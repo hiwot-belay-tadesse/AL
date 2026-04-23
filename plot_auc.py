@@ -118,7 +118,24 @@ def set_percentage_ticks(ax, x_values):
     ticks = sorted(vals.unique().tolist())
     ax.set_xticks(ticks)
     # ax.set_xticklabels([f"{tick:g}" for tick in ticks])
-    ax.set_xticklabels([f"{tick:.2f}" for tick in ticks])
+    ax.set_xticklabels([f"{tick:.1f}" for tick in ticks])
+
+
+def set_sparse_percentage_ticks(ax, x_values):
+    vals = pd.to_numeric(pd.Series(x_values), errors="coerce").dropna()
+    if vals.empty:
+        return
+    unique_vals = sorted(vals.unique().tolist())
+    ticks = []
+    if unique_vals:
+        ticks.append(unique_vals[0])
+    if len(unique_vals) >= 3:
+        ticks.append(unique_vals[len(unique_vals) // 2])
+    if len(unique_vals) >= 2:
+        ticks.append(unique_vals[-1])
+    ticks = sorted(set(ticks))
+    ax.set_xticks(ticks)
+    ax.set_xticklabels([f"{tick:.1f}" for tick in ticks])
 
 
 
@@ -186,6 +203,17 @@ def load_aggregated_auc(method_name: str, hp_name: str, pool: str, method_folder
     return None
 
 
+def load_aggregated_full_data_auc(method_name: str, hp_name: str, pool: str, method_folder: Path):
+    candidates = [ROOT_DIR / pool / "aggregates" / method_name / hp_name / "full_data_auc_aggregated.json"]
+    if method_folder is not None:
+        candidates.append(method_folder / "_aggregates" / "full_data_auc_aggregated.json")
+    for path in candidates:
+        payload = safe_load_json(path, f"aggregated full-data AUC ({method_name})")
+        if isinstance(payload, dict):
+            return payload
+    return None
+
+
 def load_user_scenario(user, fruit_scenario, pool):
     records = []
     for summary_path in find_summary_files(user, fruit_scenario, pool):
@@ -219,6 +247,7 @@ def load_user_scenario(user, fruit_scenario, pool):
         al_coreset = load_method_progress(coreset_folder, "coreset")
 
         aggregated_auc_by_method = {}
+        aggregated_full_data_auc = None
         method_sources = {
             "random": (random_folder.name if random_folder is not None else hp_folder, random_folder),
             "coreset": (coreset_folder.name if coreset_folder is not None else hp_folder, coreset_folder),
@@ -227,6 +256,13 @@ def load_user_scenario(user, fruit_scenario, pool):
             agg_df = load_aggregated_auc(method_name, hp_name, pool, method_folder)
             if agg_df is not None:
                 aggregated_auc_by_method[method_name] = agg_df
+            if aggregated_full_data_auc is None:
+                aggregated_full_data_auc = load_aggregated_full_data_auc(
+                    method_name,
+                    hp_name,
+                    pool,
+                    method_folder,
+                )
 
         records.append(
             {
@@ -241,6 +277,7 @@ def load_user_scenario(user, fruit_scenario, pool):
                 "random": al_random,
                 "coreset": al_coreset,
                 "aggregated_auc_by_method": aggregated_auc_by_method,
+                "aggregated_full_data_auc": aggregated_full_data_auc,
                 "hp_folder": hp_folder,
             }
         )
@@ -259,6 +296,17 @@ def plot_aggregate_auc(rec, hp_plot_dir: Path):
         plotted_x_values.extend(
             plot_with_variance(ax, agg_df, method_name, METHOD_COLORS[method_name])
         )
+    full_data_auc = rec.get("aggregated_full_data_auc")
+    if isinstance(full_data_auc, dict):
+        auc_100 = pd.to_numeric(pd.Series([full_data_auc.get("AUC_Mean")]), errors="coerce").dropna()
+        if not auc_100.empty:
+            ax.axhline(
+                float(auc_100.iloc[0]),
+                linestyle="--",
+                color="red",
+                linewidth=2.5,
+                label=f"100% pooled={float(auc_100.iloc[0]):.3f}",
+            )
     if plotted_x_values:
         set_percentage_ticks(ax, plotted_x_values)
         ax.set_title("Aggregated AUC")
@@ -266,6 +314,7 @@ def plot_aggregate_auc(rec, hp_plot_dir: Path):
         ax.set_ylabel("AUC Mean")
         ax.legend()
         fig.tight_layout()
+        plt.show()
         fig.savefig(hp_plot_dir / "aggregate_auc.png", dpi=150)
     plt.close(fig)
 
@@ -329,6 +378,8 @@ def plot_grid_by_participant(source_dir, ncols=3, rows_per_page=3, output_pdf="g
 
     per_page = max(1, int(ncols) * int(rows_per_page))
     output_path = source_dir / output_pdf
+    if output_path.exists():
+        output_path.unlink()
 
     with PdfPages(output_path) as pdf:
         for start in range(0, len(png_paths), per_page):

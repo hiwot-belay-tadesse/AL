@@ -2062,9 +2062,8 @@ def aggregate_per_round_labeled_and_compute_auc(
         pooled_y_score = np.concatenate(full_y_score)
         full_auc_mean, full_auc_std = _bootstrap_auc_safe(pooled_y_true, pooled_y_score)
         total_data = float(np.nansum(total_data_vals)) if total_data_vals else float(len(pooled_y_true))
-        next_round = int(auc_per_round["round"].max()) + 1 if not auc_per_round.empty else 0
         full_data_auc = {
-            "round": next_round,
+            "round": None,
             "Num_Labeled": total_data,
             "Total_Data": total_data,
             "Pct_Total_Labeled": 100.0,
@@ -2075,7 +2074,6 @@ def aggregate_per_round_labeled_and_compute_auc(
             "AUC_Mean": full_auc_mean,
             "AUC_STD": full_auc_std,
         }
-        auc_per_round = pd.concat([auc_per_round, pd.DataFrame([full_data_auc])], ignore_index=True)
 
     return {"auc_per_round": auc_per_round, "full_data_auc": full_data_auc}
 
@@ -2163,7 +2161,7 @@ def train_and_evaluate_by_pool(
         
         # 
         # Save weights per method to compare
-        np.save(f"weights_{method}.npy", all_weights)
+        # np.save(f"weights_{method}.npy", all_weights)
         
         probs_train = clf.predict(Z_tr_labeled, verbose=0).ravel()
 

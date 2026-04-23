@@ -1,2 +1,0 @@
-Pipeline,Best_Threshold,Accuracy_Mean,Accuracy_STD,Sensitivity_Mean,Sensitivity_STD,Specificity_Mean,Specificity_STD,AUC_Train,AUC_Val,AUC_Mean,AUC_STD
-global_ssl,0.43,0.491,0.5001691405606399,0.491,0.5001691405606399,0.0,0.0,0.8168225623582767,0.5,,

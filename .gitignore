@@ -2,3 +2,6 @@ output/
 output_3hidden_layer/
 results/
 __pycache__/
+*.npy
+
+*.pkl

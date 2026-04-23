@@ -1,12 +1,12 @@
 {
-  "round": 21,
-  "Num_Labeled": 2644.0,
-  "Total_Data": 2644.0,
+  "round": null,
+  "Num_Labeled": 5288.0,
+  "Total_Data": 5288.0,
   "Pct_Total_Labeled": 100.0,
   "AUC_Mean_Train": NaN,
   "AUC_STD_Train": NaN,
   "AUC_Mean_Val": NaN,
   "AUC_STD_Val": NaN,
-  "AUC_Mean": 0.8205460875885244,
-  "AUC_STD": 0.0989883820895415
+  "AUC_Mean": 0.8690909211280528,
+  "AUC_STD": 0.051036525528814956
 }
