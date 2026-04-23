@@ -1,0 +1,11 @@
+{
+    "user": "22",
+    "pool": "global_supervised",
+    "fruit": "BP",
+    "scenario": "spike",
+    "dropout_rate": 0.5,
+    "unlabeled_frac": 0.9,
+    "T": null,
+    "K": 100,
+    "Budget": 19
+}

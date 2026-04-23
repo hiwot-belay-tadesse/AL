@@ -1,0 +1,11 @@
+{
+    "user": "ID21",
+    "pool": "global_supervised",
+    "fruit": "Nectarine",
+    "scenario": "Crave",
+    "dropout_rate": 0.1,
+    "unlabeled_frac": 0.7,
+    "T": 30,
+    "K": 20,
+    "Budget": 12
+}

@@ -1,0 +1,297 @@
+id,user_id,interaction_answer,interaction_detail,physicalDiscomfort_answer,physicalDiscomfort_detail,environment_answer,environment_detail,medication_answer,medication_detail,medication_date_time,local_medication_date_time,mood_value,stressLevel_value,local_created_at,created_at
+,5/15/2025 21:15,5/15/2025 11:15,happy,1,5/15/2025 14:10,5/16/2025 0:10,,,,,,,1,5/15/2025 14:10,5/16/2025 0:10
+3943,39,yes,Family,no,,comfortable,,yes,Losartin,5/15/2025 21:15,5/15/2025 11:15,happy,1,5/15/2025 19:41,5/16/2025 5:41
+3944,39,yes,Kids,no,,comfortable,,no,,NULL,NULL,happy,1,5/16/2025 8:06,5/16/2025 18:06
+3945,39,yes,Elementary parents at a Ho'oike show at the school,no,,noisy,,no,,NULL,NULL,happy,2,5/16/2025 9:03,5/16/2025 19:03
+3946,39,yes,Crowd at elementary ho'oike,yes,Standing for over an hour waiting & watching,noisy,,no,,NULL,NULL,neutral,2,5/16/2025 10:03,5/16/2025 20:03
+3947,39,no,,yes,Rushing around ti leave house for a meeting I'm late for,quiet,,no,,NULL,NULL,unhappy,3,5/16/2025 11:11,5/16/2025 21:11
+3948,39,yes,Students when getting ready to coordinate high school graduation ,no,,noisy,,yes,Losartin,5/16/2025 21:15,5/16/2025 11:15,happy,3,5/16/2025 12:30,5/16/2025 22:30
+3949,39,yes,Adults helping set up graduation,no,,stressful,,yes,Losartin,5/16/2025 21:15,5/16/2025 11:15,neutral,3,5/16/2025 13:40,5/16/2025 23:40
+3950,39,yes,My friend who is helping tobset up for graduation,yes,It's hot in this exhibition hall where we are setting up,stressful,,yes,Losartin,5/16/2025 21:15,5/16/2025 11:15,unhappy,4,5/16/2025 14:06,5/17/2025 0:06
+3951,39,yes,My friends helping me set up for grad,yes,It's hot,stressful,,yes,Losartin,5/16/2025 21:15,5/16/2025 11:15,neutral,3,5/16/2025 15:09,5/17/2025 1:09
+3952,39,yes,My friends helping set up for graduation ,no,,noisy,,yes,Losartin,5/16/2025 21:15,5/16/2025 11:15,happy,1,5/16/2025 17:20,5/17/2025 3:20
+3953,39,yes,Friends,no,,comfortable,,yes,Losartin,5/16/2025 21:15,5/16/2025 11:15,happy,2,5/16/2025 18:21,5/17/2025 4:21
+3954,39,yes,Family,no,,comfortable,,yes,Losartin,5/16/2025 21:15,5/16/2025 11:15,neutral,2,5/16/2025 19:29,5/17/2025 5:29
+3955,39,no,,no,,comfortable,,yes,Losartin,5/16/2025 21:15,5/16/2025 11:15,neutral,3,5/16/2025 20:35,5/17/2025 6:35
+3956,39,yes,Family while eating a meal,no,,comfortable,,yes,Losartin,5/16/2025 21:15,5/16/2025 11:15,happy,1,5/16/2025 21:31,5/17/2025 7:31
+3957,39,yes,Graduates,yes,It's hot,stressful,,yes,Losartin,5/17/2025 23:15,5/17/2025 13:15,neutral,5,5/17/2025 15:15,5/18/2025 1:15
+3958,39,yes,Spouse,yes,Body's tired from coordinating graduation all day yesterday,quiet,,no,,NULL,NULL,neutral,1,5/18/2025 10:19,5/18/2025 20:19
+3959,39,yes,People at foodland,yes,Body sore from running graduation yesterday ,noisy,,no,,NULL,NULL,neutral,1,5/18/2025 11:18,5/18/2025 21:18
+3960,39,yes,Family,yes,Bodybsorenfrom running graduation all day yesterday ,noisy,,no,,NULL,NULL,neutral,1,5/18/2025 12:13,5/18/2025 22:13
+3961,39,yes,Soccer people at soccer field,yes,It's hot,stressful,,no,,NULL,NULL,unhappy,3,5/18/2025 14:25,5/19/2025 0:25
+3962,39,yes,Family,no,,quiet,,no,,NULL,NULL,neutral,1,5/19/2025 7:14,5/19/2025 17:14
+3963,39,no,,no,,quiet,,no,,NULL,NULL,neutral,1,5/19/2025 8:18,5/19/2025 18:18
+3964,39,no,,no,,quiet,,no,,NULL,NULL,neutral,1,5/19/2025 9:10,5/19/2025 19:10
+3965,39,no,,no,,quiet,,no,,NULL,NULL,neutral,1,5/19/2025 10:05,5/19/2025 20:05
+3966,39,no,,no,,quiet,,no,,NULL,NULL,neutral,3,5/19/2025 11:28,5/19/2025 21:28
+3967,39,no,,no,,quiet,,no,,NULL,NULL,neutral,2,5/19/2025 12:10,5/19/2025 22:10
+3968,39,no,,no,,quiet,,no,,NULL,NULL,neutral,1,5/19/2025 13:36,5/19/2025 23:36
+3969,39,yes,People at costco,no,,comfortable,,yes,Losartin,5/19/2025 23:15,5/19/2025 13:15,neutral,1,5/19/2025 15:28,5/20/2025 1:28
+3970,39,yes,Son,no,,quiet,,yes,Losartin,5/19/2025 23:15,5/19/2025 13:15,neutral,1,5/19/2025 16:32,5/20/2025 2:32
+3971,39,no,,no,,quiet,,yes,Losartin,5/19/2025 23:15,5/19/2025 13:15,neutral,1,5/19/2025 17:16,5/20/2025 3:16
+3972,39,yes,Family,no,,comfortable,,yes,Losartin,5/19/2025 23:15,5/19/2025 13:15,happy,1,5/19/2025 18:31,5/20/2025 4:31
+3973,39,yes,Family,no,,comfortable,,yes,Losartin,5/19/2025 23:15,5/19/2025 13:15,happy,1,5/19/2025 19:12,5/20/2025 5:12
+3974,39,no,,no,,quiet,,no,,NULL,NULL,neutral,1,5/20/2025 12:03,5/20/2025 22:03
+3975,39,no,,no,,quiet,,no,,NULL,NULL,neutral,1,5/20/2025 13:13,5/20/2025 23:13
+3976,39,no,,no,,quiet,,no,,NULL,NULL,neutral,1,5/20/2025 14:10,5/21/2025 0:10
+3977,39,no,,no,,quiet,,yes,Losartin,5/21/2025 0:15,5/20/2025 14:15,neutral,1,5/20/2025 15:05,5/21/2025 1:05
+3978,39,no,,no,,quiet,,yes,Losartin,5/21/2025 0:15,5/20/2025 14:15,unhappy,2,5/20/2025 17:13,5/21/2025 3:13
+3979,39,no,,no,,quiet,,yes,Losartin,5/21/2025 0:15,5/20/2025 14:15,neutral,2,5/20/2025 18:10,5/21/2025 4:10
+3980,39,no,,no,,quiet,,yes,Losartin,5/21/2025 0:15,5/20/2025 14:15,unhappy,3,5/20/2025 19:06,5/21/2025 5:06
+3981,39,yes,People at the store ,no,,noisy,,yes,Losartin,5/21/2025 0:15,5/20/2025 14:15,neutral,2,5/20/2025 20:08,5/21/2025 6:08
+3982,39,yes,Family,no,,comfortable,,yes,Losartin,5/21/2025 0:15,5/20/2025 14:15,unhappy,2,5/20/2025 21:10,5/21/2025 7:10
+3983,39,no,,no,,comfortable,,no,,NULL,NULL,neutral,1,5/21/2025 8:14,5/21/2025 18:14
+3984,39,no,,no,,comfortable,,no,,NULL,NULL,neutral,1,5/21/2025 9:11,5/21/2025 19:11
+3985,39,no,,no,,quiet,,no,,NULL,NULL,neutral,1,5/21/2025 10:14,5/21/2025 20:14
+3986,39,no,,no,,quiet,,no,,NULL,NULL,neutral,3,5/21/2025 11:36,5/21/2025 21:36
+3987,39,yes,People at bank,no,,noisy,,no,,NULL,NULL,unhappy,3,5/21/2025 12:13,5/21/2025 22:13
+3988,39,yes,Daughter,yes,It's hot,noisy,,yes,Losartin,5/21/2025 23:15,5/21/2025 13:15,neutral,1,5/21/2025 13:47,5/21/2025 23:47
+3989,39,yes,Daughter,yes,It's hot,comfortable,,yes,Losartin,5/21/2025 23:15,5/21/2025 13:15,neutral,1,5/21/2025 14:09,5/22/2025 0:09
+3990,39,yes,Family,no,,comfortable,,yes,Losartin,5/21/2025 23:15,5/21/2025 13:15,neutral,1,5/21/2025 15:40,5/22/2025 1:40
+3991,39,yes,Family ,yes,It's hot,comfortable,,yes,Losartin,5/21/2025 23:15,5/21/2025 13:15,unhappy,2,5/21/2025 16:15,5/22/2025 2:15
+3992,39,yes,Soccwr players at practice,no,,noisy,,yes,Losartin,5/21/2025 23:15,5/21/2025 13:15,neutral,2,5/21/2025 17:14,5/22/2025 3:14
+3993,39,yes,Soccer players at practice ,no,,noisy,,yes,Losartin,5/21/2025 23:15,5/21/2025 13:15,unhappy,3,5/21/2025 18:09,5/22/2025 4:09
+3994,39,yes,Playersvat soccer practice ,no,,noisy,,yes,Losartin ,5/21/2025 23:15,5/21/2025 13:15,neutral,2,5/21/2025 19:03,5/22/2025 5:03
+3995,39,yes,Family,no,,noisy,,yes,Losartin ,5/21/2025 23:15,5/21/2025 13:15,neutral,3,5/21/2025 20:14,5/22/2025 6:14
+3996,39,yes,Family,no,,stressful,,yes,Losartin ,5/21/2025 23:15,5/21/2025 13:15,unhappy,3,5/21/2025 21:20,5/22/2025 7:20
+3997,39,no,,no,,comfortable,,no,,NULL,NULL,neutral,1,5/22/2025 8:22,5/22/2025 18:22
+3998,39,yes,Drivers on road ,no,,noisy,,no,,NULL,NULL,neutral,1,5/22/2025 9:18,5/22/2025 19:18
+3999,39,yes,People on the road while driving,no,,comfortable,,no,,NULL,NULL,neutral,2,5/22/2025 10:29,5/22/2025 20:29
+4000,39,yes,People at grocery store ,no,,comfortable,,no,,NULL,NULL,neutral,1,5/22/2025 11:06,5/22/2025 21:06
+4001,39,no,,no,,comfortable,,no,,NULL,NULL,happy,1,5/22/2025 12:06,5/22/2025 22:06
+4002,39,no,,no,,quiet,,no,,NULL,NULL,neutral,1,5/22/2025 13:11,5/22/2025 23:11
+4003,39,yes,People online ,no,,comfortable,,yes,Losartin ,5/22/2025 23:15,5/22/2025 13:15,unhappy,2,5/22/2025 14:19,5/23/2025 0:19
+4004,39,yes,Family,no,,comfortable,,yes,Losartin ,5/22/2025 23:15,5/22/2025 13:15,happy,1,5/22/2025 15:10,5/23/2025 1:10
+4005,39,yes,Spouse,no,,comfortable,,yes,Losartin ,5/22/2025 23:15,5/22/2025 13:15,happy,1,5/22/2025 16:03,5/23/2025 2:03
+4006,39,no,,no,,comfortable,,yes,Losartin,5/22/2025 23:15,5/22/2025 13:15,happy,1,5/22/2025 17:12,5/23/2025 3:12
+4007,39,no,,no,,comfortable,,yes,Losartin ,5/22/2025 23:15,5/22/2025 13:15,happy,1,5/22/2025 18:09,5/23/2025 4:09
+4008,39,yes,Family,yes,Tired from carrying heavy pot and cooking dinner,noisy,,yes,Losartin ,5/22/2025 23:15,5/22/2025 13:15,happy,3,5/22/2025 19:28,5/23/2025 5:28
+4009,39,yes,Family ,no,,comfortable,,yes,Losartin ,5/22/2025 23:15,5/22/2025 13:15,happy,1,5/22/2025 21:14,5/23/2025 7:14
+4011,39,no,,no,,comfortable,,no,,NULL,NULL,neutral,1,5/23/2025 9:18,5/23/2025 19:18
+4013,39,yes,Online meeting ,no,,comfortable,,no,,NULL,NULL,happy,2,5/23/2025 11:05,5/23/2025 21:05
+4015,39,yes,Friends,no,,comfortable,,no,,NULL,NULL,happy,1,5/23/2025 12:18,5/23/2025 22:18
+4017,39,yes,Dad,no,,comfortable,,yes,Losartin ,5/23/2025 23:15,5/23/2025 13:15,happy,1,5/23/2025 13:26,5/23/2025 23:26
+4019,39,yes,Dad,no,,comfortable,,yes,Losartin ,5/23/2025 23:15,5/23/2025 13:15,happy,1,5/23/2025 14:43,5/24/2025 0:43
+4021,39,yes,Dad,no,,comfortable,,yes,Losartin ,5/23/2025 23:15,5/23/2025 13:15,happy,1,5/23/2025 15:05,5/24/2025 1:05
+4023,39,yes,Son,no,,comfortable,,yes,Losartin ,5/23/2025 23:15,5/23/2025 13:15,happy,1,5/23/2025 16:19,5/24/2025 2:19
+4025,39,yes,Son,no,,comfortable,,yes,Losartin ,5/23/2025 23:15,5/23/2025 13:15,neutral,1,5/23/2025 17:09,5/24/2025 3:09
+4026,39,yes,Friends,no,,comfortable,,yes,Losartin ,5/23/2025 23:15,5/23/2025 13:15,happy,1,5/23/2025 18:07,5/24/2025 4:07
+4028,39,yes,Family,no,,comfortable,,yes,Losartin ,5/23/2025 23:15,5/23/2025 13:15,happy,1,5/23/2025 20:31,5/24/2025 6:31
+4029,39,yes,Fanily,no,,comfortable,,yes,Losartin ,5/23/2025 23:15,5/23/2025 13:15,happy,1,5/23/2025 21:16,5/24/2025 7:16
+4031,39,yes,Family,no,,comfortable,,no,,NULL,NULL,neutral,1,5/24/2025 8:41,5/24/2025 18:41
+4032,39,yes,Family,no,,comfortable,,no,,NULL,NULL,happy,1,5/24/2025 9:10,5/24/2025 19:10
+4034,39,yes,People at soccer,no,,noisy,,no,,NULL,NULL,happy,2,5/24/2025 10:21,5/24/2025 20:21
+4036,39,yes,Soccer people,yes,It's hot,noisy,,no,,NULL,NULL,happy,1,5/24/2025 11:09,5/24/2025 21:09
+4038,39,yes,Soccer people,yes,Its hot,noisy,,no,,NULL,NULL,happy,4,5/24/2025 12:25,5/24/2025 22:25
+4039,39,yes,Soccer people,no,,noisy,,no,,NULL,NULL,happy,1,5/24/2025 13:18,5/24/2025 23:18
+4041,39,yes,Soccer players ,yes,Hot,noisy,,no,,NULL,NULL,happy,2,5/24/2025 14:11,5/25/2025 0:11
+4043,39,yes,Soccer people,yes,Hot and strssful.game,stressful,,no,,NULL,NULL,unhappy,6,5/24/2025 15:20,5/25/2025 1:20
+4045,39,yes,Soccer people,yes,Its hot,stressful,,no,,NULL,NULL,neutral,4,5/24/2025 16:06,5/25/2025 2:06
+4047,39,yes,Family,no,,comfortable,,no,,NULL,NULL,happy,1,5/24/2025 17:15,5/25/2025 3:15
+4048,39,yes,Family,no,,comfortable,,yes,Losartin ,5/25/2025 4:05,5/24/2025 18:05,happy,1,5/24/2025 18:07,5/25/2025 4:07
+4049,39,yes,Spouse ,no,,comfortable,,no,,NULL,NULL,neutral,1,5/25/2025 9:17,5/25/2025 19:17
+4051,39,yes,Family,no,,comfortable,,no,,NULL,NULL,neutral,2,5/25/2025 10:27,5/25/2025 20:27
+4053,39,yes,Family,no,,comfortable,,no,,NULL,NULL,neutral,3,5/25/2025 11:20,5/25/2025 21:20
+4054,39,yes,People at store,no,,noisy,,no,,NULL,NULL,neutral,2,5/25/2025 12:32,5/25/2025 22:32
+4055,39,yes,People at store,no,,noisy,,no,,NULL,NULL,neutral,3,5/25/2025 14:29,5/26/2025 0:29
+4056,39,yes,Family ,no,,stressful,,no,,NULL,NULL,unhappy,5,5/25/2025 15:40,5/26/2025 1:40
+4057,39,yes,Family,no,,stressful,,yes,Losartin ,5/26/2025 1:00,5/25/2025 15:00,neutral,4,5/25/2025 16:14,5/26/2025 2:14
+4060,39,yes,Family,no,,stressful,,yes,Losartin ,5/26/2025 1:00,5/25/2025 15:00,neutral,3,5/25/2025 17:22,5/26/2025 3:22
+4061,39,yes,Family,no,,noisy,,yes,Losartin ,5/26/2025 1:00,5/25/2025 15:00,happy,2,5/25/2025 18:02,5/26/2025 4:02
+4063,39,yes,Family ,no,,comfortable,,yes,Losartin ,5/26/2025 1:00,5/25/2025 15:00,happy,1,5/25/2025 20:19,5/26/2025 6:19
+4065,39,yes,Family,no,,others,Trying to pack for trip so it's a little chaotic,no,,NULL,NULL,unhappy,3,5/26/2025 9:20,5/26/2025 19:20
+4068,39,yes,Family,no,,comfortable,,no,,NULL,NULL,neutral,2,5/26/2025 11:23,5/26/2025 21:23
+4071,39,yes,Family,yes,Hot,comfortable,,yes,Losartin ,5/26/2025 23:45,5/26/2025 13:45,neutral,2,5/26/2025 14:10,5/27/2025 0:10
+4073,39,yes,Family ,yes,Hot,stressful,,yes,Losartin ,5/27/2025 0:00,5/26/2025 14:00,neutral,2,5/26/2025 15:08,5/27/2025 1:08
+4075,39,yes,Family,no,,comfortable,,yes,Losartin,5/27/2025 0:00,5/26/2025 14:00,happy,1,5/26/2025 16:08,5/27/2025 2:08
+4077,39,yes,Daughter,no,,comfortable,,yes,Losartin ,5/27/2025 0:00,5/26/2025 14:00,happy,1,5/26/2025 17:05,5/27/2025 3:05
+4079,39,yes,Family,no,,noisy,,yes,Losartin ,5/27/2025 0:00,5/26/2025 14:00,neutral,1,5/26/2025 18:23,5/27/2025 4:23
+4080,39,yes,Family,no,,comfortable,,yes,Losartin,5/27/2025 0:00,5/26/2025 14:00,happy,1,5/26/2025 19:19,5/27/2025 5:19
+4081,39,yes,Family,no,,stressful,,yes,Losartin ,5/27/2025 1:00,5/26/2025 15:00,neutral,2,5/26/2025 20:10,5/27/2025 6:10
+4082,39,no,,no,,comfortable,,no,,NULL,NULL,neutral,1,5/27/2025 8:06,5/27/2025 18:06
+4083,39,yes,Online meeting,no,,comfortable,,no,,NULL,NULL,neutral,1,5/27/2025 9:30,5/27/2025 19:30
+4085,39,no,,no,,comfortable,,no,,NULL,NULL,neutral,1,5/27/2025 10:11,5/27/2025 20:11
+4086,39,yes,Online meeting,yes,Its hot,comfortable,,no,,NULL,NULL,neutral,2,5/27/2025 11:18,5/27/2025 21:18
+4087,39,no,,yes,It's hot,comfortable,,no,,NULL,NULL,neutral,1,5/27/2025 12:03,5/27/2025 22:03
+4088,39,yes,Friend,no,,comfortable,,no,,NULL,NULL,happy,1,5/27/2025 13:09,5/27/2025 23:09
+4089,39,yes,Daughter,yes,It's hot,quiet,,no,,NULL,NULL,happy,1,5/27/2025 15:13,5/28/2025 1:13
+4090,39,yes,Online meeting,no,,comfortable,,no,,NULL,NULL,happy,1,5/27/2025 16:09,5/28/2025 2:09
+4091,39,yes,Online meeting,no,,comfortable,,no,,NULL,NULL,neutral,1,5/27/2025 17:09,5/28/2025 3:09
+4092,39,no,,no,,comfortable,,no,,NULL,NULL,neutral,1,5/27/2025 18:09,5/28/2025 4:09
+4093,39,no,,no,,comfortable,,yes,Losartin ,5/28/2025 4:15,5/27/2025 18:15,neutral,2,5/27/2025 19:07,5/28/2025 5:07
+4094,39,yes,Children,no,,noisy,,yes,Losartin ,5/28/2025 4:15,5/27/2025 18:15,unhappy,3,5/27/2025 20:12,5/28/2025 6:12
+4095,39,yes,Family,no,,stressful,,yes,Losartin ,5/28/2025 4:15,5/27/2025 18:15,unhappy,3,5/27/2025 21:13,5/28/2025 7:13
+4096,39,no,,no,,comfortable,,no,,NULL,NULL,neutral,1,5/28/2025 9:27,5/28/2025 19:27
+4097,39,no,,no,,comfortable,,no,,NULL,NULL,neutral,1,5/28/2025 10:23,5/28/2025 20:23
+4098,39,no,,no,,comfortable,,no,,NULL,NULL,neutral,1,5/28/2025 11:13,5/28/2025 21:13
+4099,39,yes,People at mall,no,,noisy,,no,,NULL,NULL,happy,2,5/28/2025 12:34,5/28/2025 22:34
+4100,39,yes,People at mall,no,,noisy,,no,,NULL,NULL,happy,1,5/28/2025 13:12,5/28/2025 23:12
+4101,39,yes,People at the store,no,,noisy,,no,,NULL,NULL,happy,1,5/28/2025 14:31,5/29/2025 0:31
+4102,39,no,,no,,comfortable,,no,,NULL,NULL,neutral,1,5/28/2025 15:18,5/29/2025 1:18
+4103,39,yes,Family,yes,Hot,comfortable,,yes,Losartin ,5/29/2025 1:30,5/28/2025 15:30,neutral,2,5/28/2025 16:20,5/29/2025 2:20
+4104,39,yes,Soccer players,no,,noisy,,yes,Losartin ,5/29/2025 1:15,5/28/2025 15:15,neutral,1,5/28/2025 17:06,5/29/2025 3:06
+4106,39,yes,Soccer players,no,,noisy,,yes,Losartin ,5/29/2025 1:15,5/28/2025 15:15,happy,1,5/28/2025 18:04,5/29/2025 4:04
+4107,39,yes,Family,no,,noisy,,yes,Losartin ,5/29/2025 1:15,5/28/2025 15:15,happy,2,5/28/2025 19:24,5/29/2025 5:24
+4108,39,yes,Family,no,,comfortable,,yes,Losartin ,5/29/2025 1:15,5/28/2025 15:15,neutral,1,5/28/2025 20:08,5/29/2025 6:08
+4109,39,yes,Famiy,no,,noisy,,yes,Losartin ,5/29/2025 1:15,5/28/2025 15:15,neutral,1,5/28/2025 21:03,5/29/2025 7:03
+4110,39,no,,no,,comfortable,,no,,NULL,NULL,neutral,1,5/29/2025 9:11,5/29/2025 19:11
+4111,39,no,,no,,comfortable,,no,,NULL,NULL,neutral,1,5/29/2025 10:08,5/29/2025 20:08
+4112,39,no,,yes,Hot ,comfortable,,no,,NULL,NULL,happy,1,5/29/2025 11:29,5/29/2025 21:29
+4113,39,yes,Spouse,no,,comfortable,,no,,NULL,NULL,neutral,1,5/29/2025 13:14,5/29/2025 23:14
+4114,39,yes,Spouse,no,,comfortable,,no,,NULL,NULL,happy,1,5/29/2025 14:09,5/30/2025 0:09
+4115,39,yes,Family ,no,,comfortable,,yes,Losartin ,5/30/2025 1:00,5/29/2025 15:00,happy,1,5/29/2025 15:16,5/30/2025 1:16
+4116,39,yes,Family,no,,comfortable,,yes,Losartin ,5/30/2025 1:00,5/29/2025 15:00,happy,1,5/29/2025 16:17,5/30/2025 2:17
+4117,39,yes,Family,no,,comfortable,,yes,Losartin ,5/30/2025 1:00,5/29/2025 15:00,neutral,1,5/29/2025 17:15,5/30/2025 3:15
+4118,39,yes,Family,no,,comfortable,,yes,Losartin ,5/30/2025 1:00,5/29/2025 15:00,neutral,1,5/29/2025 18:06,5/30/2025 4:06
+4154,39,yes,Family,no,,comfortable,,no,,NULL,NULL,happy,0,6/11/2025 11:01,6/11/2025 21:01
+4155,39,yes,Children,yes,It's hot,stressful,,no,,NULL,NULL,unhappy,5,6/11/2025 12:33,6/11/2025 22:33
+4156,39,yes,Children,no,,comfortable,,no,,NULL,NULL,neutral,1,6/11/2025 13:22,6/11/2025 23:22
+4158,39,yes,Children,yes,It's hot,stressful,,no,,NULL,NULL,neutral,2,6/11/2025 14:42,6/12/2025 0:42
+4159,39,yes,Children,yes,It's hot & someone injured my thumb,comfortable,,no,,NULL,NULL,unhappy,2,6/11/2025 15:15,6/12/2025 1:15
+4160,39,yes,Children,yes,Hot,comfortable,,no,,NULL,NULL,neutral,1,6/11/2025 16:10,6/12/2025 2:10
+4161,39,yes,Children,no,,comfortable,,yes,Losartin ,6/12/2025 2:00,6/11/2025 16:00,neutral,1,6/11/2025 19:07,6/12/2025 5:07
+4162,39,yes,Family,no,,comfortable,,yes,Losartin ,6/12/2025 2:00,6/11/2025 16:00,neutral,1,6/11/2025 19:08,6/12/2025 5:08
+4164,39,yes,Family,no,,comfortable,,yes,Losartin ,6/12/2025 2:00,6/11/2025 16:00,happy,1,6/11/2025 20:41,6/12/2025 6:41
+4165,39,yes,Family ,no,,comfortable,,yes,Losartin ,6/12/2025 2:00,6/11/2025 16:00,neutral,1,6/11/2025 22:04,6/12/2025 8:04
+4167,39,yes,Children,no,,comfortable,,no,,NULL,NULL,unhappy,2,6/12/2025 8:12,6/12/2025 18:12
+4168,39,yes,Children,no,,comfortable,,no,,NULL,NULL,neutral,1,6/12/2025 9:19,6/12/2025 19:19
+4169,39,yes,Team meeting online,no,,comfortable,,no,,NULL,NULL,neutral,2,6/12/2025 10:36,6/12/2025 20:36
+4170,39,yes,Team meeting for online meeting,no,,comfortable,,no,,NULL,NULL,neutral,1,6/12/2025 11:15,6/12/2025 21:15
+4171,39,yes,Family during lunch,no,,comfortable,,no,,NULL,NULL,neutral,1,6/12/2025 13:09,6/12/2025 23:09
+4172,39,yes,Children,yes,It's muggy,noisy,,no,,NULL,NULL,neutral,2,6/12/2025 15:09,6/13/2025 1:09
+4173,39,yes,Children,yes,It's muggy,noisy,,yes,Losartin ,6/13/2025 2:00,6/12/2025 16:00,neutral,1,6/12/2025 16:11,6/13/2025 2:11
+4174,39,yes,Children,yes,It's hot,noisy,,yes,Losartin ,6/13/2025 2:00,6/12/2025 16:00,happy,1,6/12/2025 17:03,6/13/2025 3:03
+4175,39,yes,Children,yes,It's hot,comfortable,,yes,Losartin ,6/13/2025 2:00,6/12/2025 16:00,neutral,1,6/12/2025 18:10,6/13/2025 4:10
+4176,39,yes,Children,no,,comfortable,,no,,NULL,NULL,neutral,1,6/13/2025 9:09,6/13/2025 19:09
+4177,39,yes,Children,no,,comfortable,,no,,NULL,NULL,neutral,1,6/13/2025 10:02,6/13/2025 20:02
+4178,39,yes,People at store,no,,noisy,,no,,NULL,NULL,neutral,2,6/13/2025 12:08,6/13/2025 22:08
+4179,39,yes,People at store,yes,Hot,noisy,,no,,NULL,NULL,neutral,2,6/13/2025 13:22,6/13/2025 23:22
+4180,39,yes,Children,no,,comfortable,,no,,NULL,NULL,neutral,2,6/13/2025 14:36,6/14/2025 0:36
+4181,39,yes,Children ,no,,comfortable,,no,,NULL,NULL,neutral,1,6/13/2025 15:26,6/14/2025 1:26
+4182,39,yes,Children ,yes,It's hot,comfortable,,yes,Losartin ,6/14/2025 2:00,6/13/2025 16:00,neutral,2,6/13/2025 16:14,6/14/2025 2:14
+4183,39,yes,Soccer players,yes,It's hot,noisy,,yes,Losartin ,6/14/2025 2:00,6/13/2025 16:00,happy,1,6/13/2025 17:06,6/14/2025 3:06
+4184,39,yes,Soccer players ,no,,noisy,,yes,Losartin,6/14/2025 2:00,6/13/2025 16:00,neutral,1,6/13/2025 18:11,6/14/2025 4:11
+4185,39,no,,no,,comfortable,,yes,Losartin ,6/14/2025 2:00,6/13/2025 16:00,neutral,1,6/13/2025 19:11,6/14/2025 5:11
+4186,39,yes,People at church ,no,,comfortable,,yes,Losartin ,6/14/2025 2:00,6/13/2025 16:00,happy,1,6/13/2025 20:38,6/14/2025 6:38
+4187,39,yes,Family,no,,comfortable,,yes,Losartin ,6/14/2025 2:00,6/13/2025 16:00,neutral,1,6/13/2025 21:32,6/14/2025 7:32
+4188,39,yes,Family,no,,comfortable,,no,,NULL,NULL,neutral,1,6/14/2025 10:27,6/14/2025 20:27
+4189,39,yes,Family,no,,noisy,,no,,NULL,NULL,happy,1,6/14/2025 11:05,6/14/2025 21:05
+4190,39,yes,Neighbors ,no,,comfortable,,no,,NULL,NULL,happy,1,6/14/2025 12:45,6/14/2025 22:45
+4191,39,yes,Family,no,,comfortable,,no,,NULL,NULL,happy,1,6/14/2025 13:23,6/14/2025 23:23
+4192,39,yes,Family,no,,comfortable,,no,,NULL,NULL,happy,1,6/14/2025 14:18,6/15/2025 0:18
+4193,39,yes,Family,no,,comfortable,,no,,NULL,NULL,neutral,2,6/14/2025 15:07,6/15/2025 1:07
+4194,39,yes,Family ,yes,Hot,comfortable,,yes,Losartin ,6/15/2025 2:00,6/14/2025 16:00,happy,1,6/14/2025 16:41,6/15/2025 2:41
+4195,39,yes,Family,yes,Hot,comfortable,,yes,Losartin ,6/15/2025 2:00,6/14/2025 16:00,happy,1,6/14/2025 17:09,6/15/2025 3:09
+4196,39,yes,Family,no,,comfortable,,yes,Losartin ,6/15/2025 2:00,6/14/2025 16:00,happy,1,6/14/2025 18:08,6/15/2025 4:08
+4197,39,yes,Family,no,,comfortable,,yes,Losartin ,6/15/2025 2:00,6/14/2025 16:00,happy,1,6/14/2025 19:11,6/15/2025 5:11
+4198,39,yes,Famolu,no,,comfortable,,yes,Losartin ,6/15/2025 2:00,6/14/2025 16:00,neutral,2,6/14/2025 20:08,6/15/2025 6:08
+4199,39,yes,Family,no,,comfortable,,yes,Losartin,6/15/2025 2:00,6/14/2025 16:00,happy,1,6/14/2025 21:19,6/15/2025 7:19
+4200,39,yes,Family,no,,comfortable,,no,,NULL,NULL,happy,1,6/15/2025 10:16,6/15/2025 20:16
+4201,39,yes,People at church ,no,,comfortable,,no,,NULL,NULL,happy,1,6/15/2025 11:08,6/15/2025 21:08
+4202,39,yes,People at store ,no,,comfortable,,no,,NULL,NULL,happy,1,6/15/2025 12:29,6/15/2025 22:29
+4203,39,yes,Family,no,,comfortable,,no,,NULL,NULL,neutral,1,6/15/2025 13:19,6/15/2025 23:19
+4204,39,yes,Family,no,,comfortable,,no,,NULL,NULL,happy,1,6/15/2025 14:06,6/16/2025 0:06
+4205,39,yes,Family,no,,comfortable,,yes,Losartin,6/16/2025 2:00,6/15/2025 16:00,happy,1,6/15/2025 20:37,6/16/2025 6:37
+4206,39,yes,Family,no,,noisy,,no,,NULL,NULL,neutral,2,6/16/2025 7:26,6/16/2025 17:26
+4207,39,no,,no,,comfortable,,no,,NULL,NULL,neutral,2,6/16/2025 8:05,6/16/2025 18:05
+4208,39,yes,People at store,no,,noisy,,no,,NULL,NULL,neutral,2,6/16/2025 9:03,6/16/2025 19:03
+4209,39,yes,People at store,no,,noisy,,no,,NULL,NULL,neutral,1,6/16/2025 10:23,6/16/2025 20:23
+4210,39,no,,yes,It's hot,noisy,,no,,NULL,NULL,neutral,2,6/16/2025 11:03,6/16/2025 21:03
+4211,39,no,,no,,noisy,,no,,NULL,NULL,neutral,1,6/16/2025 12:05,6/16/2025 22:05
+4212,39,yes,People at store,yes,It's hot,stressful,,no,,NULL,NULL,neutral,1,6/16/2025 13:23,6/16/2025 23:23
+4213,39,no,,no,,comfortable,,no,,NULL,NULL,neutral,1,6/16/2025 14:22,6/17/2025 0:22
+4214,39,no,,no,,comfortable,,no,,NULL,NULL,neutral,1,6/16/2025 15:06,6/17/2025 1:06
+4215,39,yes,Children ,no,,comfortable,,yes,Losartin ,6/17/2025 1:00,6/16/2025 15:00,neutral,1,6/16/2025 16:07,6/17/2025 2:07
+4216,39,no,,yes,It's really muggy ,comfortable,,yes,Losartin ,6/17/2025 1:00,6/16/2025 15:00,neutral,2,6/16/2025 17:17,6/17/2025 3:17
+4217,39,yes,Children,yes,I stubbed my toe,comfortable,,yes,Losartin ,6/17/2025 1:00,6/16/2025 15:00,unhappy,2,6/16/2025 18:23,6/17/2025 4:23
+4218,39,yes,Children,no,,comfortable,,yes,Losartin ,6/17/2025 1:00,6/16/2025 15:00,neutral,2,6/16/2025 19:05,6/17/2025 5:05
+4219,39,yes,Random people dropping off my cad,no,,noisy,,no,,NULL,NULL,neutral,1,6/17/2025 8:13,6/17/2025 18:13
+4220,39,yes,Online meeting with coworkers ,no,,comfortable,,no,,NULL,NULL,neutral,1,6/17/2025 9:11,6/17/2025 19:11
+4221,39,yes,Online meeting with coworkers,no,,comfortable,,no,,NULL,NULL,neutral,1,6/17/2025 10:35,6/17/2025 20:35
+4222,39,no,,no,,comfortable,,no,,NULL,NULL,neutral,1,6/17/2025 11:16,6/17/2025 21:16
+4223,39,no,,no,,comfortable,,no,,NULL,NULL,neutral,1,6/17/2025 12:12,6/17/2025 22:12
+4225,39,no,,no,,comfortable,,no,,NULL,NULL,neutral,1,6/17/2025 14:21,6/18/2025 0:21
+4227,39,no,,no,,comfortable,,no,,NULL,NULL,happy,1,6/17/2025 15:04,6/18/2025 1:04
+4228,39,yes,Uber driver ,no,,comfortable,,no,,NULL,NULL,neutral,1,6/17/2025 16:10,6/18/2025 2:10
+4229,39,yes,Children ,yes,I'm hungry,comfortable,,no,,NULL,NULL,neutral,2,6/17/2025 18:18,6/18/2025 4:18
+4230,39,yes,Family ,yes,Stress over work related things & hungry ,stressful,,no,,NULL,NULL,unhappy,4,6/17/2025 19:49,6/18/2025 5:49
+4231,39,no,,no,,comfortable,,no,,NULL,NULL,neutral,1,6/17/2025 20:06,6/18/2025 6:06
+4232,39,yes,Family,no,,comfortable,,yes,Losartin,6/18/2025 6:00,6/17/2025 20:00,happy,1,6/17/2025 21:26,6/18/2025 7:26
+4233,39,no,,no,,comfortable,,no,,NULL,NULL,neutral,1,6/18/2025 8:26,6/18/2025 18:26
+4235,39,yes,Online meeting with coworkers ,yes,It's hot ,comfortable,,no,,NULL,NULL,happy,2,6/18/2025 10:29,6/18/2025 20:29
+4236,39,yes,Coworkers online,yes,It's hot,comfortable,,no,,NULL,NULL,neutral,2,6/18/2025 11:09,6/18/2025 21:09
+4237,39,yes,My friend,no,,comfortable,,no,,NULL,NULL,neutral,2,6/18/2025 12:13,6/18/2025 22:13
+4238,39,yes,People at a meeting ,yes,It's hot ,noisy,,no,,NULL,NULL,neutral,2,6/18/2025 13:07,6/18/2025 23:07
+4241,39,yes,People on the road,yes,It's hot and I'm rushing to get to practice ,stressful,,yes,Losartin,6/19/2025 1:00,6/18/2025 15:00,unhappy,3,6/18/2025 16:25,6/19/2025 2:25
+4243,39,yes,Soccer players at practice ,no,,comfortable,,yes,Losartin ,6/19/2025 1:00,6/18/2025 15:00,happy,1,6/18/2025 18:44,6/19/2025 4:44
+4244,39,yes,Family,yes,My sinuses are bothering me ,noisy,,yes,Losartin ,6/19/2025 1:00,6/18/2025 15:00,neutral,1,6/18/2025 19:13,6/19/2025 5:13
+4245,39,yes,Family,yes,My sinuses are bothering me,comfortable,,yes,Losartin,6/19/2025 1:00,6/18/2025 15:00,happy,1,6/18/2025 20:13,6/19/2025 6:13
+4246,39,yes,Family,yes,My sinuses are bothering me,comfortable,,yes,Losartin ,6/19/2025 1:00,6/18/2025 15:00,happy,1,6/18/2025 21:12,6/19/2025 7:12
+4247,39,yes,Person on phone to repair something around the house,no,,comfortable,,no,,NULL,NULL,neutral,1,6/19/2025 8:59,6/19/2025 18:59
+4249,39,yes,Kids in a car,no,,noisy,,no,,NULL,NULL,happy,1,6/19/2025 10:27,6/19/2025 20:27
+4251,39,yes,Children ,yes,It's hot,noisy,,no,,NULL,NULL,happy,1,6/19/2025 11:15,6/19/2025 21:15
+4252,39,yes,Children ,yes,I'm hungry,noisy,,no,,NULL,NULL,happy,1,6/19/2025 12:08,6/19/2025 22:08
+4253,39,yes,Children,no,,comfortable,,no,,NULL,NULL,neutral,1,6/19/2025 13:24,6/19/2025 23:24
+4254,39,yes,Children,no,,comfortable,,no,,NULL,NULL,neutral,1,6/19/2025 14:00,6/20/2025 0:00
+4255,39,yes,Children,no,,comfortable,,no,,NULL,NULL,happy,1,6/19/2025 16:13,6/20/2025 2:13
+4256,39,yes,People at music lessons,no,,comfortable,,no,,NULL,NULL,neutral,1,6/19/2025 17:09,6/20/2025 3:09
+4257,39,yes,Children at music lessons,no,,noisy,,no,,NULL,NULL,neutral,1,6/19/2025 18:05,6/20/2025 4:05
+4259,39,yes,Family ,no,,comfortable,,yes,Losartin ,6/20/2025 4:00,6/19/2025 18:00,happy,1,6/19/2025 20:09,6/20/2025 6:09
+4261,39,yes,Family,no,,comfortable,,no,,NULL,NULL,neutral,1,6/20/2025 7:06,6/20/2025 17:06
+4262,39,yes,Spouse,no,,comfortable,,no,,NULL,NULL,neutral,1,6/20/2025 8:06,6/20/2025 18:06
+4263,39,no,,no,,comfortable,,no,,NULL,NULL,neutral,1,6/20/2025 9:17,6/20/2025 19:17
+4264,39,yes,Online meeting,no,,comfortable,,no,,NULL,NULL,neutral,1,6/20/2025 10:03,6/20/2025 20:03
+4265,39,yes,Online meeting ,no,,comfortable,,no,,NULL,NULL,neutral,2,6/20/2025 11:45,6/20/2025 21:45
+4266,39,yes,Online meeting,no,,comfortable,,no,,NULL,NULL,neutral,2,6/20/2025 12:04,6/20/2025 22:04
+4267,39,no,,no,,comfortable,,yes,Losartin ,6/20/2025 22:30,6/20/2025 12:30,neutral,1,6/20/2025 13:04,6/20/2025 23:04
+4268,39,yes,Child,no,,comfortable,,yes,Losartin ,6/20/2025 22:30,6/20/2025 12:30,neutral,1,6/20/2025 14:09,6/21/2025 0:09
+4269,39,yes,People in traffic ,no,,stressful,,yes,Losartin ,6/20/2025 22:30,6/20/2025 12:30,neutral,3,6/20/2025 15:12,6/21/2025 1:12
+4270,39,yes,Kids in a car,no,,comfortable,,yes,Losartin ,6/20/2025 22:30,6/20/2025 12:30,happy,1,6/20/2025 16:24,6/21/2025 2:24
+4271,39,yes,Family,no,,comfortable,,yes,Losartin ,6/20/2025 22:30,6/20/2025 12:30,happy,1,6/20/2025 18:07,6/21/2025 4:07
+4272,39,yes,Dad,no,,comfortable,,yes,Losartin,6/20/2025 22:30,6/20/2025 12:30,neutral,1,6/20/2025 19:17,6/21/2025 5:17
+4273,39,yes,Family,no,,comfortable,,yes,Losartin ,6/20/2025 10:30,6/20/2025 0:30,neutral,1,6/20/2025 21:29,6/21/2025 7:29
+4274,39,yes,Gamily,no,,noisy,,no,,NULL,NULL,neutral,2,6/21/2025 8:07,6/21/2025 18:07
+4275,39,yes,Family,no,,comfortable,,no,,NULL,NULL,neutral,1,6/21/2025 9:06,6/21/2025 19:06
+4277,39,yes,Family,no,,comfortable,,no,,NULL,NULL,neutral,1,6/21/2025 10:12,6/21/2025 20:12
+4279,39,yes,Family at dentist,no,,comfortable,,no,,NULL,NULL,neutral,1,6/21/2025 11:11,6/21/2025 21:11
+4280,39,yes,Family,yes,I'm hungry ,noisy,,no,,NULL,NULL,neutral,1,6/21/2025 12:40,6/21/2025 22:40
+4281,39,yes,Family at brunch,no,,noisy,,no,,NULL,NULL,happy,1,6/21/2025 13:10,6/21/2025 23:10
+4283,39,yes,Family,no,,noisy,,no,,NULL,NULL,neutral,1,6/21/2025 14:03,6/22/2025 0:03
+4285,39,yes,People at a play,no,,noisy,,no,,NULL,NULL,very_happy,1,6/21/2025 15:18,6/22/2025 1:18
+4286,39,yes,Family,no,,comfortable,,no,,NULL,NULL,happy,1,6/21/2025 17:01,6/22/2025 3:01
+4287,39,yes,Family and friends,no,,comfortable,,no,,NULL,NULL,happy,1,6/21/2025 19:07,6/22/2025 5:07
+4288,39,yes,Family,no,,comfortable,,no,,NULL,NULL,happy,1,6/21/2025 20:04,6/22/2025 6:04
+4289,39,yes,Family and. Friends,no,,noisy,,no,,NULL,NULL,happy,1,6/21/2025 21:03,6/22/2025 7:03
+4290,39,yes,Family,no,,comfortable,,no,,NULL,NULL,neutral,1,6/22/2025 9:09,6/22/2025 19:09
+4292,39,yes,Spouse,no,,comfortable,,no,,NULL,NULL,happy,1,6/22/2025 10:13,6/22/2025 20:13
+4293,39,yes,People at church,no,,comfortable,,no,,NULL,NULL,happy,1,6/22/2025 11:07,6/22/2025 21:07
+4294,39,yes,Family,no,,noisy,,no,,NULL,NULL,happy,2,6/22/2025 12:18,6/22/2025 22:18
+4295,39,yes,Family,no,,comfortable,,yes,Losartin ,6/22/2025 22:30,6/22/2025 12:30,neutral,1,6/22/2025 13:20,6/22/2025 23:20
+4296,39,yes,Family,no,,comfortable,,yes,Losartin,6/22/2025 22:30,6/22/2025 12:30,happy,1,6/22/2025 14:28,6/23/2025 0:28
+4297,39,yes,Family ,no,,comfortable,,yes,Losartin ,6/22/2025 22:30,6/22/2025 12:30,neutral,1,6/22/2025 15:27,6/23/2025 1:27
+4298,39,yes,Family,no,,comfortable,,yes,Losartin ,6/22/2025 22:30,6/22/2025 12:30,neutral,1,6/22/2025 16:15,6/23/2025 2:15
+4299,39,yes,Family,yes,Its hot,comfortable,,yes,Losartin ,6/22/2025 22:30,6/22/2025 12:30,happy,2,6/22/2025 17:07,6/23/2025 3:07
+4300,39,yes,Family,no,,comfortable,,yes,Losartin ,6/22/2025 22:30,6/22/2025 12:30,happy,1,6/22/2025 19:03,6/23/2025 5:03
+4301,39,yes,Family,no,,comfortable,,yes,Losartin ,6/22/2025 22:30,6/22/2025 12:30,happy,1,6/22/2025 20:11,6/23/2025 6:11
+4302,39,yes,Coworkers online meeting ,no,,comfortable,,no,,NULL,NULL,happy,1,6/23/2025 10:11,6/23/2025 20:11
+4304,39,yes,Online meeting,no,,comfortable,,no,,NULL,NULL,neutral,1,6/23/2025 11:02,6/23/2025 21:02
+4305,39,yes,People at store,no,,comfortable,,no,,NULL,NULL,neutral,1,6/23/2025 13:25,6/23/2025 23:25
+4306,39,no,,no,,comfortable,,no,,NULL,NULL,neutral,1,6/23/2025 14:16,6/24/2025 0:16
+4307,39,no,,no,,comfortable,,no,,NULL,NULL,unhappy,3,6/23/2025 15:01,6/24/2025 1:01
+4309,39,yes,Family,no,,noisy,,yes,Losartin ,6/24/2025 2:00,6/23/2025 16:00,neutral,1,6/23/2025 16:27,6/24/2025 2:27
+4310,39,no,,no,,stressful,,yes,Losartin ,6/24/2025 2:00,6/23/2025 16:00,neutral,3,6/23/2025 17:23,6/24/2025 3:23
+4311,39,no,,no,,comfortable,,yes,Losartin ,6/24/2025 2:00,6/23/2025 16:00,happy,2,6/23/2025 18:15,6/24/2025 4:15
+4312,39,yes,Family,no,,comfortable,,yes,Losartin ,6/24/2025 2:00,6/23/2025 16:00,neutral,2,6/23/2025 19:01,6/24/2025 5:01
+4313,39,yes,Family,no,,noisy,,yes,Losartin ,6/24/2025 2:00,6/23/2025 16:00,happy,1,6/23/2025 20:14,6/24/2025 6:14
+4314,39,yes,Family ,no,,quiet,,yes,Losartin ,6/24/2025 2:00,6/23/2025 16:00,neutral,1,6/23/2025 20:59,6/24/2025 6:59
+4315,39,no,,no,,comfortable,,no,,NULL,NULL,neutral,1,6/24/2025 8:37,6/24/2025 18:37
+4316,39,no,,no,,comfortable,,no,,NULL,NULL,neutral,1,6/24/2025 9:09,6/24/2025 19:09
+4317,39,no,,no,,comfortable,,no,,NULL,NULL,happy,1,6/24/2025 10:33,6/24/2025 20:33
+4318,39,yes,Online meeting,no,,comfortable,,no,,NULL,NULL,neutral,2,6/24/2025 11:37,6/24/2025 21:37
+4319,39,yes,People at online meeting,yes,I'm hungry,comfortable,,no,,NULL,NULL,happy,2,6/24/2025 15:32,6/25/2025 1:32
+4321,39,no,,no,,noisy,,no,,NULL,NULL,neutral,1,6/24/2025 17:21,6/25/2025 3:21
+4322,39,yes,Children,no,,noisy,,no,,NULL,NULL,happy,1,6/24/2025 17:22,6/25/2025 3:22
+4323,39,yes,People at the store,yes,Hunger ,noisy,,no,,NULL,NULL,happy,2,6/24/2025 18:02,6/25/2025 4:02
+4324,39,yes,Family,no,,noisy,,no,,NULL,NULL,unhappy,3,6/24/2025 19:06,6/25/2025 5:06
+4325,39,yes,Family ,no,,comfortable,,yes,Losartin ,6/25/2025 5:00,6/24/2025 19:00,neutral,1,6/24/2025 20:02,6/25/2025 6:02
+4326,39,yes,Family ,no,,comfortable,,yes,Losartin ,6/25/2025 5:00,6/24/2025 19:00,unhappy,1,6/24/2025 20:39,6/25/2025 6:39

@@ -1,0 +1,334 @@
+id,user_id,interaction_answer,interaction_detail,physicalDiscomfort_answer,physicalDiscomfort_detail,environment_answer,environment_detail,medication_answer,medication_detail,medication_date_time,local_medication_date_time,mood_value,stressLevel_value,local_created_at,created_at
+2300,30,no,,no,,quiet,,no,,NULL,NULL,happy,5,2024-10-18 15:29:50,2024-10-19 01:29:50
+2303,30,no,,no,,stressful,,no,,NULL,NULL,neutral,8,2024-10-18 16:41:30,2024-10-19 02:41:30
+2304,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,6,2024-10-18 17:12:30,2024-10-19 03:12:30
+2308,30,yes,Virtual students ,yes,Lower back pain ,comfortable,,no,,NULL,NULL,neutral,5,2024-10-18 18:22:05,2024-10-19 04:22:05
+2312,30,no,,yes,Back pain and headache,quiet,,no,,NULL,NULL,neutral,6,2024-10-18 19:15:08,2024-10-19 05:15:08
+2313,30,no,,yes,Headache,comfortable,,no,,NULL,NULL,neutral,4,2024-10-18 20:02:05,2024-10-19 06:02:05
+2317,30,no,,yes,Back pain and headache
+,quiet,,no,,NULL,NULL,neutral,4,2024-10-18 21:02:10,2024-10-19 07:02:10
+2319,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,5,2024-10-19 07:22:16,2024-10-19 17:22:16
+2324,30,yes,Spouse,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-10-19 09:22:39,2024-10-19 19:22:39
+2329,30,no,,yes,Headache,quiet,,no,,NULL,NULL,happy,5,2024-10-19 11:55:01,2024-10-19 21:55:01
+2331,30,yes,Classmates ,no,,comfortable,,no,,NULL,NULL,happy,4,2024-10-19 13:04:23,2024-10-19 23:04:23
+2333,30,yes,Classmates ,no,,comfortable,,no,,NULL,NULL,happy,3,2024-10-19 14:14:58,2024-10-20 00:14:58
+2335,30,yes,Spouse,yes,Headache ,comfortable,,no,,NULL,NULL,happy,4,2024-10-19 15:03:38,2024-10-20 01:03:38
+2337,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,6,2024-10-19 16:02:06,2024-10-20 02:02:06
+2343,30,no,,yes,Headache,comfortable,,no,,NULL,NULL,neutral,5,2024-10-19 19:02:52,2024-10-20 05:02:52
+2345,30,no,,yes,Headache,comfortable,,no,,NULL,NULL,neutral,5,2024-10-19 20:02:14,2024-10-20 06:02:14
+2349,30,no,,yes,Headache,comfortable,,no,,NULL,NULL,neutral,5,2024-10-19 21:03:18,2024-10-20 07:03:18
+2352,30,no,,yes,Headache,comfortable,,no,,NULL,NULL,happy,6,2024-10-20 08:26:07,2024-10-20 18:26:07
+2356,30,yes,Spouse,yes,Headache ,stressful,,no,,NULL,NULL,happy,7,2024-10-20 09:58:48,2024-10-20 19:58:48
+2361,30,yes,Spouse and classmates ,no,,comfortable,,no,,NULL,NULL,happy,4,2024-10-20 12:13:23,2024-10-20 22:13:23
+2363,30,no,,no,,quiet,,no,,NULL,NULL,happy,4,2024-10-20 13:01:52,2024-10-20 23:01:52
+2366,30,no,,no,,comfortable,,no,,NULL,NULL,happy,4,2024-10-20 14:02:07,2024-10-21 00:02:07
+2369,30,no,,no,,comfortable,,no,,NULL,NULL,happy,3,2024-10-20 15:05:37,2024-10-21 01:05:37
+2377,30,yes,Spouse,no,,stressful,,no,,NULL,NULL,neutral,7,2024-10-20 18:42:49,2024-10-21 04:42:49
+2380,30,no,,no,,noisy,,no,,NULL,NULL,happy,4,2024-10-20 21:07:58,2024-10-21 07:07:58
+2381,30,no,,no,,noisy,,no,,NULL,NULL,neutral,7,2024-10-20 21:08:31,2024-10-21 07:08:31
+2388,30,yes,Employees ,no,,comfortable,,no,,NULL,NULL,neutral,5,2024-10-21 10:05:44,2024-10-21 20:05:44
+2393,30,yes,Coworkers,no,,comfortable,,no,,NULL,NULL,happy,4,2024-10-21 12:35:33,2024-10-21 22:35:33
+2394,30,yes,Co Workers ,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-10-21 13:33:57,2024-10-21 23:33:57
+2397,30,no,,no,,quiet,,no,,NULL,NULL,happy,6,2024-10-21 14:20:52,2024-10-22 00:20:52
+2400,30,yes,Phone call,no,,stressful,,no,,NULL,NULL,neutral,6,2024-10-21 15:15:36,2024-10-22 01:15:36
+2402,30,yes,Zoom participants ,no,,noisy,,no,,NULL,NULL,happy,6,2024-10-21 18:25:20,2024-10-22 04:25:20
+2404,30,yes,Spouse,no,,quiet,,no,,NULL,NULL,happy,5,2024-10-21 19:03:27,2024-10-22 05:03:27
+2406,30,no,,no,,quiet,,no,,NULL,NULL,happy,5,2024-10-21 20:48:00,2024-10-22 06:48:00
+2423,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,6,2024-10-23 10:17:03,2024-10-23 20:17:03
+2425,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,5,2024-10-23 11:05:38,2024-10-23 21:05:38
+2429,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-10-23 12:01:49,2024-10-23 22:01:49
+2431,30,no,,no,,quiet,,no,,NULL,NULL,neutral,3,2024-10-23 13:01:47,2024-10-23 23:01:47
+2434,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-10-23 14:01:49,2024-10-24 00:01:49
+2439,30,yes,Salesperson ,no,,noisy,,no,,NULL,NULL,happy,6,2024-10-23 15:27:11,2024-10-24 01:27:11
+2440,30,no,,no,,quiet,,no,,NULL,NULL,happy,5,2024-10-23 16:02:32,2024-10-24 02:02:32
+2443,30,no,,no,,comfortable,,no,,NULL,NULL,happy,4,2024-10-23 17:02:04,2024-10-24 03:02:04
+2447,30,yes,Spouse,no,,comfortable,,no,,NULL,NULL,neutral,6,2024-10-23 19:25:40,2024-10-24 05:25:40
+2448,30,no,,no,,quiet,,no,,NULL,NULL,neutral,3,2024-10-23 20:03:01,2024-10-24 06:03:01
+2450,30,no,,no,,quiet,,no,,NULL,NULL,neutral,2,2024-10-23 21:01:51,2024-10-24 07:01:51
+2453,30,no,,no,,noisy,,no,,NULL,NULL,happy,3,2024-10-24 08:02:16,2024-10-24 18:02:16
+2456,30,yes,Co worker ,no,,comfortable,,no,,NULL,NULL,happy,4,2024-10-24 09:02:05,2024-10-24 19:02:05
+2458,30,yes,Coworker,no,,comfortable,,no,,NULL,NULL,neutral,3,2024-10-24 10:01:15,2024-10-24 20:01:15
+2462,30,yes,Coworker,no,,comfortable,,no,,NULL,NULL,happy,4,2024-10-24 11:22:29,2024-10-24 21:22:29
+2463,30,no,,no,,quiet,,no,,NULL,NULL,happy,3,2024-10-24 12:02:10,2024-10-24 22:02:10
+2465,30,yes,Coworkers,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-10-24 13:06:20,2024-10-24 23:06:20
+2468,30,yes,Coworkers,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-10-24 14:02:04,2024-10-25 00:02:04
+2470,30,no,,no,,quiet,,no,,NULL,NULL,neutral,2,2024-10-24 15:01:53,2024-10-25 01:01:53
+2476,30,yes,Texting ,no,,comfortable,,no,,NULL,NULL,happy,2,2024-10-24 18:30:42,2024-10-25 04:30:42
+2478,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,3,2024-10-24 19:03:39,2024-10-25 05:03:39
+2479,30,no,,no,,quiet,,no,,NULL,NULL,neutral,2,2024-10-24 20:02:08,2024-10-25 06:02:08
+2482,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,3,2024-10-24 21:09:27,2024-10-25 07:09:27
+2483,30,no,,no,,quiet,,no,,NULL,NULL,neutral,6,2024-10-25 08:00:25,2024-10-25 18:00:25
+2485,30,yes,Coworkers,no,,comfortable,,no,,NULL,NULL,happy,3,2024-10-25 09:02:00,2024-10-25 19:02:00
+2493,30,yes,Coworker,no,,comfortable,,no,,NULL,NULL,happy,6,2024-10-25 12:08:47,2024-10-25 22:08:47
+2498,30,no,,no,,quiet,,no,,NULL,NULL,happy,4,2024-10-25 15:01:54,2024-10-26 01:01:54
+2501,30,no,,no,,quiet,,no,,NULL,NULL,happy,3,2024-10-25 16:00:55,2024-10-26 02:00:55
+2508,30,yes,Virtual fitness students ,no,,noisy,,no,,NULL,NULL,happy,4,2024-10-25 18:36:27,2024-10-26 04:36:27
+2509,30,no,,no,,quiet,,no,,NULL,NULL,happy,3,2024-10-25 19:04:51,2024-10-26 05:04:51
+2511,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,3,2024-10-25 20:01:32,2024-10-26 06:01:32
+2515,30,yes,Fitness class virtual students ,no,,others,Finished class and vacuumed quiet now ,no,,NULL,NULL,happy,5,2024-10-26 09:14:56,2024-10-26 19:14:56
+2517,30,yes,Fitness class students ,no,,noisy,,no,,NULL,NULL,happy,3,2024-10-26 11:26:08,2024-10-26 21:26:08
+2522,30,yes,Friends ,no,,noisy,,no,,NULL,NULL,happy,3,2024-10-26 13:55:07,2024-10-26 23:55:07
+2525,30,yes,Friend,no,,comfortable,,no,,NULL,NULL,happy,4,2024-10-26 14:57:34,2024-10-27 00:57:34
+2531,30,no,,yes,Headache and tired ,quiet,,no,,NULL,NULL,neutral,5,2024-10-26 18:17:55,2024-10-27 04:17:55
+2534,30,no,,yes,Tired and headache,comfortable,,no,,NULL,NULL,neutral,4,2024-10-26 19:00:33,2024-10-27 05:00:33
+2538,30,no,,yes,Tired ,comfortable,,no,,NULL,NULL,neutral,4,2024-10-26 20:56:29,2024-10-27 06:56:29
+2541,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-10-26 22:57:26,2024-10-27 08:57:26
+2543,30,no,,no,,quiet,,no,,NULL,NULL,happy,3,2024-10-27 08:06:25,2024-10-27 18:06:25
+2546,30,yes,Spouse,no,,comfortable,,no,,NULL,NULL,neutral,5,2024-10-27 09:21:31,2024-10-27 19:21:31
+2553,30,no,,no,,stressful,,no,,NULL,NULL,neutral,6,2024-10-27 14:39:54,2024-10-28 00:39:54
+2555,30,no,,yes,Headache,quiet,,no,,NULL,NULL,neutral,5,2024-10-27 15:02:57,2024-10-28 01:02:57
+2559,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-10-27 17:26:08,2024-10-28 03:26:08
+2561,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,5,2024-10-27 18:06:24,2024-10-28 04:06:24
+2565,30,no,,no,,quiet,,no,,NULL,NULL,neutral,5,2024-10-27 19:09:46,2024-10-28 05:09:46
+2567,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-10-27 20:01:48,2024-10-28 06:01:48
+2570,30,no,,no,,quiet,,no,,NULL,NULL,neutral,5,2024-10-27 21:01:20,2024-10-28 07:01:20
+2572,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-10-27 22:07:52,2024-10-28 08:07:52
+2575,30,yes,Coworkers ,no,,quiet,,no,,NULL,NULL,happy,5,2024-10-28 08:33:26,2024-10-28 18:33:26
+2577,30,no,,no,,comfortable,,no,,NULL,NULL,happy,4,2024-10-28 10:02:54,2024-10-28 20:02:54
+2578,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-10-28 11:02:22,2024-10-28 21:02:22
+2584,30,yes,Coworker,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-10-28 12:54:06,2024-10-28 22:54:06
+2586,30,yes,Coworker ,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-10-28 13:15:24,2024-10-28 23:15:24
+2587,30,yes,Coworker ,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-10-28 14:00:34,2024-10-29 00:00:34
+2591,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,3,2024-10-28 15:02:19,2024-10-29 01:02:19
+2593,30,no,,no,,quiet,,no,,NULL,NULL,neutral,3,2024-10-28 16:03:22,2024-10-29 02:03:22
+2594,30,no,,yes,Headache,stressful,,no,,NULL,NULL,neutral,6,2024-10-28 17:01:03,2024-10-29 03:01:03
+2597,30,no,,yes,Headache ,quiet,,no,,NULL,NULL,happy,4,2024-10-28 18:31:43,2024-10-29 04:31:43
+2599,30,no,,yes,Headache ,comfortable,,no,,NULL,NULL,neutral,4,2024-10-28 19:02:22,2024-10-29 05:02:22
+2604,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-10-28 21:36:40,2024-10-29 07:36:40
+2607,30,no,,yes,Headache,quiet,,no,,NULL,NULL,neutral,5,2024-10-29 08:02:25,2024-10-29 18:02:25
+2609,30,yes,Coworker ,yes,Headache ,quiet,,no,,NULL,NULL,neutral,4,2024-10-29 09:03:07,2024-10-29 19:03:07
+2613,30,yes,Coworker,yes,Headache ,comfortable,,no,,NULL,NULL,neutral,4,2024-10-29 10:16:02,2024-10-29 20:16:02
+2615,30,yes,Coworker,yes,Headache ,comfortable,,no,,NULL,NULL,neutral,4,2024-10-29 11:01:24,2024-10-29 21:01:24
+2624,30,no,,yes,Headache ,comfortable,,no,,NULL,NULL,neutral,6,2024-10-29 16:04:51,2024-10-30 02:04:51
+2626,30,yes,Students ,no,,comfortable,,no,,NULL,NULL,happy,4,2024-10-29 17:52:43,2024-10-30 03:52:43
+2627,30,no,,no,,comfortable,,no,,NULL,NULL,happy,4,2024-10-29 18:05:57,2024-10-30 04:05:57
+2630,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-10-29 19:56:54,2024-10-30 05:56:54
+2632,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-10-29 20:50:09,2024-10-30 06:50:09
+2634,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-10-30 06:28:00,2024-10-30 16:28:00
+2635,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-10-30 08:03:09,2024-10-30 18:03:09
+2640,30,yes,Coworkers ,no,,comfortable,,no,,NULL,NULL,neutral,5,2024-10-30 09:06:23,2024-10-30 19:06:23
+2644,30,yes,Students ,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-10-30 12:12:41,2024-10-30 22:12:41
+2647,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-10-30 14:42:01,2024-10-31 00:42:01
+2648,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-10-30 15:01:50,2024-10-31 01:01:50
+2651,30,no,,no,,quiet,,no,,NULL,NULL,neutral,3,2024-10-30 16:26:32,2024-10-31 02:26:32
+2655,30,yes,Fitness students ,no,,noisy,,no,,NULL,NULL,happy,4,2024-10-30 18:31:49,2024-10-31 04:31:49
+2656,30,no,,no,,quiet,,no,,NULL,NULL,happy,3,2024-10-30 19:02:26,2024-10-31 05:02:26
+2659,30,no,,no,,quiet,,no,,NULL,NULL,neutral,3,2024-10-30 20:07:22,2024-10-31 06:07:22
+2662,30,yes,Spouse,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-10-30 21:10:48,2024-10-31 07:10:48
+2663,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-10-30 21:52:21,2024-10-31 07:52:21
+2665,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-10-31 08:00:16,2024-10-31 18:00:16
+2669,30,yes,Student ,no,,comfortable,,no,,NULL,NULL,happy,4,2024-10-31 09:16:20,2024-10-31 19:16:20
+2675,30,yes,Student,no,,comfortable,,no,,NULL,NULL,happy,4,2024-10-31 12:06:58,2024-10-31 22:06:58
+2676,30,yes,Coworker ,no,,comfortable,,no,,NULL,NULL,happy,3,2024-10-31 12:07:30,2024-10-31 22:07:30
+2680,30,no,,no,,comfortable,,no,,NULL,NULL,happy,4,2024-10-31 14:07:34,2024-11-01 00:07:34
+2684,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,3,2024-10-31 19:36:27,2024-11-01 05:36:27
+2687,30,no,,no,,quiet,,no,,NULL,NULL,happy,3,2024-10-31 20:07:08,2024-11-01 06:07:08
+2689,30,yes,Spouse ,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-10-31 21:48:02,2024-11-01 07:48:02
+2690,30,no,,no,,quiet,,no,,NULL,NULL,neutral,3,2024-10-31 22:04:28,2024-11-01 08:04:28
+2692,30,no,,no,,quiet,,no,,NULL,NULL,happy,5,2024-11-01 08:04:31,2024-11-01 18:04:31
+2694,30,yes,Coworker,no,,comfortable,,no,,NULL,NULL,happy,4,2024-11-01 09:38:36,2024-11-01 19:38:36
+2695,30,no,,no,,quiet,,no,,NULL,NULL,happy,4,2024-11-01 10:02:01,2024-11-01 20:02:01
+2698,30,yes,Coworker,no,,quiet,,no,,NULL,NULL,happy,4,2024-11-01 11:05:59,2024-11-01 21:05:59
+2702,30,yes,Coworkers ,no,,comfortable,,no,,NULL,NULL,happy,4,2024-11-01 12:04:51,2024-11-01 22:04:51
+2704,30,yes,Student ,no,,quiet,,no,,NULL,NULL,happy,3,2024-11-01 13:13:18,2024-11-01 23:13:18
+2705,30,no,,no,,quiet,,no,,NULL,NULL,happy,4,2024-11-01 14:00:37,2024-11-02 00:00:37
+2708,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-11-01 15:11:45,2024-11-02 01:11:45
+2710,30,no,,no,,noisy,,no,,NULL,NULL,neutral,4,2024-11-01 17:05:46,2024-11-02 03:05:46
+2713,30,yes,Spouse ,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-01 18:31:25,2024-11-02 04:31:25
+2720,30,no,,no,,comfortable,,no,,NULL,NULL,happy,3,2024-11-01 23:17:41,2024-11-02 09:17:41
+2726,30,no,,no,,quiet,,no,,NULL,NULL,happy,4,2024-11-02 11:31:27,2024-11-02 21:31:27
+2731,30,no,,no,,comfortable,,no,,NULL,NULL,happy,4,2024-11-02 15:00:29,2024-11-03 01:00:29
+2732,30,no,,no,,comfortable,,no,,NULL,NULL,happy,4,2024-11-02 15:00:47,2024-11-03 01:00:47
+2734,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-02 16:08:48,2024-11-03 02:08:48
+2740,30,yes,Spouse ,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-02 21:26:43,2024-11-03 07:26:43
+2741,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-11-02 23:09:39,2024-11-03 09:09:39
+2742,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-11-03 07:39:00,2024-11-03 17:39:00
+2744,30,yes,Spouse ,no,,quiet,,no,,NULL,NULL,neutral,5,2024-11-03 08:11:48,2024-11-03 18:11:48
+2746,30,yes,Spouse,no,,comfortable,,no,,NULL,NULL,happy,5,2024-11-03 10:05:36,2024-11-03 20:05:36
+2749,30,yes,Spouse,no,,quiet,,no,,NULL,NULL,happy,4,2024-11-03 12:15:41,2024-11-03 22:15:41
+2751,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-03 13:25:56,2024-11-03 23:25:56
+2753,30,no,,no,,quiet,,no,,NULL,NULL,neutral,5,2024-11-03 14:12:30,2024-11-04 00:12:30
+2754,30,no,,no,,comfortable,,no,,NULL,NULL,happy,4,2024-11-03 15:01:40,2024-11-04 01:01:40
+2758,30,no,,no,,comfortable,,no,,NULL,NULL,happy,4,2024-11-03 16:07:50,2024-11-04 02:07:50
+2760,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,5,2024-11-03 17:08:18,2024-11-04 03:08:18
+2763,30,yes,Family,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-03 18:17:31,2024-11-04 04:17:31
+2766,30,no,,no,,quiet,,no,,NULL,NULL,neutral,5,2024-11-03 19:07:16,2024-11-04 05:07:16
+2768,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,5,2024-11-03 20:40:42,2024-11-04 06:40:42
+2770,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-03 21:20:07,2024-11-04 07:20:07
+2771,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-03 22:12:40,2024-11-04 08:12:40
+2775,30,yes,Students,no,,comfortable,,no,,NULL,NULL,happy,5,2024-11-04 09:39:40,2024-11-04 19:39:40
+2777,30,yes,Students ,no,,comfortable,,no,,NULL,NULL,happy,5,2024-11-04 10:09:32,2024-11-04 20:09:32
+2779,30,no,,no,,comfortable,,no,,NULL,NULL,happy,5,2024-11-04 11:35:11,2024-11-04 21:35:11
+2781,30,yes,Students ,no,,comfortable,,no,,NULL,NULL,happy,5,2024-11-04 12:03:11,2024-11-04 22:03:11
+2786,30,yes,Coworker ,no,,quiet,,no,,NULL,NULL,neutral,5,2024-11-04 13:04:05,2024-11-04 23:04:05
+2787,30,no,,no,,quiet,,no,,NULL,NULL,neutral,5,2024-11-04 13:09:33,2024-11-04 23:09:33
+2791,30,no,,no,,quiet,,no,,NULL,NULL,neutral,5,2024-11-04 14:22:05,2024-11-05 00:22:05
+2793,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,5,2024-11-04 15:11:26,2024-11-05 01:11:26
+2797,30,no,,no,,quiet,,no,,NULL,NULL,happy,5,2024-11-04 16:06:27,2024-11-05 02:06:27
+2801,30,yes,Virtual students ,no,,noisy,,no,,NULL,NULL,happy,4,2024-11-04 18:19:31,2024-11-05 04:19:31
+2807,30,no,,no,,comfortable,,no,,NULL,NULL,happy,4,2024-11-04 20:11:25,2024-11-05 06:11:25
+2810,30,no,,no,,noisy,,no,,NULL,NULL,happy,4,2024-11-04 21:02:48,2024-11-05 07:02:48
+2812,30,no,,no,,quiet,,no,,NULL,NULL,neutral,5,2024-11-05 08:03:49,2024-11-05 18:03:49
+2817,30,no,,no,,quiet,,no,,NULL,NULL,neutral,7,2024-11-05 09:24:43,2024-11-05 19:24:43
+2819,30,no,,no,,quiet,,no,,NULL,NULL,neutral,6,2024-11-05 10:18:33,2024-11-05 20:18:33
+2822,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,5,2024-11-05 11:21:15,2024-11-05 21:21:15
+2824,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,5,2024-11-05 12:29:36,2024-11-05 22:29:36
+2826,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-05 13:14:12,2024-11-05 23:14:12
+2829,30,no,,no,,quiet,,no,,NULL,NULL,neutral,5,2024-11-05 14:11:21,2024-11-06 00:11:21
+2833,30,no,,no,,noisy,,no,,NULL,NULL,neutral,5,2024-11-05 15:28:58,2024-11-06 01:28:58
+2835,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,5,2024-11-05 16:08:37,2024-11-06 02:08:37
+2839,30,no,,no,,comfortable,,no,,NULL,NULL,happy,4,2024-11-05 18:22:06,2024-11-06 04:22:06
+2841,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-11-05 20:00:00,2024-11-06 06:00:00
+2844,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,5,2024-11-05 21:03:03,2024-11-06 07:03:03
+2845,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-11-05 21:18:57,2024-11-06 07:18:57
+2848,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-06 09:05:33,2024-11-06 19:05:33
+2849,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-11-06 09:05:53,2024-11-06 19:05:53
+2853,30,yes,Coworkers ,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-06 10:12:15,2024-11-06 20:12:15
+2855,30,yes,Coworker ,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-06 11:13:04,2024-11-06 21:13:04
+2860,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-06 12:15:12,2024-11-06 22:15:12
+2864,30,yes,Coworkers ,no,,comfortable,,no,,NULL,NULL,neutral,5,2024-11-06 14:03:53,2024-11-07 00:03:53
+2866,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,5,2024-11-06 14:56:50,2024-11-07 00:56:50
+2870,30,yes,Friend ,no,,comfortable,,no,,NULL,NULL,neutral,5,2024-11-06 16:26:19,2024-11-07 02:26:19
+2872,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,5,2024-11-06 17:03:23,2024-11-07 03:03:23
+2875,30,yes,Fitness class ,no,,noisy,,no,,NULL,NULL,happy,4,2024-11-06 18:19:28,2024-11-07 04:19:28
+2877,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-11-06 19:05:12,2024-11-07 05:05:12
+2879,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-06 20:01:57,2024-11-07 06:01:57
+2882,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-06 21:03:47,2024-11-07 07:03:47
+2885,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-11-07 08:00:55,2024-11-07 18:00:55
+2891,30,yes,Students,no,,quiet,,no,,NULL,NULL,happy,4,2024-11-07 11:01:21,2024-11-07 21:01:21
+2895,30,yes,Coworker ,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-07 12:01:52,2024-11-07 22:01:52
+2899,30,yes,Students ,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-07 13:35:52,2024-11-07 23:35:52
+2900,30,yes,Students ,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-07 14:00:34,2024-11-08 00:00:34
+2903,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-07 15:03:17,2024-11-08 01:03:17
+2910,30,no,,no,,quiet,,no,,NULL,NULL,happy,4,2024-11-07 18:01:35,2024-11-08 04:01:35
+2912,30,no,,no,,comfortable,,no,,NULL,NULL,happy,4,2024-11-07 19:04:43,2024-11-08 05:04:43
+2916,30,no,,no,,comfortable,,no,,NULL,NULL,happy,4,2024-11-07 20:03:16,2024-11-08 06:03:16
+2918,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-07 21:05:16,2024-11-08 07:05:16
+2920,30,no,,no,,comfortable,,no,,NULL,NULL,happy,4,2024-11-07 22:26:19,2024-11-08 08:26:19
+2921,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-11-08 07:08:58,2024-11-08 17:08:58
+2924,30,no,,no,,quiet,,no,,NULL,NULL,neutral,5,2024-11-08 08:01:25,2024-11-08 18:01:25
+2928,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-08 09:44:00,2024-11-08 19:44:00
+2929,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-08 10:07:39,2024-11-08 20:07:39
+2931,30,no,,no,,comfortable,,no,,NULL,NULL,happy,4,2024-11-08 11:17:10,2024-11-08 21:17:10
+2934,30,yes,Coworkers,no,,comfortable,,no,,NULL,NULL,happy,3,2024-11-08 12:08:39,2024-11-08 22:08:39
+2938,30,yes,Coworker,no,,comfortable,,no,,NULL,NULL,happy,4,2024-11-08 13:00:57,2024-11-08 23:00:57
+2941,30,no,,no,,comfortable,,no,,NULL,NULL,happy,3,2024-11-08 14:04:52,2024-11-09 00:04:52
+2944,30,no,,no,,quiet,,no,,NULL,NULL,neutral,5,2024-11-08 15:14:42,2024-11-09 01:14:42
+2949,30,yes,Virtual Fitness students ,no,,noisy,,no,,NULL,NULL,happy,4,2024-11-08 18:29:49,2024-11-09 04:29:49
+2952,30,yes,Family ,no,,comfortable,,no,,NULL,NULL,happy,3,2024-11-08 20:16:56,2024-11-09 06:16:56
+2953,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-08 21:01:44,2024-11-09 07:01:44
+2955,30,no,,no,,quiet,,no,,NULL,NULL,neutral,3,2024-11-08 23:18:30,2024-11-09 09:18:30
+2957,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-09 07:03:02,2024-11-09 17:03:02
+2960,30,yes,Virtual fitness class  ,no,,noisy,,no,,NULL,NULL,happy,4,2024-11-09 09:17:20,2024-11-09 19:17:20
+2963,30,no,,no,,comfortable,,no,,NULL,NULL,happy,3,2024-11-09 11:39:16,2024-11-09 21:39:16
+2964,30,no,,no,,comfortable,,no,,NULL,NULL,happy,3,2024-11-09 12:04:52,2024-11-09 22:04:52
+2967,30,no,,no,,comfortable,,no,,NULL,NULL,happy,3,2024-11-09 13:02:50,2024-11-09 23:02:50
+2977,30,yes,Family ,no,,comfortable,,no,,NULL,NULL,happy,4,2024-11-09 17:11:03,2024-11-10 03:11:03
+2979,30,no,,no,,quiet,,no,,NULL,NULL,happy,4,2024-11-09 18:09:25,2024-11-10 04:09:25
+2981,30,no,,no,,quiet,,no,,NULL,NULL,neutral,3,2024-11-09 19:01:48,2024-11-10 05:01:48
+2982,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-09 19:39:42,2024-11-10 05:39:42
+2983,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-09 19:56:50,2024-11-10 05:56:50
+2985,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-11-09 20:35:55,2024-11-10 06:35:55
+2986,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-11-09 22:01:36,2024-11-10 08:01:36
+2988,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-11-09 23:06:38,2024-11-10 09:06:38
+2992,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,5,2024-11-10 08:25:06,2024-11-10 18:25:06
+2993,30,no,,no,,quiet,,no,,NULL,NULL,neutral,5,2024-11-10 09:00:59,2024-11-10 19:00:59
+2994,30,yes,Family,no,,comfortable,,no,,NULL,NULL,neutral,5,2024-11-10 10:01:44,2024-11-10 20:01:44
+2998,30,yes,Taiko class,no,,noisy,,no,,NULL,NULL,happy,4,2024-11-10 12:00:59,2024-11-10 22:00:59
+3001,30,yes,Spouses ,no,,comfortable,,no,,NULL,NULL,neutral,5,2024-11-10 12:55:46,2024-11-10 22:55:46
+3006,30,no,,no,,comfortable,,no,,NULL,NULL,happy,4,2024-11-10 16:01:27,2024-11-11 02:01:27
+3009,30,no,,no,,quiet,,no,,NULL,NULL,happy,3,2024-11-10 17:03:28,2024-11-11 03:03:28
+3012,30,yes,People at dinner ,no,,noisy,,no,,NULL,NULL,happy,4,2024-11-10 17:57:25,2024-11-11 03:57:25
+3016,30,no,,no,,noisy,,no,,NULL,NULL,happy,3,2024-11-10 19:22:45,2024-11-11 05:22:45
+3017,30,no,,no,,quiet,,no,,NULL,NULL,happy,4,2024-11-10 20:04:29,2024-11-11 06:04:29
+3020,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-10 22:01:42,2024-11-11 08:01:42
+3021,30,no,,no,,quiet,,no,,NULL,NULL,neutral,3,2024-11-10 23:01:20,2024-11-11 09:01:20
+3024,30,yes,Spouse ,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-11 08:08:39,2024-11-11 18:08:39
+3025,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-11-11 09:02:46,2024-11-11 19:02:46
+3028,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,5,2024-11-11 10:01:30,2024-11-11 20:01:30
+3029,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,5,2024-11-11 11:01:29,2024-11-11 21:01:29
+3032,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,5,2024-11-11 13:15:39,2024-11-11 23:15:39
+3034,30,no,,no,,quiet,,no,,NULL,NULL,neutral,5,2024-11-11 14:02:28,2024-11-12 00:02:28
+3038,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,5,2024-11-11 15:10:58,2024-11-12 01:10:58
+3040,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,5,2024-11-11 16:02:44,2024-11-12 02:02:44
+3041,30,no,,no,,noisy,,no,,NULL,NULL,neutral,5,2024-11-11 17:01:35,2024-11-12 03:01:35
+3044,30,yes, Virtual fitness students ,no,,noisy,,no,,NULL,NULL,happy,4,2024-11-11 18:26:55,2024-11-12 04:26:55
+3045,30,no,,no,,comfortable,,no,,NULL,NULL,happy,4,2024-11-11 19:00:29,2024-11-12 05:00:29
+3047,30,no,,no,,comfortable,,no,,NULL,NULL,happy,4,2024-11-11 20:00:22,2024-11-12 06:00:22
+3050,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,5,2024-11-11 21:17:39,2024-11-12 07:17:39
+3051,30,no,,no,,quiet,,no,,NULL,NULL,neutral,5,2024-11-12 06:43:52,2024-11-12 16:43:52
+3053,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,5,2024-11-12 08:03:39,2024-11-12 18:03:39
+3057,30,yes,Coworker ,no,,comfortable,,no,,NULL,NULL,happy,4,2024-11-12 08:39:22,2024-11-12 18:39:22
+3058,30,yes,Student ,no,,comfortable,,no,,NULL,NULL,neutral,5,2024-11-12 09:01:40,2024-11-12 19:01:40
+3061,30,no,,no,,quiet,,no,,NULL,NULL,neutral,5,2024-11-12 10:01:47,2024-11-12 20:01:47
+3064,30,yes,Coworker ,no,,comfortable,,no,,NULL,NULL,neutral,5,2024-11-12 11:13:10,2024-11-12 21:13:10
+3068,30,yes,Coworker ,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-12 12:12:58,2024-11-12 22:12:58
+3069,30,yes,Students ,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-12 13:06:04,2024-11-12 23:06:04
+3072,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-11-12 13:56:24,2024-11-12 23:56:24
+3076,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-12 15:02:09,2024-11-13 01:02:09
+3079,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,5,2024-11-12 15:51:58,2024-11-13 01:51:58
+3084,30,yes,Zumba students ,no,,noisy,,no,,NULL,NULL,happy,4,2024-11-12 17:50:55,2024-11-13 03:50:55
+3087,30,no,,no,,comfortable,,no,,NULL,NULL,happy,4,2024-11-12 18:32:57,2024-11-13 04:32:57
+3089,30,yes,Spouse,no,,comfortable,,no,,NULL,NULL,happy,4,2024-11-12 19:04:42,2024-11-13 05:04:42
+3092,30,no,,no,,comfortable,,no,,NULL,NULL,happy,4,2024-11-12 20:02:43,2024-11-13 06:02:43
+3096,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-12 21:08:20,2024-11-13 07:08:20
+3098,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-12 22:01:37,2024-11-13 08:01:37
+3100,30,no,,no,,quiet,,no,,NULL,NULL,neutral,5,2024-11-13 06:47:39,2024-11-13 16:47:39
+3103,30,no,,no,,comfortable,,no,,NULL,NULL,happy,5,2024-11-13 08:02:37,2024-11-13 18:02:37
+3106,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-11-13 09:00:55,2024-11-13 19:00:55
+3108,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,5,2024-11-13 10:11:37,2024-11-13 20:11:37
+3109,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,5,2024-11-13 10:12:16,2024-11-13 20:12:16
+3117,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-11-13 12:03:41,2024-11-13 22:03:41
+3124,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-13 15:17:17,2024-11-14 01:17:17
+3126,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-13 16:02:18,2024-11-14 02:02:18
+3128,30,no,,yes,Headache ,comfortable,,no,,NULL,NULL,neutral,5,2024-11-13 17:00:14,2024-11-14 03:00:14
+3134,30,no,,no,,noisy,,no,,NULL,NULL,happy,4,2024-11-13 18:30:14,2024-11-14 04:30:14
+3135,30,no,,no,,quiet,,no,,NULL,NULL,happy,4,2024-11-13 19:06:48,2024-11-14 05:06:48
+3141,30,yes,Spouse ,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-13 21:59:52,2024-11-14 07:59:52
+3143,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-13 22:47:18,2024-11-14 08:47:18
+3144,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-13 23:26:31,2024-11-14 09:26:31
+3145,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-13 23:42:19,2024-11-14 09:42:19
+3148,30,no,,no,,comfortable,,no,,NULL,NULL,happy,4,2024-11-14 07:16:45,2024-11-14 17:16:45
+3151,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-11-14 08:08:48,2024-11-14 18:08:48
+3153,30,no,,no,,quiet,,no,,NULL,NULL,happy,4,2024-11-14 08:55:50,2024-11-14 18:55:50
+3156,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-11-14 10:04:05,2024-11-14 20:04:05
+3162,30,yes,Student ,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-14 11:15:53,2024-11-14 21:15:53
+3166,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-14 12:12:35,2024-11-14 22:12:35
+3167,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-11-14 12:43:07,2024-11-14 22:43:07
+3168,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-14 13:02:47,2024-11-14 23:02:47
+3173,30,yes,Spouse,no,,quiet,,no,,NULL,NULL,neutral,5,2024-11-14 14:20:03,2024-11-15 00:20:03
+3175,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-11-14 15:07:04,2024-11-15 01:07:04
+3181,30,no,,no,,quiet,,no,,NULL,NULL,happy,3,2024-11-14 18:02:49,2024-11-15 04:02:49
+3183,30,no,,no,,comfortable,,no,,NULL,NULL,happy,3,2024-11-14 18:55:11,2024-11-15 04:55:11
+3186,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-14 20:02:33,2024-11-15 06:02:33
+3190,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-14 21:10:07,2024-11-15 07:10:07
+3191,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-11-14 21:56:27,2024-11-15 07:56:27
+3193,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-11-15 06:52:31,2024-11-15 16:52:31
+3196,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-11-15 09:04:47,2024-11-15 19:04:47
+3198,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-11-15 10:04:10,2024-11-15 20:04:10
+3201,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-11-15 11:06:05,2024-11-15 21:06:05
+3203,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-15 11:45:22,2024-11-15 21:45:22
+3206,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-11-15 13:07:07,2024-11-15 23:07:07
+3209,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-11-15 13:52:00,2024-11-15 23:52:00
+3211,30,no,,no,,quiet,,no,,NULL,NULL,neutral,3,2024-11-15 15:01:39,2024-11-16 01:01:39
+3214,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-15 16:12:24,2024-11-16 02:12:24
+3215,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-15 16:59:39,2024-11-16 02:59:39
+3218,30,yes,Virtual zumba students ,no,,noisy,,no,,NULL,NULL,happy,4,2024-11-15 18:21:03,2024-11-16 04:21:03
+3220,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-11-15 19:28:02,2024-11-16 05:28:02
+3222,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-15 20:04:40,2024-11-16 06:04:40
+3225,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-11-15 21:39:07,2024-11-16 07:39:07
+3226,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-11-15 22:00:46,2024-11-16 08:00:46
+3227,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-11-16 06:51:00,2024-11-16 16:51:00
+3229,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-16 07:56:55,2024-11-16 17:56:55
+3234,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-11-16 09:21:01,2024-11-16 19:21:01
+3237,30,no,,no,,comfortable,,no,,NULL,NULL,happy,4,2024-11-16 11:34:00,2024-11-16 21:34:00
+3238,30,yes,Phone call,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-16 12:08:19,2024-11-16 22:08:19
+3241,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-16 13:00:55,2024-11-16 23:00:55
+3244,30,no,,no,,comfortable,,no,,NULL,NULL,happy,4,2024-11-16 14:05:47,2024-11-17 00:05:47
+3247,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-16 16:01:56,2024-11-17 02:01:56
+3251,30,no,,no,,comfortable,,no,,NULL,NULL,happy,4,2024-11-16 17:17:42,2024-11-17 03:17:42
+3252,30,no,,no,,comfortable,,no,,NULL,NULL,happy,4,2024-11-16 18:01:36,2024-11-17 04:01:36
+3254,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-16 18:57:54,2024-11-17 04:57:54
+3256,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-11-16 19:50:04,2024-11-17 05:50:04
+3260,30,no,,no,,quiet,,no,,NULL,NULL,neutral,4,2024-11-16 21:03:02,2024-11-17 07:03:02
+3261,30,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,2024-11-16 23:19:31,2024-11-17 09:19:31

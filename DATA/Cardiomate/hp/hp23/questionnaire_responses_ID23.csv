@@ -1,0 +1,200 @@
+id,user_id,interaction_answer,interaction_detail,physicalDiscomfort_answer,physicalDiscomfort_detail,environment_answer,environment_detail,medication_answer,medication_detail,medication_date_time,local_medication_date_time,mood_value,stressLevel_value,local_created_at,created_at
+1265,23,yes,study staff conversationa,no,,comfortable,,yes,motrin ,9/3/2024 18:53,9/3/2024 8:53,happy,5,9/3/2024 8:58,9/3/2024 18:58
+1270,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,4,9/3/2024 19:01,9/4/2024 5:01
+1272,23,no,,no,,comfortable,,yes,motrin,9/4/2024 13:15,9/4/2024 3:15,neutral,3,9/4/2024 5:41,9/4/2024 15:41
+1273,23,no,,no,,comfortable,,no,,NULL,NULL,neutral,3,9/4/2024 7:56,9/4/2024 17:56
+1275,23,yes,co workers,no,,comfortable,,no,,NULL,NULL,neutral,3,9/4/2024 9:12,9/4/2024 19:12
+1279,23,yes,coworkers,no,,comfortable,,yes,treseba,9/4/2024 19:55,9/4/2024 9:55,neutral,4,9/4/2024 10:02,9/4/2024 20:02
+1281,23,yes,coworkers,no,,comfortable,,no,,NULL,NULL,neutral,4,9/4/2024 11:02,9/4/2024 21:02
+1288,23,yes,coworkers,no,,others,hot -ac at work is out,no,,NULL,NULL,neutral,5,9/4/2024 14:02,9/5/2024 0:02
+1290,23,yes,coworkers,no,,others,hot,no,,NULL,NULL,neutral,5,9/4/2024 15:05,9/5/2024 1:05
+1294,23,yes,coworkers end of day,no,,comfortable,,no,,NULL,NULL,neutral,5,9/4/2024 17:01,9/5/2024 3:01
+1303,23,no,,no,,comfortable,,no,,NULL,NULL,neutral,2,9/5/2024 6:01,9/5/2024 16:01
+1304,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,2,9/5/2024 7:03,9/5/2024 17:03
+1305,23,no,,no,,comfortable,,no,,NULL,NULL,neutral,2,9/5/2024 8:01,9/5/2024 18:01
+1310,23,yes,co workers,no,,others,hot,no,,NULL,NULL,neutral,5,9/5/2024 11:08,9/5/2024 21:08
+1313,23,yes,coworkers,no,,others,just hot,no,,NULL,NULL,neutral,5,9/5/2024 12:09,9/5/2024 22:09
+1315,23,yes,coworkers,no,,comfortable,,no,,NULL,NULL,neutral,5,9/5/2024 13:02,9/5/2024 23:02
+1317,23,yes,coworkers,no,,comfortable,,no,,NULL,NULL,neutral,5,9/5/2024 14:03,9/6/2024 0:03
+1320,23,yes,coworkers,no,,comfortable,,no,,NULL,NULL,neutral,5,9/5/2024 15:01,9/6/2024 1:01
+1323,23,yes,coworkers,no,,comfortable,,no,,NULL,NULL,neutral,5,9/5/2024 16:04,9/6/2024 2:04
+1332,23,yes,my kids,no,,comfortable,,no,,NULL,NULL,neutral,5,9/5/2024 20:02,9/6/2024 6:02
+1335,23,no,,no,,comfortable,,no,,NULL,NULL,neutral,2,9/6/2024 5:58,9/6/2024 15:58
+1336,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,2,9/6/2024 7:17,9/6/2024 17:17
+1337,23,no,,no,,comfortable,,no,,NULL,NULL,neutral,2,9/6/2024 8:02,9/6/2024 18:02
+1342,23,yes,coworkers,no,,comfortable,,no,,NULL,NULL,neutral,5,9/6/2024 11:09,9/6/2024 21:09
+1344,23,yes,coworkers,no,,comfortable,,no,,NULL,NULL,neutral,5,9/6/2024 12:02,9/6/2024 22:02
+1346,23,yes,co workers,no,,comfortable,,no,,NULL,NULL,neutral,5,9/6/2024 13:02,9/6/2024 23:02
+1349,23,yes,co workers & court staff,no,,stressful,,no,,NULL,NULL,neutral,6,9/6/2024 14:05,9/7/2024 0:05
+1351,23,yes,coworkers,no,,comfortable,,no,,NULL,NULL,neutral,5,9/6/2024 15:03,9/7/2024 1:03
+1352,23,yes,coworkers,no,,comfortable,,no,,NULL,NULL,neutral,5,9/6/2024 16:02,9/7/2024 2:02
+1355,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,4,9/6/2024 19:02,9/7/2024 5:02
+1364,23,no,,yes,knot in shoulder blade,quiet,,no,,NULL,NULL,neutral,1,9/7/2024 7:03,9/7/2024 17:03
+1366,23,yes,kids,yes,knot in shoulder,quiet,,yes,allegra,9/7/2024 18:26,9/7/2024 8:26,neutral,2,9/7/2024 9:02,9/7/2024 19:02
+1374,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,4,9/7/2024 14:01,9/8/2024 0:01
+1379,23,yes,clientele,no,,comfortable,,no,,NULL,NULL,neutral,2,9/7/2024 16:01,9/8/2024 2:01
+1392,23,yes,my kids,yes,allergy attack,others,home but kids are cleaning,yes,dayquill,9/8/2024 22:45,9/8/2024 12:45,neutral,4,9/8/2024 13:02,9/8/2024 23:02
+1395,23,yes,kids,yes,allergies,others,in car,no,,NULL,NULL,neutral,3,9/8/2024 15:00,9/9/2024 1:00
+1406,23,no,,no,,quiet,,no,,NULL,NULL,neutral,1,9/9/2024 6:07,9/9/2024 16:07
+1408,23,yes,coworkers,yes,lower back pain,others,work,no,,NULL,NULL,neutral,2,9/9/2024 8:04,9/9/2024 18:04
+1409,23,yes,coworkers,no,,others,at work,yes,vitamin d,9/9/2024 18:15,9/9/2024 8:15,neutral,2,9/9/2024 9:02,9/9/2024 19:02
+1410,23,yes,coworkers,no,,comfortable,,no,,NULL,NULL,neutral,2,9/9/2024 10:01,9/9/2024 20:01
+1412,23,yes,coworkers,no,,comfortable,,no,,NULL,NULL,neutral,3,9/9/2024 11:05,9/9/2024 21:05
+1415,23,yes,coworkers,no,,comfortable,,no,,NULL,NULL,neutral,3,9/9/2024 15:01,9/10/2024 1:01
+1417,23,yes,coworkers,no,,comfortable,,no,,NULL,NULL,neutral,2,9/9/2024 16:01,9/10/2024 2:01
+1421,23,yes,clientele,yes,lower back pain,comfortable,,no,,NULL,NULL,neutral,2,9/9/2024 19:02,9/10/2024 5:02
+1426,23,yes,my son,yes,lower back pain,quiet,,no,,NULL,NULL,neutral,1,9/10/2024 6:00,9/10/2024 16:00
+1427,23,yes,kids,yes,lowee back pain,others,just got to work,yes,motrin,9/10/2024 17:15,9/10/2024 7:15,neutral,1,9/10/2024 8:02,9/10/2024 18:02
+1429,23,yes,coworketd,no,,comfortable,,no,,NULL,NULL,neutral,2,9/10/2024 10:01,9/10/2024 20:01
+1430,23,yes,coworkers,no,,comfortable,,yes,treseba,9/10/2024 20:55,9/10/2024 10:55,neutral,4,9/10/2024 11:03,9/10/2024 21:03
+1433,23,yes,coworkers,yes,lower back pain,comfortable,,no,,NULL,NULL,neutral,3,9/10/2024 15:06,9/11/2024 1:06
+1434,23,yes,coworkers,yes,lower back pain,comfortable,,yes,motrin,9/11/2024 2:05,9/10/2024 16:05,neutral,3,9/10/2024 16:12,9/11/2024 2:12
+1443,23,no,,no,,quiet,,no,,NULL,NULL,neutral,1,9/11/2024 6:07,9/11/2024 16:07
+1444,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,1,9/11/2024 7:04,9/11/2024 17:04
+1445,23,yes,coworkers,no,,comfortable,,yes,ceterizine,9/11/2024 17:15,9/11/2024 7:15,neutral,2,9/11/2024 8:01,9/11/2024 18:01
+1447,23,yes,coworkers,yes,lower back pain,quiet,,no,,NULL,NULL,neutral,2,9/11/2024 10:04,9/11/2024 20:04
+1448,23,yes,coworkers,yes,lower back pain,quiet,,no,,NULL,NULL,neutral,2,9/11/2024 11:05,9/11/2024 21:05
+1449,23,yes,coworkers,yes,lower back pain,others,work,yes,motrin,9/11/2024 21:10,9/11/2024 11:10,neutral,3,9/11/2024 12:03,9/11/2024 22:03
+1451,23,yes,coworkers,no,,comfortable,,no,,NULL,NULL,neutral,3,9/11/2024 14:01,9/12/2024 0:01
+1453,23,yes,coworkers,no,,comfortable,,no,,NULL,NULL,neutral,2,9/11/2024 15:01,9/12/2024 1:01
+1455,23,yes,coworkers,no,,comfortable,,yes,doxycycline,9/12/2024 2:30,9/11/2024 16:30,neutral,2,9/11/2024 17:02,9/12/2024 3:02
+1456,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,1,9/11/2024 18:08,9/12/2024 4:08
+1458,23,yes,kids and other family,no,,noisy,,no,,NULL,NULL,neutral,2,9/11/2024 19:03,9/12/2024 5:03
+1459,23,yes,kids and other family,no,,noisy,,no,,NULL,NULL,neutral,2,9/11/2024 19:03,9/12/2024 5:03
+1461,23,yes,kids & family,no,,noisy,,no,,NULL,NULL,neutral,2,9/11/2024 20:09,9/12/2024 6:09
+1462,23,yes,kids n family,no,,noisy,,no,,NULL,NULL,neutral,2,9/11/2024 21:06,9/12/2024 7:06
+1469,23,no,,yes,lower back pain,quiet,,no,,NULL,NULL,neutral,1,9/12/2024 6:06,9/12/2024 16:06
+1471,23,yes,kids,yes,lower back pain,others,sitting in car,no,,NULL,NULL,neutral,2,9/12/2024 7:13,9/12/2024 17:13
+1472,23,yes,coworkers,yes,lower back pain,others,work,no,,NULL,NULL,neutral,2,9/12/2024 8:01,9/12/2024 18:01
+1477,23,yes,coworkers,yes,lower back pain,quiet,,no,,NULL,NULL,unhappy,2,9/12/2024 10:04,9/12/2024 20:04
+1478,23,yes,coworkers,yes,lower back pain,others,at work,no,,NULL,NULL,unhappy,2,9/12/2024 11:03,9/12/2024 21:03
+1482,23,yes,co workers,yes,lower back pain,others,at work just uncomfortable due to pain,yes,motrin,9/12/2024 21:57,9/12/2024 11:57,unhappy,3,9/12/2024 12:02,9/12/2024 22:02
+1484,23,yes,coworkers,yes,lower back pain,others,work just uncomfortable,no,,NULL,NULL,unhappy,2,9/12/2024 13:02,9/12/2024 23:02
+1489,23,yes,coworkers,yes,lower back pain,others,work ,yes,motrin,9/12/2024 22:45,9/12/2024 12:45,neutral,3,9/12/2024 15:11,9/13/2024 1:11
+1492,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,2,9/12/2024 18:04,9/13/2024 4:04
+1494,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,2,9/12/2024 21:10,9/13/2024 7:10
+1495,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,0,9/12/2024 22:03,9/13/2024 8:03
+1497,23,no,,yes,lower back pain,quiet,,no,,NULL,NULL,neutral,0,9/13/2024 6:08,9/13/2024 16:08
+1498,23,yes,kids,yes,lower back pain,comfortable,,no,,NULL,NULL,neutral,1,9/13/2024 8:01,9/13/2024 18:01
+1500,23,yes,coworkers,yes,lower back pain,comfortable,,no,,NULL,NULL,neutral,2,9/13/2024 9:02,9/13/2024 19:02
+1503,23,yes,coworkers,yes,lower back pain,comfortable,,no,,NULL,NULL,neutral,2,9/13/2024 10:07,9/13/2024 20:07
+1517,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,2,9/13/2024 21:03,9/14/2024 7:03
+1518,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,1,9/13/2024 22:09,9/14/2024 8:09
+1519,23,no,,no,,comfortable,,no,,NULL,NULL,neutral,1,9/13/2024 23:05,9/14/2024 9:05
+1526,23,no,,no,,comfortable,,no,,NULL,NULL,neutral,0,9/14/2024 7:18,9/14/2024 17:18
+1527,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,0,9/14/2024 8:01,9/14/2024 18:01
+1528,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,3,9/14/2024 9:02,9/14/2024 19:02
+1530,23,yes,kids,no,,stressful,,no,,NULL,NULL,unhappy,5,9/14/2024 10:07,9/14/2024 20:07
+1532,23,yes,kids,no,,stressful,,no,,NULL,NULL,neutral,5,9/14/2024 11:18,9/14/2024 21:18
+1535,23,yes,massage therapist,no,,comfortable,,no,,NULL,NULL,neutral,3,9/14/2024 13:05,9/14/2024 23:05
+1537,23,no,,no,,comfortable,,no,,NULL,NULL,neutral,2,9/14/2024 14:07,9/15/2024 0:07
+1541,23,yes,kids,no,,stressful,,no,,NULL,NULL,neutral,5,9/14/2024 16:01,9/15/2024 2:01
+1544,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,4,9/14/2024 17:03,9/15/2024 3:03
+1545,23,yes,kids,no,,others,hot & tired,no,,NULL,NULL,neutral,4,9/14/2024 18:02,9/15/2024 4:02
+1546,23,yes,kids,no,,others,hot and tired,no,,NULL,NULL,neutral,4,9/14/2024 19:01,9/15/2024 5:01
+1547,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,3,9/14/2024 20:16,9/15/2024 6:16
+1548,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,3,9/14/2024 21:03,9/15/2024 7:03
+1553,23,yes,store employee,no,,quiet,,no,,NULL,NULL,neutral,3,9/15/2024 7:10,9/15/2024 17:10
+1555,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,4,9/15/2024 9:02,9/15/2024 19:02
+1556,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,4,9/15/2024 10:03,9/15/2024 20:03
+1557,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,5,9/15/2024 11:10,9/15/2024 21:10
+1559,23,yes,kids,no,,stressful,,no,,NULL,NULL,neutral,5,9/15/2024 13:06,9/15/2024 23:06
+1562,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,5,9/15/2024 14:08,9/16/2024 0:08
+1565,23,yes,kids and family,no,,comfortable,,no,,NULL,NULL,neutral,3,9/15/2024 17:15,9/16/2024 3:15
+1566,23,yes,kids and family,no,,comfortable,,no,,NULL,NULL,neutral,4,9/15/2024 18:03,9/16/2024 4:03
+1568,23,yes,clientele,no,,comfortable,,no,,NULL,NULL,neutral,2,9/15/2024 19:01,9/16/2024 5:01
+1569,23,yes,clientele and co-agents,no,,comfortable,,no,,NULL,NULL,happy,2,9/15/2024 20:01,9/16/2024 6:01
+1570,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,1,9/15/2024 23:05,9/16/2024 9:05
+1576,23,no,,no,,quiet,,no,,NULL,NULL,neutral,1,9/16/2024 5:59,9/16/2024 15:59
+1577,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,1,9/16/2024 7:05,9/16/2024 17:05
+1578,23,yes,coworkers,no,,comfortable,,no,,NULL,NULL,neutral,1,9/16/2024 8:01,9/16/2024 18:01
+1579,23,yes,coworkers,no,,comfortable,,no,,NULL,NULL,neutral,3,9/16/2024 10:01,9/16/2024 20:01
+1580,23,yes,coworkers,no,,comfortable,,no,,NULL,NULL,neutral,3,9/16/2024 11:01,9/16/2024 21:01
+1581,23,yes,coworkers,no,,comfortable,,no,,NULL,NULL,neutral,4,9/16/2024 12:02,9/16/2024 22:02
+1584,23,yes,coworkers,no,,comfortable,,no,,NULL,NULL,neutral,4,9/16/2024 15:10,9/17/2024 1:10
+1585,23,yes,coworkers,no,,comfortable,,no,,NULL,NULL,neutral,4,9/16/2024 16:01,9/17/2024 2:01
+1586,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,2,9/16/2024 16:58,9/17/2024 2:58
+1588,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,4,9/16/2024 18:02,9/17/2024 4:02
+1589,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,3,9/16/2024 20:00,9/17/2024 6:00
+1594,23,no,,no,,quiet,,no,,NULL,NULL,neutral,0,9/17/2024 6:14,9/17/2024 16:14
+1595,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,2,9/17/2024 7:09,9/17/2024 17:09
+1596,23,yes,kids and zoom call,no,,comfortable,,no,,NULL,NULL,neutral,2,9/17/2024 8:09,9/17/2024 18:09
+1597,23,yes,coworkers,no,,comfortable,,no,,NULL,NULL,neutral,2,9/17/2024 9:01,9/17/2024 19:01
+1600,23,yes,coworkers,no,,comfortable,,no,,NULL,NULL,neutral,5,9/17/2024 11:02,9/17/2024 21:02
+1602,23,yes,coworkers,no,,comfortable,,no,,NULL,NULL,neutral,5,9/17/2024 13:01,9/17/2024 23:01
+1603,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,4,9/17/2024 14:03,9/18/2024 0:03
+1604,23,yes,coworkers,no,,comfortable,,no,,NULL,NULL,neutral,4,9/17/2024 15:13,9/18/2024 1:13
+1606,23,yes,coworkers,no,,comfortable,,no,,NULL,NULL,neutral,5,9/17/2024 16:01,9/18/2024 2:01
+1608,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,4,9/17/2024 18:02,9/18/2024 4:02
+1609,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,4,9/17/2024 19:06,9/18/2024 5:06
+1610,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,4,9/17/2024 20:01,9/18/2024 6:01
+1611,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,4,9/17/2024 21:01,9/18/2024 7:01
+1613,23,no,,no,,quiet,,no,,NULL,NULL,neutral,0,9/18/2024 5:56,9/18/2024 15:56
+1614,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,2,9/18/2024 7:06,9/18/2024 17:06
+1616,23,yes,vpc staff,no,,others,hot - walkimg,no,,NULL,NULL,neutral,2,9/18/2024 9:00,9/18/2024 19:00
+1617,23,no,,no,,others,quiet on the city bus but it is comfortable,no,,NULL,NULL,neutral,2,9/18/2024 10:01,9/18/2024 20:01
+1618,23,yes,my son & storage staff,no,,others,looking at storage units,no,,NULL,NULL,neutral,2,9/18/2024 11:24,9/18/2024 21:24
+1619,23,no,,no,,quiet,,no,,NULL,NULL,neutral,2,9/18/2024 12:01,9/18/2024 22:01
+1622,23,no,,no,,quiet,,no,,NULL,NULL,neutral,2,9/18/2024 15:27,9/19/2024 1:27
+1624,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,2,9/18/2024 16:18,9/19/2024 2:18
+1625,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,2,9/18/2024 17:06,9/19/2024 3:06
+1627,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,2,9/18/2024 18:01,9/19/2024 4:01
+1628,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,2,9/18/2024 19:01,9/19/2024 5:01
+1629,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,2,9/18/2024 20:01,9/19/2024 6:01
+1630,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,2,9/18/2024 21:01,9/19/2024 7:01
+1631,23,no,,no,,comfortable,,no,,NULL,NULL,neutral,1,9/18/2024 22:11,9/19/2024 8:11
+1634,23,no,,no,,quiet,,no,,NULL,NULL,neutral,1,9/19/2024 6:06,9/19/2024 16:06
+1635,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,1,9/19/2024 7:15,9/19/2024 17:15
+1639,23,yes,coworkers,no,,comfortable,,no,,NULL,NULL,neutral,5,9/19/2024 12:04,9/19/2024 22:04
+1647,23,yes,clientele & co-agents,no,,noisy,,no,,NULL,NULL,neutral,3,9/19/2024 19:02,9/20/2024 5:02
+1650,23,yes,clients & co-agents,no,,noisy,,no,,NULL,NULL,neutral,3,9/19/2024 21:03,9/20/2024 7:03
+1660,23,yes,coworkers,no,,quiet,,no,,NULL,NULL,neutral,2,9/20/2024 11:02,9/20/2024 21:02
+1662,23,yes,mail carrier,no,,quiet,,no,,NULL,NULL,neutral,3,9/20/2024 12:15,9/20/2024 22:15
+1673,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,3,9/20/2024 20:13,9/21/2024 6:13
+1674,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,3,9/20/2024 21:06,9/21/2024 7:06
+1675,23,yes,cashier at convwnient store,no,,quiet,,no,,NULL,NULL,neutral,1,9/21/2024 6:58,9/21/2024 16:58
+1676,23,yes,kids and clients via zoom,no,,comfortable,,no,,NULL,NULL,neutral,3,9/21/2024 8:01,9/21/2024 18:01
+1677,23,yes,kids and clientd via zoom,no,,comfortable,,no,,NULL,NULL,neutral,3,9/21/2024 8:56,9/21/2024 18:56
+1687,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,3,9/21/2024 21:02,9/22/2024 7:02
+1688,23,no,,no,,quiet,,no,,NULL,NULL,neutral,0,9/22/2024 6:05,9/22/2024 16:05
+1689,23,yes,clients,no,,comfortable,,yes,treseba,9/22/2024 16:35,9/22/2024 6:35,neutral,2,9/22/2024 8:14,9/22/2024 18:14
+1690,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,3,9/22/2024 9:15,9/22/2024 19:15
+1691,23,yes, clients,no,,comfortable,,no,,NULL,NULL,neutral,3,9/22/2024 10:02,9/22/2024 20:02
+1692,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,2,9/22/2024 11:03,9/22/2024 21:03
+1693,23,yes,clients,no,,comfortable,,no,,NULL,NULL,neutral,3,9/22/2024 13:06,9/22/2024 23:06
+1700,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,4,9/22/2024 20:04,9/23/2024 6:04
+1701,23,no,,no,,quiet,,no,,NULL,NULL,neutral,0,9/23/2024 6:11,9/23/2024 16:11
+1702,23,no,,no,,comfortable,,no,,NULL,NULL,neutral,1,9/23/2024 7:07,9/23/2024 17:07
+1703,23,yes,customer svs,no,,stressful,,no,,NULL,NULL,unhappy,4,9/23/2024 8:18,9/23/2024 18:18
+1707,23,yes,coworkers,no,,comfortable,,no,,NULL,NULL,neutral,3,9/23/2024 12:03,9/23/2024 22:03
+1708,23,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,9/23/2024 13:03,9/23/2024 23:03
+1709,23,yes,coworkers,no,,comfortable,,no,,NULL,NULL,neutral,3,9/23/2024 14:01,9/24/2024 0:01
+1710,23,yes,coworkers,no,,comfortable,,no,,NULL,NULL,neutral,3,9/23/2024 15:01,9/24/2024 1:01
+1712,23,yes, coworkers,no,,comfortable,,no,,NULL,NULL,neutral,4,9/23/2024 16:02,9/24/2024 2:02
+1714,23,no,,no,,comfortable,,no,,NULL,NULL,neutral,3,9/23/2024 17:01,9/24/2024 3:01
+1717,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,4,9/23/2024 18:11,9/24/2024 4:11
+1719,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,4,9/23/2024 19:02,9/24/2024 5:02
+1721,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,5,9/23/2024 20:04,9/24/2024 6:04
+1724,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,3,9/23/2024 20:58,9/24/2024 6:58
+1727,23,no,,no,,others,busy,no,,NULL,NULL,neutral,2,9/24/2024 6:03,9/24/2024 16:03
+1728,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,3,9/24/2024 7:10,9/24/2024 17:10
+1729,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,3,9/24/2024 8:03,9/24/2024 18:03
+1742,23,yes,coworkers,no,,comfortable,,no,,NULL,NULL,neutral,4,9/24/2024 15:03,9/25/2024 1:03
+1743,23,yes,coworkers,no,,comfortable,,no,,NULL,NULL,neutral,4,9/24/2024 16:07,9/25/2024 2:07
+1755,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,4,9/24/2024 21:01,9/25/2024 7:01
+1762,23,no,,no,,quiet,,no,,NULL,NULL,neutral,0,9/25/2024 6:02,9/25/2024 16:02
+1789,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,3,9/25/2024 19:01,9/26/2024 5:01
+1793,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,3,9/25/2024 21:03,9/26/2024 7:03
+1794,23,no,,no,,comfortable,,no,,NULL,NULL,neutral,2,9/25/2024 22:01,9/26/2024 8:01
+1796,23,no,,no,,quiet,,no,,NULL,NULL,neutral,0,9/26/2024 6:00,9/26/2024 16:00
+1804,23,yes,coworkers,no,,comfortable,,no,,NULL,NULL,neutral,3,9/26/2024 11:01,9/26/2024 21:01
+1899,23,yes,kids,no,,noisy,,no,,NULL,NULL,neutral,5,9/28/2024 16:01,9/29/2024 2:01
+1908,23,no,,no,,noisy,,no,,NULL,NULL,neutral,5,9/28/2024 19:01,9/29/2024 5:01
+1960,23,yes,son,no,,comfortable,,no,,NULL,NULL,neutral,4,9/30/2024 14:09,10/1/2024 0:09
+1984,23,no,,no,,quiet,,no,,NULL,NULL,neutral,3,9/30/2024 22:17,10/1/2024 8:17
+1992,23,yes,coworkers,no,,comfortable,,yes,treseba,10/1/2024 19:45,10/1/2024 9:45,neutral,4,10/1/2024 10:01,10/1/2024 20:01
+2001,23,yes,coworkers,no,,comfortable,,no,,NULL,NULL,neutral,3,10/1/2024 15:02,10/2/2024 1:02
+2006,23,yes,coworkers,no,,comfortable,,no,,NULL,NULL,neutral,3,10/1/2024 16:10,10/2/2024 2:10
+2013,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,4,10/1/2024 19:02,10/2/2024 5:02
+2018,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,3,10/1/2024 20:06,10/2/2024 6:06
+2020,23,yes,kids,no,,comfortable,,no,,NULL,NULL,neutral,3,10/1/2024 21:01,10/2/2024 7:01

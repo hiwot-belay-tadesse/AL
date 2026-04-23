@@ -1,0 +1,11 @@
+{
+    "user": "35",
+    "pool": "global",
+    "fruit": "BP",
+    "scenario": "spike",
+    "dropout_rate": 0.5,
+    "unlabeled_frac": 0.9,
+    "T": null,
+    "K": 100,
+    "Budget": 24
+}

@@ -1,0 +1,6 @@
+uid,global_ssl_AUC_Train,global_ssl_AUC_Mean±STD,global_supervised_AUC_Train,global_supervised_AUC_Mean±STD
+ID12,0.757,0.574 ± 0.171,0.647,0.577 ± 0.198
+ID19,0.828,0.233 ± 0.191,0.647,0.476 ± 0.234
+ID20,0.749,0.672 ± 0.312,0.647,0.223 ± 0.223
+ID27,0.749,0.599 ± 0.228,0.647,0.617 ± 0.201
+AGGREGATED,,0.573 ± 0.101,,0.487 ± 0.110

@@ -1,0 +1,4 @@
+Pipeline,Best_Threshold,Accuracy (Mean ± STD),Sensitivity_Mean ± STD,Specificity_Mean ± STD,AUC_Train,AUC_Val,AUC_Mean ± STD
+global_ssl,0.39,0.8136 ± 0.0739,0.921 ± 0.062,0.631 ± 0.155,0.697,0.587,0.799 ± 0.103
+personal_ssl,0.43,0.7623 ± 0.0863,0.885 ± 0.073,0.277 ± 0.226,0.795,0.6,0.615 ± 0.185
+global_supervised,0.33,0.5853 ± 0.0884,0.891 ± 0.071,0.064 ± 0.075,0.777,0.603,0.587 ± 0.107

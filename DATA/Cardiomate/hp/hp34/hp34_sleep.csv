@@ -1,0 +1,8 @@
+time,data_type,value
+2025-02-05T00:00:00+00:00,sleep,"Duration: 18300000, efficiency: 94, start_time: 2025-02-05T05:39:30.000, minutes_asleep: 288, minutes_awake: 17, efficiency: 94"
+2025-02-06T00:00:00+00:00,sleep,"Duration: 30720000, efficiency: 98, start_time: 2025-02-06T01:58:00.000, minutes_asleep: 504, minutes_awake: 8, efficiency: 98"
+2025-02-07T00:00:00+00:00,sleep,"Duration: 21840000, efficiency: 94, start_time: 2025-02-07T04:04:30.000, minutes_asleep: 341, minutes_awake: 23, efficiency: 94"
+2025-02-08T00:00:00+00:00,sleep,"Duration: 33960000, efficiency: 95, start_time: 2025-02-08T01:15:30.000, minutes_asleep: 539, minutes_awake: 27, efficiency: 95"
+2025-02-09T00:00:00+00:00,sleep,"Duration: 19680000, efficiency: 95, start_time: 2025-02-09T05:47:00.000, minutes_asleep: 312, minutes_awake: 16, efficiency: 95"
+2025-02-10T00:00:00+00:00,sleep,"Duration: 23160000, efficiency: 96, start_time: 2025-02-10T05:33:30.000, minutes_asleep: 371, minutes_awake: 15, efficiency: 96"
+2025-02-11T00:00:00+00:00,sleep,"Duration: 25980000, efficiency: 99, start_time: 2025-02-11T05:12:30.000, minutes_asleep: 430, minutes_awake: 3, efficiency: 99"

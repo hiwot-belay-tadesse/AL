@@ -1,0 +1,6 @@
+time,data_type,value
+2025-04-18T00:00:00+00:00,sleep,"Duration: 5340000, efficiency: 93, start_time: 2025-04-18T07:12:00.000, minutes_asleep: 83, minutes_awake: 6, efficiency: 93"
+2025-04-19T00:00:00+00:00,sleep,"Duration: 28920000, efficiency: 89, start_time: 2025-04-19T00:13:30.000, minutes_asleep: 430, minutes_awake: 52, efficiency: 89"
+2025-04-21T00:00:00+00:00,sleep,"Duration: 34620000, efficiency: 93, start_time: 2025-04-20T22:02:00.000, minutes_asleep: 529, minutes_awake: 41, efficiency: 93"
+2025-04-22T00:00:00+00:00,sleep,"Duration: 28620000, efficiency: 95, start_time: 2025-04-21T23:06:30.000, minutes_asleep: 452, minutes_awake: 24, efficiency: 95"
+2025-04-27T00:00:00+00:00,sleep,"Duration: 26520000, efficiency: 94, start_time: 2025-04-27T00:03:00.000, minutes_asleep: 412, minutes_awake: 28, efficiency: 94"

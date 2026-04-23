@@ -1,0 +1,4 @@
+source=run.py
+rows=2044
+time_col=datetime_local
+sha256=ea1f379f6efffe176dfefeb1433de5087394d04b2c48debfa41ea71657d4d6df

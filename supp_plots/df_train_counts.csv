@@ -1,0 +1,11 @@
+fruit_scenario,len_df_train,pos,neg,len_df_val,pos_val,neg_val
+Almond_Crave,29,6,23,8,0,8
+Almond_Use,158,36,122,50,15,35
+Carrot_Crave,170,72,98,62,22,40
+Carrot_Use,339,113,226,118,43,75
+Coffee_Use,30,12,18,9,5,4
+GHB_Use,10,4,6,4,1,3
+Melon_Crave,190,65,125,66,20,46
+Melon_Use,219,119,100,50,23,27
+Nectarine_Crave,327,158,169,150,62,88
+Nectarine_Use,351,163,188,152,65,87

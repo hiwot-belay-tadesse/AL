@@ -1,0 +1,275 @@
+id,user_id,interaction_answer,interaction_detail,physicalDiscomfort_answer,physicalDiscomfort_detail,environment_answer,environment_detail,medication_answer,medication_detail,medication_date_time,local_medication_date_time,mood_value,stressLevel_value,local_created_at,created_at
+1711,25,yes,PI for study.,no,,quiet,,no,,NULL,NULL,neutral,7,9/23/2024 15:43,9/24/2024 1:43
+1745,25,no,,no,,comfortable,,no,,NULL,NULL,neutral,6,9/24/2024 16:29,9/25/2024 2:29
+1746,25,no,,no,,quiet,,no,,NULL,NULL,neutral,7,9/24/2024 17:05,9/25/2024 3:05
+1749,25,no,,no,,noisy,,no,,NULL,NULL,happy,5,9/24/2024 18:18,9/25/2024 4:18
+1751,25,no,,no,,noisy,,no,,NULL,NULL,neutral,4,9/24/2024 19:04,9/25/2024 5:04
+1754,25,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,9/24/2024 20:58,9/25/2024 6:58
+1757,25,yes,Daughter & Husband,no,,comfortable,,no,,NULL,NULL,happy,3,9/24/2024 21:16,9/25/2024 7:16
+1764,25,yes,Colleagues at a meeting.,no,,others,Zoom department meeting.,no,,NULL,NULL,neutral,5,9/25/2024 8:12,9/25/2024 18:12
+1766,25,yes,Fashion Technology Department Meeting ,no,,others,Uncomfortable due to topic to be discussed. ,no,,NULL,NULL,neutral,7,9/25/2024 9:29,9/25/2024 19:29
+1768,25,yes,Fashion Technolgy Department meeting. ,no,,others,Good discussion on student opportunities.   ,no,,NULL,NULL,neutral,6,9/25/2024 10:07,9/25/2024 20:07
+1770,25,no,,no,,quiet,,no,,NULL,NULL,neutral,5,9/25/2024 11:18,9/25/2024 21:18
+1772,25,yes,Records Office Staff ,no,,others,Muted Conversation & laughter in an office setting.,no,,NULL,NULL,neutral,6,9/25/2024 12:11,9/25/2024 22:11
+1774,25,no,,no,,quiet,,no,,NULL,NULL,neutral,5,9/25/2024 13:09,9/25/2024 23:09
+1777,25,yes,COSM -P20 Meeting,no,,comfortable,,no,,NULL,NULL,neutral,5,9/25/2024 14:33,9/26/2024 0:33
+1780,25,no,,no,,quiet,,no,,NULL,NULL,neutral,5,9/25/2024 15:41,9/26/2024 1:41
+1784,25,no,,no,,quiet,,no,,NULL,NULL,neutral,5,9/25/2024 17:13,9/26/2024 3:13
+1788,25,no,,no,,quiet,,no,,NULL,NULL,happy,3,9/25/2024 18:22,9/26/2024 4:22
+1797,25,no,,no,,others,Busy,no,,NULL,NULL,neutral,6,9/26/2024 8:08,9/26/2024 18:08
+1801,25,yes,Planning Meeting members.,no,,others,Calm,no,,NULL,NULL,neutral,5,9/26/2024 9:19,9/26/2024 19:19
+1806,25,yes,Student ,no,,others,Busy,no,,NULL,NULL,neutral,6,9/26/2024 11:13,9/26/2024 21:13
+1808,25,yes,Colleague,no,,comfortable,,no,,NULL,NULL,happy,3,9/26/2024 12:14,9/26/2024 22:14
+1811,25,no,,no,,others,Rushed - Went from training session to a meeting.,no,,NULL,NULL,neutral,6,9/26/2024 13:46,9/26/2024 23:46
+1813,25,no,,no,,others,Overwhelmed with understanding changes coming to BANNER interface. ,no,,NULL,NULL,neutral,6,9/26/2024 14:04,9/27/2024 0:04
+1821,25,no,,no,,quiet,,no,,NULL,NULL,neutral,5,9/26/2024 17:23,9/27/2024 3:23
+1824,25,yes,Youngest daughter ,no,,comfortable,,no,,NULL,NULL,happy,2,9/26/2024 18:05,9/27/2024 4:05
+1828,25,yes,Husband and daughter.,no,,comfortable,,no,,NULL,NULL,happy,2,9/26/2024 19:52,9/27/2024 5:52
+1829,25,yes,Husband & 2 daughters ,no,,comfortable,,no,,NULL,NULL,happy,2,9/26/2024 20:02,9/27/2024 6:02
+1838,25,no,,no,,quiet,,no,,NULL,NULL,happy,2,9/27/2024 7:32,9/27/2024 17:32
+1844,25,yes,Cohort meeting. ,no,,others,Busy,no,,NULL,NULL,happy,6,9/27/2024 11:04,9/27/2024 21:04
+1852,25,yes,Cohort,no,,others,Nervous stress,no,,NULL,NULL,neutral,6,9/27/2024 13:40,9/27/2024 23:40
+1856,25,no,,no,,quiet,,no,,NULL,NULL,neutral,5,9/27/2024 15:05,9/28/2024 1:05
+1859,25,no,,no,,quiet,,no,,NULL,NULL,neutral,5,9/27/2024 16:44,9/28/2024 2:44
+1862,25,no,,no,,comfortable,,no,,NULL,NULL,neutral,6,9/27/2024 17:25,9/28/2024 3:25
+1866,25,yes,Husband & 2 daughters.,no,,others,Anxious…waiting for photoshoot to start.,no,,NULL,NULL,neutral,6,9/27/2024 18:43,9/28/2024 4:43
+1871,25,yes,Husband & 2 daughters,no,,comfortable,,no,,NULL,NULL,happy,2,9/27/2024 20:22,9/28/2024 6:22
+1872,25,yes,Husband,no,,comfortable,,no,,NULL,NULL,happy,2,9/27/2024 20:58,9/28/2024 6:58
+1881,25,no,,no,,quiet,,no,,NULL,NULL,happy,4,9/28/2024 8:05,9/28/2024 18:05
+1884,25,no,,no,,quiet,,no,,NULL,NULL,happy,2,9/28/2024 9:22,9/28/2024 19:22
+1886,25,yes,Youngest daughter,no,,comfortable,,no,,NULL,NULL,happy,3,9/28/2024 10:23,9/28/2024 20:23
+1888,25,no,,no,,comfortable,,no,,NULL,NULL,happy,4,9/28/2024 11:04,9/28/2024 21:04
+1889,25,no,,no,,comfortable,,no,,NULL,NULL,neutral,3,9/28/2024 11:49,9/28/2024 21:49
+1890,25,no,,no,,comfortable,,no,,NULL,NULL,neutral,5,9/28/2024 12:03,9/28/2024 22:03
+1895,25,yes,Workout buddy,no,,comfortable,,no,,NULL,NULL,happy,5,9/28/2024 13:28,9/28/2024 23:28
+1897,25,no,,no,,quiet,,no,,NULL,NULL,neutral,5,9/28/2024 15:03,9/29/2024 1:03
+1900,25,yes,Daughter ,no,,comfortable,,no,,NULL,NULL,happy,3,9/28/2024 16:03,9/29/2024 2:03
+1904,25,no,,no,,comfortable,,no,,NULL,NULL,happy,3,9/28/2024 17:10,9/29/2024 3:10
+1909,25,no,,yes,Muscle soreness,comfortable,,yes,Lisonopril 20mcg ,9/29/2024 5:03,9/28/2024 19:03,happy,5,9/28/2024 19:16,9/29/2024 5:16
+1918,25,yes,Husband,no,,comfortable,,no,,NULL,NULL,happy,3,9/29/2024 8:09,9/29/2024 18:09
+1921,25,no,,no,,others,Busy with chores.,no,,NULL,NULL,neutral,6,9/29/2024 10:08,9/29/2024 20:08
+1926,25,yes,Husband & Daighters,no,,others,Busy ,no,,NULL,NULL,happy,3,9/29/2024 14:19,9/30/2024 0:19
+1928,25,no,,no,,stressful,,no,,NULL,NULL,neutral,7,9/29/2024 16:02,9/30/2024 2:02
+1931,25,no,,no,,others,Busy,no,,NULL,NULL,neutral,7,9/29/2024 18:10,9/30/2024 4:10
+1932,25,yes,Husband,no,,comfortable,,no,,NULL,NULL,happy,5,9/29/2024 18:42,9/30/2024 4:42
+1933,25,no,,no,,comfortable,,no,,NULL,NULL,happy,4,9/29/2024 19:02,9/30/2024 5:02
+1938,25,no,,no,,comfortable,,no,,NULL,NULL,happy,3,9/29/2024 20:23,9/30/2024 6:23
+1942,25,no,,no,,comfortable,,no,,NULL,NULL,happy,5,9/29/2024 21:56,9/30/2024 7:56
+1948,25,yes,Youngest daughter,no,,others,Rushed,no,,NULL,NULL,neutral,7,9/30/2024 6:57,9/30/2024 16:57
+1971,25,no,,no,,stressful,,no,,NULL,NULL,neutral,8,9/30/2024 18:29,10/1/2024 4:29
+1973,25,no,,no,,stressful,,no,,NULL,NULL,neutral,7,9/30/2024 19:02,10/1/2024 5:02
+1975,25,yes,Daughter,no,,others,Content,no,,NULL,NULL,happy,5,9/30/2024 19:44,10/1/2024 5:44
+1978,25,yes,Husband & daughter,no,,others,Easy going,no,,NULL,NULL,neutral,5,9/30/2024 20:03,10/1/2024 6:03
+1980,25,no,,no,,comfortable,,yes,Lisinopril 20mcg,10/1/2024 6:30,9/30/2024 20:30,happy,5,9/30/2024 20:40,10/1/2024 6:40
+1989,25,no,,no,,others,Excited,no,,NULL,NULL,neutral,6,10/1/2024 7:11,10/1/2024 17:11
+1998,25,yes,Student,no,,others,Anxious & strong sense of urgency,no,,NULL,NULL,neutral,8,10/1/2024 13:43,10/1/2024 23:43
+2002,25,yes,Instructor,no,,others,Venting ,no,,NULL,NULL,neutral,7,10/1/2024 15:25,10/2/2024 1:25
+2004,25,no,,no,,quiet,,no,,NULL,NULL,neutral,6,10/1/2024 15:57,10/2/2024 1:57
+2009,25,no,,no,,quiet,,no,,NULL,NULL,neutral,5,10/1/2024 17:34,10/2/2024 3:34
+2011,25,no,,no,,noisy,,no,,NULL,NULL,neutral,6,10/1/2024 18:03,10/2/2024 4:03
+2015,25,no,,no,,comfortable,,no,,NULL,NULL,happy,5,10/1/2024 19:24,10/2/2024 5:24
+2016,25,no,,no,,comfortable,,no,,NULL,NULL,neutral,7,10/1/2024 19:50,10/2/2024 5:50
+2017,25,no,,no,,comfortable,,no,,NULL,NULL,neutral,6,10/1/2024 20:02,10/2/2024 6:02
+2022,25,no,,no,,quiet,,yes,Lisinopril 20mcg,10/2/2024 7:23,10/1/2024 21:23,neutral,5,10/1/2024 21:24,10/2/2024 7:24
+2024,25,no,,no,,stressful,,no,,NULL,NULL,neutral,6,10/2/2024 6:39,10/2/2024 16:39
+2026,25,no,,no,,stressful,,no,,NULL,NULL,neutral,7,10/2/2024 10:03,10/2/2024 20:03
+2028,25,no,,no,,others,Busy,no,,NULL,NULL,neutral,7,10/2/2024 11:07,10/2/2024 21:07
+2029,25,no,,no,,others,Anxious,no,,NULL,NULL,neutral,7,10/2/2024 12:08,10/2/2024 22:08
+2030,25,no,,no,,quiet,,no,,NULL,NULL,neutral,5,10/2/2024 13:03,10/2/2024 23:03
+2032,25,no,,no,,quiet,,no,,NULL,NULL,neutral,5,10/2/2024 14:51,10/3/2024 0:51
+2033,25,yes,Youngest daughter.,no,,comfortable,,no,,NULL,NULL,neutral,5,10/2/2024 16:02,10/3/2024 2:02
+2035,25,yes,Youngest daughter ,no,,comfortable,,no,,NULL,NULL,neutral,5,10/2/2024 17:02,10/3/2024 3:02
+2037,25,no,,no,,others,Exhausting ,no,,NULL,NULL,neutral,6,10/2/2024 18:47,10/3/2024 4:47
+2041,25,yes,Husband,no,,comfortable,,yes,Lisinopril 20 mcg,10/3/2024 6:45,10/2/2024 20:45,neutral,5,10/2/2024 20:58,10/3/2024 6:58
+2043,25,no,,no,,quiet,,no,,NULL,NULL,neutral,5,10/3/2024 7:31,10/3/2024 17:31
+2044,25,no,,no,,quiet,,no,,NULL,NULL,neutral,5,10/3/2024 8:05,10/3/2024 18:05
+2047,25,yes,Colleagues ,no,,noisy,,no,,NULL,NULL,neutral,7,10/3/2024 11:15,10/3/2024 21:15
+2050,25,yes,Colleagues in a meeting ,no,,others,System meeting discussion on course applicability ,no,,NULL,NULL,neutral,7,10/3/2024 14:24,10/4/2024 0:24
+2052,25,no,,no,,quiet,,no,,NULL,NULL,neutral,7,10/3/2024 16:03,10/4/2024 2:03
+2054,25,no,,no,,quiet,,no,,NULL,NULL,neutral,6,10/3/2024 16:23,10/4/2024 2:23
+2055,25,yes,Youngest daughter ,no,,others,Busy,no,,NULL,NULL,neutral,6,10/3/2024 16:59,10/4/2024 2:59
+2057,25,no,,no,,quiet,,no,,NULL,NULL,happy,5,10/3/2024 18:03,10/4/2024 4:03
+2058,25,no,,no,,quiet,,no,,NULL,NULL,happy,5,10/3/2024 19:02,10/4/2024 5:02
+2059,25,no,,no,,quiet,,no,,NULL,NULL,neutral,6,10/3/2024 20:01,10/4/2024 6:01
+2060,25,no,,no,,quiet,,yes,Lisinopril 20 mcg,10/4/2024 7:37,10/3/2024 21:37,happy,5,10/3/2024 21:55,10/4/2024 7:55
+2061,25,no,,no,,quiet,,no,,NULL,NULL,happy,5,10/4/2024 7:47,10/4/2024 17:47
+2062,25,yes,Colleague ,no,,comfortable,,no,,NULL,NULL,neutral,5,10/4/2024 9:06,10/4/2024 19:06
+2063,25,yes,Presentation guide,no,,others,Outdoors with medium physical activity ,no,,NULL,NULL,neutral,6,10/4/2024 10:08,10/4/2024 20:08
+2066,25,yes,Colleagues ,no,,others,Outdoors ,no,,NULL,NULL,happy,4,10/4/2024 12:41,10/4/2024 22:41
+2068,25,no,,no,,quiet,,no,,NULL,NULL,happy,3,10/4/2024 13:05,10/4/2024 23:05
+2070,25,no,,no,,quiet,,no,,NULL,NULL,neutral,4,10/4/2024 15:37,10/5/2024 1:37
+2071,25,yes,Youngest daughter ,no,,quiet,,no,,NULL,NULL,happy,3,10/4/2024 16:29,10/5/2024 2:29
+2074,25,no,,no,,noisy,,no,,NULL,NULL,neutral,5,10/4/2024 18:10,10/5/2024 4:10
+2076,25,no,,no,,noisy,,no,,NULL,NULL,neutral,6,10/4/2024 19:18,10/5/2024 5:18
+2077,25,no,,no,,others,Busy & anxious ,no,,NULL,NULL,neutral,6,10/4/2024 20:21,10/5/2024 6:21
+2078,25,no,,no,,quiet,,no,,NULL,NULL,neutral,5,10/5/2024 8:10,10/5/2024 18:10
+2079,25,no,,no,,others,Busy,no,,NULL,NULL,neutral,6,10/5/2024 9:08,10/5/2024 19:08
+2080,25,no,,no,,noisy,,no,,NULL,NULL,neutral,6,10/5/2024 11:14,10/5/2024 21:14
+2081,25,yes,Youngest Daughter @ 10:07am,no,,others,Busy with cleaning chores.,no,,NULL,NULL,neutral,5,10/5/2024 11:18,10/5/2024 21:18
+2082,25,yes,Chiropractor,no,,comfortable,,no,,NULL,NULL,very_happy,2,10/5/2024 12:07,10/5/2024 22:07
+2084,25,no,,no,,quiet,,no,,NULL,NULL,neutral,7,10/5/2024 15:47,10/6/2024 1:47
+2085,25,no,,no,,quiet,,no,,NULL,NULL,neutral,6,10/5/2024 16:55,10/6/2024 2:55
+2086,25,yes,Daughter,no,,others,Relaxing ,no,,NULL,NULL,neutral,6,10/5/2024 18:03,10/6/2024 4:03
+2087,25,yes,Family,no,,comfortable,,no,,NULL,NULL,happy,6,10/5/2024 20:02,10/6/2024 6:02
+2088,25,yes,Husband & Daughter,no,,comfortable,,yes,Lisinopril 20mg,10/6/2024 6:26,10/5/2024 20:26,happy,3,10/5/2024 20:27,10/6/2024 6:27
+2089,25,yes,Daughter,no,,comfortable,,no,,NULL,NULL,happy,3,10/6/2024 9:51,10/6/2024 19:51
+2090,25,yes,Daughter,no,,others,Relaxing,no,,NULL,NULL,happy,3,10/6/2024 10:44,10/6/2024 20:44
+2091,25,no,,no,,others,Relaxing ,no,,NULL,NULL,happy,3,10/6/2024 11:30,10/6/2024 21:30
+2092,25,yes,Daughter,no,,others,Relaxing ,no,,NULL,NULL,happy,3,10/6/2024 13:07,10/6/2024 23:07
+2093,25,yes,Husband,no,,others,Relaxing,no,,NULL,NULL,happy,3,10/6/2024 14:25,10/7/2024 0:25
+2094,25,no,,no,,comfortable,,no,,NULL,NULL,happy,3,10/6/2024 15:33,10/7/2024 1:33
+2095,25,no,,no,,others,Relaxing,no,,NULL,NULL,neutral,5,10/6/2024 16:03,10/7/2024 2:03
+2096,25,no,,no,,noisy,,no,,NULL,NULL,neutral,5,10/6/2024 17:05,10/7/2024 3:05
+2097,25,no,,no,,comfortable,,no,,NULL,NULL,happy,3,10/6/2024 17:59,10/7/2024 3:59
+2098,25,no,,no,,comfortable,,no,,NULL,NULL,happy,3,10/6/2024 18:35,10/7/2024 4:35
+2099,25,no,,no,,quiet,,no,,NULL,NULL,neutral,5,10/6/2024 19:11,10/7/2024 5:11
+2100,25,no,,no,,quiet,,yes,Lisinopril 2” mcg,10/7/2024 7:08,10/6/2024 21:08,happy,5,10/6/2024 21:17,10/7/2024 7:17
+2101,25,no,,no,,others,Anxious for the work week.,no,,NULL,NULL,neutral,6,10/7/2024 7:55,10/7/2024 17:55
+2102,25,no,,no,,others,Busy at work!,no,,NULL,NULL,neutral,7,10/7/2024 9:02,10/7/2024 19:02
+2103,25,no,,no,,stressful,,no,,NULL,NULL,neutral,7,10/7/2024 11:01,10/7/2024 21:01
+2104,25,yes,Vendor,no,,others,Noisy & rushed. ,no,,NULL,NULL,neutral,6,10/7/2024 12:59,10/7/2024 22:59
+2105,25,yes,Youngest daughter,no,,others,Peaceful,no,,NULL,NULL,happy,4,10/7/2024 14:52,10/8/2024 0:52
+2106,25,no,,no,,noisy,,no,,NULL,NULL,neutral,6,10/7/2024 16:35,10/8/2024 2:35
+2107,25,no,,no,,others,Relaxing,no,,NULL,NULL,happy,4,10/7/2024 18:00,10/8/2024 4:00
+2108,25,no,,no,,noisy,,no,,NULL,NULL,neutral,5,10/7/2024 20:02,10/8/2024 6:02
+2109,25,no,,no,,noisy,,no,,NULL,NULL,neutral,5,10/7/2024 20:48,10/8/2024 6:48
+2110,25,no,,no,,noisy,,no,,NULL,NULL,neutral,5,10/7/2024 21:02,10/8/2024 7:02
+2111,25,yes,ATD Advising Workshop Participant ,no,,stressful,,no,,NULL,NULL,neutral,7,10/8/2024 8:06,10/8/2024 18:06
+2112,25,no,,no,,noisy,,no,,NULL,NULL,happy,5,10/8/2024 9:11,10/8/2024 19:11
+2113,25,yes,Daughters ,no,,comfortable,,no,,NULL,NULL,happy,4,10/8/2024 10:42,10/8/2024 20:42
+2114,25,yes,Daughter,no,,comfortable,,no,,NULL,NULL,neutral,5,10/8/2024 12:02,10/8/2024 22:02
+2115,25,yes,Daughter,no,,comfortable,,no,,NULL,NULL,neutral,5,10/8/2024 14:23,10/9/2024 0:23
+2116,25,no,,no,,comfortable,,no,,NULL,NULL,happy,4,10/8/2024 14:23,10/9/2024 0:23
+2117,25,no,,no,,stressful,,no,,NULL,NULL,neutral,7,10/8/2024 15:03,10/9/2024 1:03
+2118,25,yes,Cousin,no,,noisy,,no,,NULL,NULL,happy,5,10/8/2024 16:26,10/9/2024 2:26
+2119,25,no,,no,,comfortable,,no,,NULL,NULL,happy,4,10/8/2024 17:16,10/9/2024 3:16
+2121,25,no,,no,,noisy,,yes,Lisinopril 20mcg,10/9/2024 8:20,10/8/2024 22:20,neutral,7,10/8/2024 22:30,10/9/2024 8:30
+2122,25,no,,no,,comfortable,,no,,NULL,NULL,happy,5,10/9/2024 7:12,10/9/2024 17:12
+2125,25,no,,no,,noisy,,no,,NULL,NULL,neutral,5,10/9/2024 9:04,10/9/2024 19:04
+2127,25,no,,no,,comfortable,,no,,NULL,NULL,happy,4,10/9/2024 9:42,10/9/2024 19:42
+2129,25,no,,no,,others,Busy,no,,NULL,NULL,happy,5,10/9/2024 10:37,10/9/2024 20:37
+2132,25,no,,no,,comfortable,,no,,NULL,NULL,happy,6,10/9/2024 13:10,10/9/2024 23:10
+2134,25,no,,no,,noisy,,no,,NULL,NULL,neutral,6,10/9/2024 14:03,10/10/2024 0:03
+2136,25,no,,no,,noisy,,no,,NULL,NULL,happy,4,10/9/2024 15:03,10/10/2024 1:03
+2139,25,no,,no,,others,Busy & Rushed,no,,NULL,NULL,neutral,6,10/9/2024 16:08,10/10/2024 2:08
+2140,25,no,,no,,stressful,,no,,NULL,NULL,neutral,6,10/9/2024 17:03,10/10/2024 3:03
+2144,25,no,,no,,noisy,,no,,NULL,NULL,happy,4,10/10/2024 9:26,10/10/2024 19:26
+2147,25,no,,no,,noisy,,no,,NULL,NULL,happy,4,10/10/2024 10:19,10/10/2024 20:19
+2148,25,no,,no,,others,Rushed! ,no,,NULL,NULL,neutral,7,10/10/2024 11:07,10/10/2024 21:07
+2151,25,no,,no,,others,Rushed,no,,NULL,NULL,neutral,7,10/10/2024 12:08,10/10/2024 22:08
+2153,25,no,,no,,others,Rushed! ,no,,NULL,NULL,neutral,7,10/10/2024 13:28,10/10/2024 23:28
+2154,25,no,,no,,others,Rushed ,no,,NULL,NULL,neutral,7,10/10/2024 13:31,10/10/2024 23:31
+2162,25,no,,no,,others,Relieved!,no,,NULL,NULL,happy,5,10/10/2024 22:43,10/11/2024 8:43
+2163,25,yes,Husband ,no,,comfortable,,yes,Lisinopril 20mcg,10/11/2024 8:51,10/10/2024 22:51,happy,4,10/10/2024 23:44,10/11/2024 9:44
+2164,25,no,,no,,comfortable,,no,,NULL,NULL,happy,4,10/11/2024 8:21,10/11/2024 18:21
+2165,25,no,,no,,noisy,,no,,NULL,NULL,neutral,6,10/11/2024 9:13,10/11/2024 19:13
+2166,25,no,,no,,noisy,,no,,NULL,NULL,neutral,6,10/11/2024 10:02,10/11/2024 20:02
+2167,25,no,,no,,comfortable,,no,,NULL,NULL,happy,4,10/11/2024 11:02,10/11/2024 21:02
+2170,25,no,,no,,quiet,,no,,NULL,NULL,neutral,5,10/11/2024 13:23,10/11/2024 23:23
+2171,25,no,,no,,comfortable,,no,,NULL,NULL,happy,5,10/11/2024 14:01,10/12/2024 0:01
+2172,25,no,,no,,comfortable,,no,,NULL,NULL,happy,4,10/11/2024 15:00,10/12/2024 1:00
+2173,25,no,,no,,comfortable,,no,,NULL,NULL,happy,4,10/11/2024 16:28,10/12/2024 2:28
+2175,25,no,,no,,comfortable,,no,,NULL,NULL,happy,4,10/11/2024 17:03,10/12/2024 3:03
+2178,25,no,,no,,noisy,,no,,NULL,NULL,neutral,5,10/11/2024 19:01,10/12/2024 5:01
+2180,25,no,,no,,comfortable,,no,,NULL,NULL,happy,5,10/11/2024 20:01,10/12/2024 6:01
+2183,25,no,,no,,others,Busy!,no,,NULL,NULL,neutral,6,10/12/2024 8:09,10/12/2024 18:09
+2184,25,no,,no,,noisy,,no,,NULL,NULL,neutral,5,10/12/2024 8:24,10/12/2024 18:24
+2187,25,yes,Husband ,no,,noisy,,no,,NULL,NULL,happy,5,10/12/2024 9:35,10/12/2024 19:35
+2188,25,no,,no,,noisy,,no,,NULL,NULL,neutral,5,10/12/2024 10:19,10/12/2024 20:19
+2189,25,no,,no,,noisy,,no,,NULL,NULL,neutral,6,10/12/2024 12:02,10/12/2024 22:02
+2190,25,yes,Husband ,no,,comfortable,,no,,NULL,NULL,happy,5,10/12/2024 14:37,10/13/2024 0:37
+2192,25,no,,no,,quiet,,no,,NULL,NULL,happy,5,10/12/2024 15:40,10/13/2024 1:40
+2194,25,no,,no,,comfortable,,no,,NULL,NULL,happy,5,10/12/2024 16:25,10/13/2024 2:25
+2196,25,no,,no,,comfortable,,no,,NULL,NULL,happy,5,10/12/2024 17:59,10/13/2024 3:59
+2197,25,no,,no,,noisy,,no,,NULL,NULL,neutral,6,10/12/2024 19:37,10/13/2024 5:37
+2198,25,no,,no,,noisy,,no,,NULL,NULL,happy,5,10/12/2024 20:06,10/13/2024 6:06
+2201,25,yes,Husband ,no,,comfortable,,no,,NULL,NULL,happy,5,10/13/2024 9:13,10/13/2024 19:13
+2202,25,no,,no,,noisy,,no,,NULL,NULL,happy,3,10/13/2024 10:45,10/13/2024 20:45
+2203,25,yes,Son,no,,comfortable,,no,,NULL,NULL,happy,5,10/13/2024 11:34,10/13/2024 21:34
+2204,25,no,,no,,others,Busy with chores ,no,,NULL,NULL,neutral,6,10/13/2024 13:31,10/13/2024 23:31
+2205,25,no,,no,,quiet,,no,,NULL,NULL,neutral,5,10/13/2024 14:52,10/14/2024 0:52
+2206,25,no,,no,,quiet,,no,,NULL,NULL,neutral,4,10/13/2024 15:44,10/14/2024 1:44
+2208,25,no,,no,,quiet,,no,,NULL,NULL,happy,5,10/13/2024 16:12,10/14/2024 2:12
+2209,25,yes,Husband,no,,noisy,,no,,NULL,NULL,happy,5,10/13/2024 17:05,10/14/2024 3:05
+2210,25,no,,no,,others,Busy ,no,,NULL,NULL,neutral,6,10/13/2024 18:26,10/14/2024 4:26
+2211,25,no,,no,,noisy,,no,,NULL,NULL,neutral,5,10/13/2024 19:15,10/14/2024 5:15
+2215,25,no,,no,,others,Busy,no,,NULL,NULL,unhappy,7,10/14/2024 8:28,10/14/2024 18:28
+2216,25,no,,no,,quiet,,no,,NULL,NULL,neutral,7,10/14/2024 9:02,10/14/2024 19:02
+2219,25,no,,no,,others,Getting g ready to see student. ,no,,NULL,NULL,neutral,7,10/14/2024 11:35,10/14/2024 21:35
+2223,25,no,,no,,others,Busy ,no,,NULL,NULL,neutral,6,10/14/2024 13:14,10/14/2024 23:14
+2225,25,no,,no,,stressful,,no,,NULL,NULL,neutral,7,10/14/2024 14:05,10/15/2024 0:05
+2226,25,yes,Colleague ,no,,others,Busy,no,,NULL,NULL,neutral,7,10/14/2024 14:51,10/15/2024 0:51
+2228,25,no,,no,,noisy,,no,,NULL,NULL,neutral,6,10/14/2024 15:39,10/15/2024 1:39
+2230,25,yes,Daughter ,no,,noisy,,no,,NULL,NULL,happy,5,10/14/2024 16:27,10/15/2024 2:27
+2231,25,no,,no,,quiet,,yes,Lisinopril 20 mcg,10/15/2024 4:00,10/14/2024 18:00,happy,6,10/14/2024 18:16,10/15/2024 4:16
+2232,25,no,,no,,comfortable,,no,,NULL,NULL,neutral,6,10/14/2024 19:02,10/15/2024 5:02
+2234,25,no,,no,,quiet,,no,,NULL,NULL,happy,4,10/14/2024 20:38,10/15/2024 6:38
+2236,25,no,,no,,noisy,,no,,NULL,NULL,neutral,5,10/15/2024 6:44,10/15/2024 16:44
+2237,25,yes,ATD Coaching Meetong,no,,stressful,,no,,NULL,NULL,neutral,7,10/15/2024 7:58,10/15/2024 17:58
+2239,25,yes,Colleagues ,no,,others,Heavy- sensitive topics being discussed ,no,,NULL,NULL,neutral,6,10/15/2024 11:04,10/15/2024 21:04
+2242,25,no,,no,,others,Busy,no,,NULL,NULL,neutral,6,10/15/2024 13:44,10/15/2024 23:44
+2243,25,no,,no,,others,Busy ,no,,NULL,NULL,unhappy,7,10/15/2024 14:38,10/16/2024 0:38
+2245,25,no,,no,,stressful,,no,,NULL,NULL,neutral,7,10/15/2024 15:32,10/16/2024 1:32
+2246,25,no,,no,,others,Relaxing ,no,,NULL,NULL,happy,5,10/15/2024 17:04,10/16/2024 3:04
+2248,25,no,,no,,others,Busy,no,,NULL,NULL,neutral,6,10/15/2024 18:06,10/16/2024 4:06
+2249,25,no,,no,,quiet,,no,,NULL,NULL,neutral,5,10/15/2024 18:57,10/16/2024 4:57
+2250,25,no,,no,,quiet,,no,,NULL,NULL,neutral,6,10/15/2024 19:34,10/16/2024 5:34
+2251,25,no,,no,,others,Irritated by an email response from a parent who is difficult to deal with. ,no,,NULL,NULL,unhappy,6,10/15/2024 21:03,10/16/2024 7:03
+2252,25,no,,no,,comfortable,,no,,NULL,NULL,happy,4,10/16/2024 6:40,10/16/2024 16:40
+2253,25,no,,no,,quiet,,no,,NULL,NULL,neutral,6,10/16/2024 9:53,10/16/2024 19:53
+2254,25,no,,no,,others,Engaging ,no,,NULL,NULL,happy,6,10/16/2024 11:01,10/16/2024 21:01
+2257,25,no,,no,,quiet,,no,,NULL,NULL,neutral,5,10/16/2024 13:03,10/16/2024 23:03
+2259,25,no,,no,,comfortable,,no,,NULL,NULL,neutral,6,10/16/2024 14:07,10/17/2024 0:07
+2260,25,no,,no,,quiet,,no,,NULL,NULL,neutral,6,10/16/2024 14:32,10/17/2024 0:32
+2262,25,no,,no,,others,Busy,no,,NULL,NULL,neutral,6,10/16/2024 16:01,10/17/2024 2:01
+2264,25,no,,no,,others,Busy,no,,NULL,NULL,neutral,6,10/16/2024 17:04,10/17/2024 3:04
+2266,25,no,,no,,comfortable,,no,,NULL,NULL,happy,4,10/16/2024 18:32,10/17/2024 4:32
+2267,25,no,,no,,noisy,,no,,NULL,NULL,neutral,5,10/16/2024 18:34,10/17/2024 4:34
+2268,25,yes,Student,no,,stressful,,no,,NULL,NULL,neutral,6,10/17/2024 9:30,10/17/2024 19:30
+2269,25,no,,no,,noisy,,no,,NULL,NULL,neutral,6,10/17/2024 10:15,10/17/2024 20:15
+2270,25,no,,no,,noisy,,no,,NULL,NULL,neutral,6,10/17/2024 11:51,10/17/2024 21:51
+2271,25,yes,Colleague ,no,,stressful,,no,,NULL,NULL,neutral,6,10/17/2024 15:08,10/18/2024 1:08
+2272,25,no,,no,,noisy,,no,,NULL,NULL,neutral,6,10/17/2024 16:02,10/18/2024 2:02
+2275,25,yes,Husband ,no,,comfortable,,no,,NULL,NULL,happy,5,10/17/2024 17:31,10/18/2024 3:31
+2277,25,yes,Husband ,no,,comfortable,,no,,NULL,NULL,happy,5,10/17/2024 18:59,10/18/2024 4:59
+2279,25,no,,no,,comfortable,,no,,NULL,NULL,happy,5,10/17/2024 19:35,10/18/2024 5:35
+2281,25,no,,no,,comfortable,,yes,Lisinopril 20mcg,10/18/2024 5:50,10/17/2024 19:50,happy,5,10/17/2024 20:09,10/18/2024 6:09
+2283,25,no,,no,,comfortable,,no,,NULL,NULL,neutral,5,10/17/2024 21:02,10/18/2024 7:02
+2285,25,no,,no,,quiet,,no,,NULL,NULL,happy,4,10/18/2024 7:19,10/18/2024 17:19
+2291,25,yes,Colleagues in a curriculum meeting ,no,,stressful,,no,,NULL,NULL,neutral,7,10/18/2024 10:06,10/18/2024 20:06
+2293,25,yes,Prospective student,no,,others,Busy,no,,NULL,NULL,neutral,6,10/18/2024 11:18,10/18/2024 21:18
+2295,25,yes,Colleagues,no,,others,Busy,no,,NULL,NULL,neutral,6,10/18/2024 12:02,10/18/2024 22:02
+2297,25,yes,Colleagues at a meeting.,no,,others,Anxious - topic discussed is complex. ,no,,NULL,NULL,neutral,7,10/18/2024 13:42,10/18/2024 23:42
+2299,25,no,,no,,quiet,,no,,NULL,NULL,neutral,6,10/18/2024 15:01,10/19/2024 1:01
+2301,25,no,,no,,noisy,,no,,NULL,NULL,neutral,6,10/18/2024 16:02,10/19/2024 2:02
+2307,25,yes,Husband ,no,,noisy,,no,,NULL,NULL,happy,5,10/18/2024 18:05,10/19/2024 4:05
+2310,25,yes,Husband,no,,others,Noisy but relaxing,no,,NULL,NULL,happy,4,10/18/2024 18:58,10/19/2024 4:58
+2315,25,yes,Family ,no,,comfortable,,no,,NULL,NULL,happy,5,10/18/2024 20:13,10/19/2024 6:13
+2318,25,no,,no,,others,Rushed ,no,,NULL,NULL,neutral,6,10/19/2024 6:50,10/19/2024 16:50
+2320,25,no,,no,,others,Anxious,no,,NULL,NULL,neutral,6,10/19/2024 7:43,10/19/2024 17:43
+2321,25,no,,no,,stressful,,no,,NULL,NULL,neutral,7,10/19/2024 8:22,10/19/2024 18:22
+2323,25,no,,no,,comfortable,,no,,NULL,NULL,happy,4,10/19/2024 9:16,10/19/2024 19:16
+2326,25,no,,no,,comfortable,,no,,NULL,NULL,happy,4,10/19/2024 10:01,10/19/2024 20:01
+2327,25,no,,no,,quiet,,no,,NULL,NULL,neutral,5,10/19/2024 11:23,10/19/2024 21:23
+2340,25,no,,no,,stressful,,no,,NULL,NULL,unhappy,7,10/19/2024 18:07,10/20/2024 4:07
+2341,25,yes,Daughter,no,,others,Busy,no,,NULL,NULL,neutral,6,10/19/2024 18:37,10/20/2024 4:37
+2344,25,no,,no,,noisy,,no,,NULL,NULL,neutral,6,10/19/2024 19:56,10/20/2024 5:56
+2351,25,yes,Husband ,no,,comfortable,,no,,NULL,NULL,happy,4,10/20/2024 7:20,10/20/2024 17:20
+2353,25,no,,no,,noisy,,no,,NULL,NULL,neutral,6,10/20/2024 8:31,10/20/2024 18:31
+2355,25,no,,no,,comfortable,,no,,NULL,NULL,neutral,6,10/20/2024 9:31,10/20/2024 19:31
+2362,25,no,,no,,comfortable,,no,,NULL,NULL,neutral,5,10/20/2024 12:18,10/20/2024 22:18
+2367,25,yes,Daughter ,no,,others,Busy,no,,NULL,NULL,neutral,6,10/20/2024 14:09,10/21/2024 0:09
+2368,25,no,,no,,quiet,,no,,NULL,NULL,neutral,5,10/20/2024 15:02,10/21/2024 1:02
+2372,25,no,,no,,comfortable,,no,,NULL,NULL,neutral,3,10/20/2024 16:47,10/21/2024 2:47
+2374,25,no,,no,,comfortable,,no,,NULL,NULL,happy,2,10/20/2024 17:02,10/21/2024 3:02
+2376,25,no,,no,,others,Busy,no,,NULL,NULL,neutral,6,10/20/2024 18:15,10/21/2024 4:15
+2383,25,no,,no,,quiet,,no,,NULL,NULL,neutral,2,10/21/2024 4:18,10/21/2024 14:18
+2384,25,yes,Gym partner,no,,quiet,,no,,NULL,NULL,happy,1,10/21/2024 5:57,10/21/2024 15:57
+2386,25,yes,Collegue,no,,others,Busy,no,,NULL,NULL,neutral,6,10/21/2024 9:04,10/21/2024 19:04
+2390,25,yes,Students,no,,others,Busy,no,,NULL,NULL,neutral,7,10/21/2024 11:03,10/21/2024 21:03
+2392,25,no,,no,,stressful,,no,,NULL,NULL,neutral,7,10/21/2024 12:01,10/21/2024 22:01
+2396,25,no,,no,,quiet,,no,,NULL,NULL,neutral,6,10/21/2024 14:16,10/22/2024 0:16
+2399,25,no,,no,,quiet,,no,,NULL,NULL,neutral,6,10/21/2024 15:09,10/22/2024 1:09
+2401,25,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,10/21/2024 17:20,10/22/2024 3:20
+2403,25,no,,no,,comfortable,,yes,Lisinopril 20 mcg,10/22/2024 4:19,10/21/2024 18:19,happy,4,10/21/2024 18:35,10/22/2024 4:35
+2405,25,no,,no,,noisy,,no,,NULL,NULL,neutral,5,10/21/2024 19:54,10/22/2024 5:54

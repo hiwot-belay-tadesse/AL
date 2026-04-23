@@ -1,0 +1,15 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+	ignorecase = true
+	precomposeunicode = true
+[remote "origin"]
+	url = git@github.com:dtak/Active_Learning_for_SUD_Prediction.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+[branch "main"]
+	remote = origin
+	merge = refs/heads/main
+	gk-last-accessed = 2026-01-28T01:56:59.354Z
+	gk-last-modified = 2026-01-21T14:30:15.224Z

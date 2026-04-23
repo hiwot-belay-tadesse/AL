@@ -1,0 +1,11 @@
+{
+    "user": "ID27",
+    "pool": "global",
+    "fruit": "Melon",
+    "scenario": "Use",
+    "dropout_rate": 0.2,
+    "unlabeled_frac": 0.7,
+    "T": 30,
+    "K": 20,
+    "Budget": 8
+}

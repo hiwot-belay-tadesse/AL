@@ -1,0 +1,13 @@
+{
+    "user": "ID21",
+    "fruit": "Nectarine",
+    "scenario": "Crave",
+    "K": 10,
+    "budget": null,
+    "unlabeled_frac": 0.7,
+    "T": 50,
+    "acquisition": "random",
+    "gs_epochs": 200,
+    "gs_batch": 32,
+    "dropout_rate": 0.3
+}

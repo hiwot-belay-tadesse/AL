@@ -1,0 +1,11 @@
+{
+    "user": "ID10",
+    "pool": "personal",
+    "fruit": "Carrot",
+    "scenario": "Crave",
+    "dropout_rate": 0.2,
+    "unlabeled_frac": 0.7,
+    "T": 30,
+    "K": 20,
+    "Budget": 2
+}

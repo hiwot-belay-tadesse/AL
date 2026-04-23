@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "../CardioMate_ML"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"python.defaultInterpreterPath": "/Users/hiwotbelaytadesse/micromamba/envs/Ban/bin/python",
+		"chatgpt.commentCodeLensEnabled": false
+	}
+}

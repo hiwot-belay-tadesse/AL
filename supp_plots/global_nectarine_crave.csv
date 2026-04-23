@@ -1,0 +1,6 @@
+ID,Substance,Task,Pipeline,Threshold,Sensitivity,Specificity,Accuracy,ROC AUC,AUC_Train,AUC_Val
+ID10,Nectarine,Crave,global_supervised,0.21,0.778 ± 0.269,0.543 ± 0.183,0.622 ± 0.150,0.781 ± 0.158,0.8640551269567824,0.6130952380952381
+ID12,Nectarine,Crave,global_supervised,0.21,0.939 ± 0.239,0.935 ± 0.247,1.000 ± 0.000,1.000 ± 0.000,0.8640551269567824,0.625
+ID20,Nectarine,Crave,global_supervised,0.21,0.970 ± 0.171,0.866 ± 0.341,1.000 ± 0.000,1.000 ± 0.000,0.8640551269567824,0.6666666666666667
+ID21,Nectarine,Crave,global_supervised,0.21,0.554 ± 0.092,0.730 ± 0.086,0.640 ± 0.064,0.673 ± 0.081,0.8640551269567824,0.6724477729601891
+ID27,Nectarine,Crave,global_supervised,0.21,0.787 ± 0.245,1.000 ± 0.000,0.926 ± 0.082,0.910 ± 0.117,0.8640551269567824,0.4910714285714286

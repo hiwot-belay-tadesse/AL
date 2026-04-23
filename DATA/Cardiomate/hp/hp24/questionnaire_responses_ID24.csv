@@ -1,0 +1,177 @@
+id,user_id,interaction_answer,interaction_detail,physicalDiscomfort_answer,physicalDiscomfort_detail,environment_answer,environment_detail,medication_answer,medication_detail,medication_date_time,local_medication_date_time,mood_value,stressLevel_value,local_created_at,created_at
+1268,24,yes,The study staff.,no,,comfortable,,no,,NULL,NULL,neutral,3,9/3/2024 15:51,9/4/2024 1:51
+1274,24,no,,no,,comfortable,,no,,NULL,NULL,neutral,0,9/4/2024 8:24,9/4/2024 18:24
+1276,24,yes,Grandpa,no,,comfortable,,no,,NULL,NULL,neutral,0,9/4/2024 9:18,9/4/2024 19:18
+1284,24,yes,Aunty and Grandma,no,,noisy,,no,,NULL,NULL,unhappy,4,9/4/2024 12:11,9/4/2024 22:11
+1287,24,yes,Aunty on the phone a few minutes ago. I was also returning a call to my PCP. Did not talk during the test.,no,,quiet,,no,,NULL,NULL,unhappy,6,9/4/2024 13:54,9/4/2024 23:54
+1289,24,yes,Texting classmates.,no,,comfortable,,no,,NULL,NULL,neutral,4,9/4/2024 14:14,9/5/2024 0:14
+1291,24,no,,no,,comfortable,,no,,NULL,NULL,happy,1,9/4/2024 16:02,9/5/2024 2:02
+1293,24,no,,no,,quiet,,no,,NULL,NULL,neutral,3,9/4/2024 16:34,9/5/2024 2:34
+1295,24,no,,no,,comfortable,,no,,NULL,NULL,neutral,1,9/4/2024 17:09,9/5/2024 3:09
+1296,24,no,,no,,quiet,,no,,NULL,NULL,happy,3,9/4/2024 18:33,9/5/2024 4:33
+1298,24,no,,no,,comfortable,,no,,NULL,NULL,neutral,3,9/4/2024 19:15,9/5/2024 5:15
+1299,24,no,,no,,comfortable,,no,,NULL,NULL,neutral,0,9/4/2024 20:47,9/5/2024 6:47
+1300,24,yes,Grandma,no,,noisy,,no,,NULL,NULL,happy,2,9/4/2024 21:43,9/5/2024 7:43
+1301,24,no,,no,,quiet,,no,,NULL,NULL,very_happy,1,9/4/2024 22:35,9/5/2024 8:35
+1302,24,no,,no,,comfortable,,no,,NULL,NULL,happy,2,9/4/2024 23:28,9/5/2024 9:28
+1308,24,no,,no,,comfortable,,no,,NULL,NULL,neutral,3,9/5/2024 9:36,9/5/2024 19:36
+1312,24,no,,no,,quiet,,no,,NULL,NULL,neutral,3,9/5/2024 11:16,9/5/2024 21:16
+1316,24,no,,no,,quiet,,no,,NULL,NULL,neutral,5,9/5/2024 13:12,9/5/2024 23:12
+1319,24,yes,Before getting ready to go out  I was im my zoom class.,no,,quiet,,no,,NULL,NULL,neutral,4,9/5/2024 14:28,9/6/2024 0:28
+1321,24,no,,no,,quiet,,no,,NULL,NULL,neutral,4,9/5/2024 15:13,9/6/2024 1:13
+1324,24,no,,no,,noisy,,no,,NULL,NULL,neutral,4,9/5/2024 16:18,9/6/2024 2:18
+1326,24,no,,no,,noisy,,no,,NULL,NULL,neutral,6,9/5/2024 16:52,9/6/2024 2:52
+1329,24,yes,Classmates before assessment.,no,,quiet,,no,,NULL,NULL,neutral,4,9/5/2024 18:22,9/6/2024 4:22
+1331,24,no,,no,,quiet,,no,,NULL,NULL,neutral,3,9/5/2024 19:37,9/6/2024 5:37
+1333,24,no,,no,,quiet,,no,,NULL,NULL,neutral,4,9/5/2024 20:46,9/6/2024 6:46
+1334,24,no,,no,,quiet,,no,,NULL,NULL,neutral,5,9/5/2024 21:11,9/6/2024 7:11
+1348,24,no,,no,,comfortable,,no,,NULL,NULL,happy,2,9/6/2024 13:40,9/6/2024 23:40
+1353,24,yes,Aunty,no,,noisy,,no,,NULL,NULL,unhappy,0,9/6/2024 16:32,9/7/2024 2:32
+1354,24,no,,no,,comfortable,,no,,NULL,NULL,neutral,0,9/6/2024 16:57,9/7/2024 2:57
+1356,24,yes,Aunty,no,,comfortable,,no,,NULL,NULL,happy,0,9/6/2024 19:31,9/7/2024 5:31
+1359,24,yes,Aunty,no,,quiet,,no,,NULL,NULL,neutral,2,9/6/2024 22:52,9/7/2024 8:52
+1360,24,yes,Aunty,no,,comfortable,,no,,NULL,NULL,happy,0,9/7/2024 1:27,9/7/2024 11:27
+1361,24,yes,Aunty,no,,others,Watching horror,no,,NULL,NULL,happy,2,9/7/2024 2:37,9/7/2024 12:37
+1362,24,no,,no,,comfortable,,no,,NULL,NULL,very_happy,0,9/7/2024 5:27,9/7/2024 15:27
+1363,24,no,,no,,comfortable,,no,,NULL,NULL,happy,0,9/7/2024 6:30,9/7/2024 16:30
+1371,24,yes,Aunty,no,,quiet,,no,,NULL,NULL,unhappy,4,9/7/2024 13:02,9/7/2024 23:02
+1372,24,yes,Aunty,no,,noisy,,no,,NULL,NULL,unhappy,5,9/7/2024 13:12,9/7/2024 23:12
+1375,24,yes,Uncle Aunty,no,,quiet,,no,,NULL,NULL,neutral,3,9/7/2024 14:30,9/8/2024 0:30
+1377,24,yes,Aunty,no,,quiet,,no,,NULL,NULL,unhappy,5,9/7/2024 15:23,9/8/2024 1:23
+1381,24,no,,no,,comfortable,,no,,NULL,NULL,happy,2,9/7/2024 17:26,9/8/2024 3:26
+1382,24,no,,no,,quiet,,no,,NULL,NULL,neutral,2,9/7/2024 19:21,9/8/2024 5:21
+1383,24,no,,no,,comfortable,,no,,NULL,NULL,neutral,4,9/7/2024 20:38,9/8/2024 6:38
+1384,24,no,,no,,quiet,,no,,NULL,NULL,neutral,2,9/7/2024 21:37,9/8/2024 7:37
+1385,24,no,,no,,quiet,,no,,NULL,NULL,neutral,4,9/7/2024 22:49,9/8/2024 8:49
+1386,24,no,,no,,comfortable,,no,,NULL,NULL,neutral,3,9/7/2024 23:49,9/8/2024 9:49
+1387,24,no,,no,,comfortable,,no,,NULL,NULL,neutral,3,9/8/2024 0:51,9/8/2024 10:51
+1388,24,no,,no,,comfortable,,no,,NULL,NULL,neutral,3,9/8/2024 1:55,9/8/2024 11:55
+1389,24,no,,no,,comfortable,,no,,NULL,NULL,neutral,2,9/8/2024 5:04,9/8/2024 15:04
+1391,24,no,,no,,comfortable,,no,,NULL,NULL,neutral,2,9/8/2024 13:00,9/8/2024 23:00
+1393,24,yes,Classmates,no,,comfortable,,no,,NULL,NULL,neutral,3,9/8/2024 14:13,9/9/2024 0:13
+1396,24,yes,Grandparents,no,,stressful,,no,,NULL,NULL,neutral,5,9/8/2024 15:54,9/9/2024 1:54
+1398,24,no,,no,,comfortable,,no,,NULL,NULL,neutral,3,9/8/2024 17:09,9/9/2024 3:09
+1399,24,no,,no,,comfortable,,no,,NULL,NULL,happy,2,9/8/2024 18:42,9/9/2024 4:42
+1401,24,no,,no,,comfortable,,no,,NULL,NULL,happy,3,9/8/2024 22:35,9/9/2024 8:35
+1402,24,no,,no,,comfortable,,no,,NULL,NULL,happy,3,9/8/2024 22:45,9/9/2024 8:45
+1403,24,no,,no,,comfortable,,no,,NULL,NULL,happy,2,9/9/2024 2:30,9/9/2024 12:30
+1404,24,no,,no,,comfortable,,no,,NULL,NULL,very_unhappy,6,9/9/2024 4:26,9/9/2024 14:26
+1405,24,no,,no,,comfortable,,no,,NULL,NULL,very_happy,0,9/9/2024 5:03,9/9/2024 15:03
+1411,24,yes,Classmates/Teacher online,no,,comfortable,,no,,NULL,NULL,neutral,3,9/9/2024 10:24,9/9/2024 20:24
+1414,24,no,,no,,comfortable,,no,,NULL,NULL,very_happy,0,9/9/2024 13:00,9/9/2024 23:00
+1416,24,yes,Nieces,no,,comfortable,,no,,NULL,NULL,happy,3,9/9/2024 15:28,9/10/2024 1:28
+1419,24,no,,no,,comfortable,,no,,NULL,NULL,very_happy,0,9/9/2024 17:04,9/10/2024 3:04
+1420,24,no,,no,,comfortable,,no,,NULL,NULL,happy,1,9/9/2024 18:48,9/10/2024 4:48
+1422,24,no,,no,,quiet,,no,,NULL,NULL,neutral,2,9/9/2024 20:46,9/10/2024 6:46
+1423,24,no,,no,,quiet,,no,,NULL,NULL,neutral,0,9/9/2024 21:23,9/10/2024 7:23
+1424,24,no,,no,,comfortable,,no,,NULL,NULL,neutral,3,9/10/2024 0:35,9/10/2024 10:35
+1425,24,no,,no,,comfortable,,no,,NULL,NULL,neutral,3,9/10/2024 4:59,9/10/2024 14:59
+1431,24,no,,no,,comfortable,,no,,NULL,NULL,neutral,3,9/10/2024 12:56,9/10/2024 22:56
+1432,24,yes,Teacher and classmates on zoom. Aunty,no,,comfortable,,no,,NULL,NULL,neutral,3,9/10/2024 14:35,9/11/2024 0:35
+1435,24,no,,no,,noisy,,no,,NULL,NULL,unhappy,3,9/10/2024 16:40,9/11/2024 2:40
+1436,24,yes,Classmates and teacher.,no,,quiet,,no,,NULL,NULL,neutral,5,9/10/2024 18:23,9/11/2024 4:23
+1437,24,no,,no,,noisy,,no,,NULL,NULL,neutral,0,9/10/2024 20:16,9/11/2024 6:16
+1438,24,no,,no,,quiet,,no,,NULL,NULL,neutral,3,9/10/2024 23:21,9/11/2024 9:21
+1439,24,no,,no,,quiet,,no,,NULL,NULL,neutral,0,9/10/2024 23:22,9/11/2024 9:22
+1440,24,no,,no,,comfortable,,no,,NULL,NULL,neutral,0,9/11/2024 2:41,9/11/2024 12:41
+1441,24,no,,no,,comfortable,,no,,NULL,NULL,happy,0,9/11/2024 4:13,9/11/2024 14:13
+1442,24,no,,no,,comfortable,,no,,NULL,NULL,happy,0,9/11/2024 4:35,9/11/2024 14:35
+1452,24,no,,no,,comfortable,,no,,NULL,NULL,happy,0,9/11/2024 14:18,9/12/2024 0:18
+1454,24,no,,no,,quiet,,no,,NULL,NULL,neutral,0,9/11/2024 16:44,9/12/2024 2:44
+1457,24,no,,no,,comfortable,,no,,NULL,NULL,neutral,3,9/11/2024 18:43,9/12/2024 4:43
+1460,24,no,,no,,comfortable,,no,,NULL,NULL,neutral,2,9/11/2024 19:46,9/12/2024 5:46
+1463,24,yes,Classmate,no,,quiet,,no,,NULL,NULL,neutral,3,9/11/2024 21:26,9/12/2024 7:26
+1464,24,no,,no,,quiet,,no,,NULL,NULL,neutral,3,9/12/2024 0:43,9/12/2024 10:43
+1465,24,no,,no,,comfortable,,no,,NULL,NULL,neutral,5,9/12/2024 0:44,9/12/2024 10:44
+1466,24,no,,no,,quiet,,no,,NULL,NULL,happy,0,9/12/2024 3:22,9/12/2024 13:22
+1467,24,no,,no,,comfortable,,no,,NULL,NULL,neutral,0,9/12/2024 4:04,9/12/2024 14:04
+1468,24,no,,no,,comfortable,,no,,NULL,NULL,neutral,3,9/12/2024 5:32,9/12/2024 15:32
+1476,24,no,,no,,noisy,,no,,NULL,NULL,neutral,2,9/12/2024 9:57,9/12/2024 19:57
+1480,24,no,,no,,quiet,,no,,NULL,NULL,neutral,2,9/12/2024 11:36,9/12/2024 21:36
+1487,24,no,,no,,quiet,,no,,NULL,NULL,neutral,5,9/12/2024 14:28,9/13/2024 0:28
+1493,24,yes,Aunty,no,,quiet,,no,,NULL,NULL,neutral,3,9/12/2024 21:05,9/13/2024 7:05
+1496,24,no,,no,,comfortable,,no,,NULL,NULL,neutral,5,9/12/2024 23:34,9/13/2024 9:34
+1509,24,no,,no,,comfortable,,no,,NULL,NULL,happy,0,9/13/2024 12:44,9/13/2024 22:44
+1515,24,no,,no,,comfortable,,no,,NULL,NULL,happy,3,9/13/2024 16:25,9/14/2024 2:25
+1516,24,no,,no,,quiet,,no,,NULL,NULL,neutral,3,9/13/2024 18:23,9/14/2024 4:23
+1520,24,no,,no,,comfortable,,no,,NULL,NULL,happy,0,9/14/2024 0:20,9/14/2024 10:20
+1521,24,no,,no,,quiet,,no,,NULL,NULL,neutral,3,9/14/2024 1:00,9/14/2024 11:00
+1522,24,no,,no,,quiet,,no,,NULL,NULL,neutral,2,9/14/2024 2:09,9/14/2024 12:09
+1523,24,no,,no,,quiet,,no,,NULL,NULL,very_happy,0,9/14/2024 2:23,9/14/2024 12:23
+1524,24,no,,no,,quiet,,no,,NULL,NULL,neutral,2,9/14/2024 4:30,9/14/2024 14:30
+1525,24,no,,no,,comfortable,,no,,NULL,NULL,very_happy,0,9/14/2024 6:41,9/14/2024 16:41
+1549,24,yes,Grandparents,no,,noisy,,no,,NULL,NULL,unhappy,6,9/14/2024 22:00,9/15/2024 8:00
+1550,24,no,,no,,quiet,,no,,NULL,NULL,happy,3,9/15/2024 1:16,9/15/2024 11:16
+1551,24,no,,no,,comfortable,,no,,NULL,NULL,neutral,3,9/15/2024 3:06,9/15/2024 13:06
+1552,24,no,,no,,quiet,,no,,NULL,NULL,neutral,2,9/15/2024 5:24,9/15/2024 15:24
+1554,24,no,,no,,quiet,,no,,NULL,NULL,very_unhappy,0,9/15/2024 8:48,9/15/2024 18:48
+1560,24,yes,Family,no,,quiet,,no,,NULL,NULL,unhappy,0,9/15/2024 13:15,9/15/2024 23:15
+1564,24,yes,Family,no,,noisy,,no,,NULL,NULL,neutral,0,9/15/2024 15:44,9/16/2024 1:44
+1571,24,yes,Grandma,no,,comfortable,,no,,NULL,NULL,neutral,0,9/15/2024 23:33,9/16/2024 9:33
+1572,24,no,,no,,comfortable,,no,,NULL,NULL,neutral,0,9/16/2024 0:57,9/16/2024 10:57
+1573,24,no,,no,,comfortable,,no,,NULL,NULL,unhappy,2,9/16/2024 3:19,9/16/2024 13:19
+1574,24,no,,no,,comfortable,,no,,NULL,NULL,unhappy,0,9/16/2024 4:22,9/16/2024 14:22
+1575,24,no,,no,,quiet,,no,,NULL,NULL,neutral,0,9/16/2024 5:13,9/16/2024 15:13
+1583,24,yes,Aunty,no,,noisy,,no,,NULL,NULL,unhappy,3,9/16/2024 14:35,9/17/2024 0:35
+1587,24,yes,Family,no,,noisy,,no,,NULL,NULL,neutral,2,9/16/2024 17:31,9/17/2024 3:31
+1590,24,yes,Classmates on zoom. Grandparents.,no,,noisy,,no,,NULL,NULL,happy,1,9/16/2024 21:01,9/17/2024 7:01
+1591,24,no,,no,,comfortable,,no,,NULL,NULL,neutral,3,9/16/2024 22:06,9/17/2024 8:06
+1592,24,yes,Family,no,,noisy,,no,,NULL,NULL,unhappy,6,9/16/2024 23:35,9/17/2024 9:35
+1593,24,no,,no,,comfortable,,no,,NULL,NULL,neutral,0,9/17/2024 2:32,9/17/2024 12:32
+1599,24,no,,no,,quiet,,no,,NULL,NULL,neutral,3,9/17/2024 10:17,9/17/2024 20:17
+1605,24,no,,no,,quiet,,no,,NULL,NULL,happy,2,9/17/2024 15:26,9/18/2024 1:26
+1607,24,no,,no,,quiet,,no,,NULL,NULL,happy,2,9/17/2024 17:12,9/18/2024 3:12
+1612,24,no,,no,,quiet,,no,,NULL,NULL,neutral,1,9/18/2024 4:40,9/18/2024 14:40
+1621,24,no,,no,,quiet,,no,,NULL,NULL,happy,1,9/18/2024 14:16,9/19/2024 0:16
+1623,24,no,,no,,quiet,,no,,NULL,NULL,happy,0,9/18/2024 16:16,9/19/2024 2:16
+1626,24,yes,Classmates,no,,comfortable,,no,,NULL,NULL,very_happy,0,9/18/2024 17:36,9/19/2024 3:36
+1632,24,no,,no,,quiet,,no,,NULL,NULL,happy,0,9/19/2024 0:05,9/19/2024 10:05
+1645,24,no,,no,,noisy,,no,,NULL,NULL,neutral,3,9/19/2024 17:32,9/20/2024 3:32
+1648,24,no,,no,,quiet,,no,,NULL,NULL,neutral,0,9/19/2024 19:23,9/20/2024 5:23
+1649,24,no,,no,,quiet,,no,,NULL,NULL,neutral,0,9/19/2024 20:05,9/20/2024 6:05
+1651,24,no,,no,,noisy,,no,,NULL,NULL,neutral,0,9/19/2024 21:54,9/20/2024 7:54
+1653,24,yes,Classmates and grandma,no,,quiet,,no,,NULL,NULL,neutral,0,9/20/2024 1:07,9/20/2024 11:07
+1654,24,no,,no,,quiet,,no,,NULL,NULL,neutral,1,9/20/2024 4:45,9/20/2024 14:45
+1667,24,yes,Family,no,,comfortable,,no,,NULL,NULL,neutral,2,9/20/2024 15:05,9/21/2024 1:05
+1720,24,no,,no,,noisy,,no,,NULL,NULL,neutral,2,9/23/2024 19:04,9/24/2024 5:04
+1723,24,no,,no,,quiet,,no,,NULL,NULL,happy,2,9/23/2024 20:42,9/24/2024 6:42
+1725,24,yes,Friends,no,,quiet,,no,,NULL,NULL,happy,0,9/23/2024 23:19,9/24/2024 9:19
+1726,24,yes,Grandpa,no,,comfortable,,no,,NULL,NULL,happy,0,9/24/2024 3:33,9/24/2024 13:33
+1752,24,no,,no,,others,Noisy and warm.,no,,NULL,NULL,neutral,0,9/24/2024 19:55,9/25/2024 5:55
+1760,24,yes,Grandma,no,,noisy,,no,,NULL,NULL,happy,0,9/24/2024 22:12,9/25/2024 8:12
+1761,24,yes,Family,no,,noisy,,no,,NULL,NULL,neutral,0,9/25/2024 1:49,9/25/2024 11:49
+1781,24,no,,no,,quiet,,no,,NULL,NULL,neutral,0,9/25/2024 16:01,9/26/2024 2:01
+1786,24,no,,no,,quiet,,no,,NULL,NULL,neutral,0,9/25/2024 17:29,9/26/2024 3:29
+1795,24,yes,Friend,no,,quiet,,no,,NULL,NULL,neutral,0,9/26/2024 5:53,9/26/2024 15:53
+1799,24,no,,no,,quiet,,no,,NULL,NULL,neutral,0,9/26/2024 9:05,9/26/2024 19:05
+1814,24,no,,no,,quiet,,no,,NULL,NULL,neutral,0,9/26/2024 14:53,9/27/2024 0:53
+1817,24,no,,no,,quiet,,no,,NULL,NULL,neutral,0,9/26/2024 15:27,9/27/2024 1:27
+1834,24,no,,no,,noisy,,no,,NULL,NULL,neutral,0,9/26/2024 21:48,9/27/2024 7:48
+1835,24,yes,Grandma,no,,noisy,,no,,NULL,NULL,neutral,0,9/27/2024 0:17,9/27/2024 10:17
+1863,24,yes,Family,no,,noisy,,no,,NULL,NULL,neutral,2,9/27/2024 17:45,9/28/2024 3:45
+1868,24,no,,no,,noisy,,no,,NULL,NULL,neutral,0,9/27/2024 19:08,9/28/2024 5:08
+1877,24,no,,no,,noisy,,no,,NULL,NULL,neutral,2,9/27/2024 22:15,9/28/2024 8:15
+1880,24,yes,Family,no,,quiet,,no,,NULL,NULL,neutral,0,9/28/2024 7:27,9/28/2024 17:27
+1906,24,no,,no,,noisy,,no,,NULL,NULL,neutral,2,9/28/2024 18:14,9/29/2024 4:14
+1914,24,no,,no,,noisy,,no,,NULL,NULL,neutral,4,9/28/2024 22:08,9/29/2024 8:08
+1915,24,no,,no,,quiet,,no,,NULL,NULL,neutral,0,9/29/2024 5:08,9/29/2024 15:08
+1916,24,no,,no,,quiet,,no,,NULL,NULL,neutral,0,9/29/2024 6:45,9/29/2024 16:45
+1936,24,yes,Friends,no,,quiet,,no,,NULL,NULL,neutral,0,9/29/2024 19:18,9/30/2024 5:18
+1945,24,no,,no,,noisy,,no,,NULL,NULL,neutral,3,9/30/2024 1:12,9/30/2024 11:12
+1946,24,no,,no,,quiet,,no,,NULL,NULL,neutral,2,9/30/2024 4:26,9/30/2024 14:26
+1949,24,no,,no,,quiet,,no,,NULL,NULL,neutral,4,9/30/2024 7:23,9/30/2024 17:23
+1962,24,no,,no,,quiet,,no,,NULL,NULL,neutral,4,9/30/2024 14:25,10/1/2024 0:25
+1965,24,no,,no,,noisy,,no,,NULL,NULL,neutral,2,9/30/2024 16:00,10/1/2024 2:00
+1977,24,no,,no,,quiet,,no,,NULL,NULL,neutral,0,9/30/2024 20:03,10/1/2024 6:03
+1981,24,no,,no,,quiet,,no,,NULL,NULL,neutral,0,9/30/2024 20:48,10/1/2024 6:48
+1983,24,no,,no,,quiet,,no,,NULL,NULL,neutral,0,9/30/2024 21:37,10/1/2024 7:37
+1985,24,no,,no,,quiet,,no,,NULL,NULL,neutral,0,10/1/2024 0:03,10/1/2024 10:03
+1986,24,no,,no,,quiet,,no,,NULL,NULL,neutral,0,10/1/2024 2:32,10/1/2024 12:32
+1987,24,no,,no,,quiet,,no,,NULL,NULL,neutral,3,10/1/2024 4:57,10/1/2024 14:57
+2005,24,no,,no,,quiet,,no,,NULL,NULL,neutral,3,10/1/2024 16:06,10/2/2024 2:06
+2023,24,no,,no,,noisy,,no,,NULL,NULL,happy,0,10/2/2024 2:49,10/2/2024 12:49
+2025,24,no,,no,,quiet,,no,,NULL,NULL,very_unhappy,2,10/2/2024 7:05,10/2/2024 17:05
+2036,24,yes,Aunt and grandma.,no,,noisy,,no,,NULL,NULL,neutral,3,10/2/2024 18:02,10/3/2024 4:02
+2038,24,no,,no,,noisy,,no,,NULL,NULL,neutral,0,10/2/2024 19:48,10/3/2024 5:48
+2040,24,no,,no,,quiet,,no,,NULL,NULL,neutral,0,10/2/2024 20:51,10/3/2024 6:51
+2042,24,no,,no,,quiet,,no,,NULL,NULL,neutral,0,10/3/2024 3:59,10/3/2024 13:59

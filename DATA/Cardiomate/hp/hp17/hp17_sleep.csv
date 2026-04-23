@@ -1,0 +1,8 @@
+time,data_type,value
+2024-04-08T00:00:00+00:00,sleep,"Duration: 18120000, efficiency: 73, start_time: 2024-04-08T00:18:00.000, minutes_asleep: 220, minutes_awake: 82, efficiency: 73"
+2024-04-09T00:00:00+00:00,sleep,"Duration: 5280000, efficiency: 63, start_time: 2024-04-09T21:35:00.000, minutes_asleep: 55, minutes_awake: 33, efficiency: 63"
+2024-04-10T00:00:00+00:00,sleep,"Duration: 10680000, efficiency: 65, start_time: 2024-04-10T18:17:00.000, minutes_asleep: 115, minutes_awake: 63, efficiency: 65"
+2024-04-11T00:00:00+00:00,sleep,"Duration: 10140000, efficiency: 52, start_time: 2024-04-10T23:03:00.000, minutes_asleep: 88, minutes_awake: 81, efficiency: 52"
+2024-04-12T00:00:00+00:00,sleep,"Duration: 33420000, efficiency: 80, start_time: 2024-04-11T23:19:00.000, minutes_asleep: 437, minutes_awake: 109, efficiency: 80"
+2024-04-13T00:00:00+00:00,sleep,"Duration: 8400000, efficiency: 79, start_time: 2024-04-13T03:18:30.000, minutes_asleep: 110, minutes_awake: 30, efficiency: 79"
+2024-04-14T00:00:00+00:00,sleep,"Duration: 25260000, efficiency: 58, start_time: 2024-04-14T02:31:00.000, minutes_asleep: 235, minutes_awake: 173, efficiency: 58"
