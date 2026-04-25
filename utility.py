@@ -90,11 +90,11 @@ def compute_n_slices(df_queried, budget, target_ratio=0.43 ):
     return n_slices_neg, n_slices_pos
 
 def augment_labeled_windows(df_queried, target_ratio=0.43, 
-                              min_len=24):
+                              min_len=24, n_aug=3):
     '''
     augment each queried window by slicing into subwindows
     '''
-    
+
     n_slices_neg, n_slices_pos = compute_n_slices(
         df_queried, budget=30, target_ratio=target_ratio
     )
@@ -110,8 +110,9 @@ def augment_labeled_windows(df_queried, target_ratio=0.43,
         rows.append({'user_id': uid, 'hr_seq': hr, 
                      'st_seq': st, 'state_val': y})
 
-        n = n_slices_pos if y == 1 else n_slices_neg
-
+        # n = n_slices_pos if y == 1 else n_slices_neg
+        n = n_aug
+        
         for _ in range(n):
             length = np.random.randint(min_len, T + 1)
             start  = np.random.randint(0, T - length + 1)
@@ -1175,90 +1176,49 @@ def bootstrap_auc(
     valid_frac = len(auc_samples) / n_iters
     return auc_mean, auc_std, valid_frac
 
-
 def make_labeled_unlabeled_with_target_quota(
     df_all_tr: pd.DataFrame,
     target_uid: str,
     unlabeled_frac: float,
     *,
-    target_labeled_frac: float = 0.2,   # fraction of labeled that must be target
-    target_reserve_frac: float = 0.2,   # fraction of target samples to reserve for unlabeled pool
+    target_labeled_frac: float = 0.2,
+    target_reserve_frac: float = 0.2,
     seed: int = 42,
     stratify_col: str = "state_val",
     user_col: str = "user_id",
 ):
-    """
-    Split df_all_tr into labeled/unlabeled with a guaranteed target presence.
-    """
+    n_total   = len(df_all_tr)
+    n_labeled = max(4, int(round((1 - unlabeled_frac) * n_total)))
     
-    
-    # rng = np.random.default_rng(seed)
+    df_target = df_all_tr[df_all_tr[user_col] == target_uid]
+    df_rest   = df_all_tr[df_all_tr[user_col] != target_uid]
 
-    n_total = len(df_all_tr)
-    # df_tr_u = df_all_tr[df_all_tr['user_id'] == target_uid]
-    df_tr_u = df_all_tr[df_all_tr['user_id'] == target_uid]
+    # ── Step 1: guarantee 1 per class from target ─────────
+    df_target_lab = (
+        df_target
+        .groupby(stratify_col, group_keys=False)
+        .apply(lambda g: g.sample(n=1, random_state=seed))
+    )
 
-    n_target_avail = len(df_tr_u)
-    n_labeled = int(round((1 - unlabeled_frac) * n_total))
-    n_target_desired = int(round(target_labeled_frac * n_labeled))
-    n_target_cap = int(np.floor((1 - target_reserve_frac) * n_target_avail))
-    n_target = min(n_target_desired, n_target_cap)  # can't exceed available
-    if len(df_tr_u) < n_target:
-        target_labeled_frac -=0.1
-    # breakpoint()
-    n_rest = n_labeled - n_target
+    # ── Step 2: fill remaining slots from non-target ──────
+    n_rest    = n_labeled - len(df_target_lab)
+    df_rest_lab = (
+        df_rest
+        .groupby(stratify_col, group_keys=False)
+        .apply(lambda g: g.sample(
+            n=min(len(g), max(1, int(round(n_rest * len(g) / len(df_rest))))),
+            random_state=seed
+        ))
+        .sample(n=min(n_rest, len(df_rest)), random_state=seed)
+    )
 
-    df_target = df_all_tr[df_all_tr[user_col] == target_uid].copy()
-    df_rest   = df_all_tr[df_all_tr[user_col] != target_uid].copy()
-
-    # --- sample target labeled (try to stratify by class if possible) ---
-    if stratify_col in df_target.columns and df_target[stratify_col].nunique() > 1 and n_target > 0:
-        # stratified sample
-        df_target_lab = (
-            df_target.groupby(stratify_col, group_keys=False)
-            .apply(lambda g: g.sample(n=max(1, int(round(n_target * len(g)/len(df_target)))),
-                                      random_state=seed))
-        )
-        # If rounding overshoots/undershoots, correct to exact n_target
-        if len(df_target_lab) > n_target:
-            df_target_lab = df_target_lab.sample(n=n_target, random_state=seed)
-        elif len(df_target_lab) < n_target:
-            # top up randomly
-            remaining = df_target.drop(df_target_lab.index)
-            need = n_target - len(df_target_lab)
-            if need > 0 and len(remaining) > 0:
-                df_target_lab = pd.concat([df_target_lab, remaining.sample(n=min(need, len(remaining)), random_state=seed)])
-    else:
-        df_target_lab = df_target.sample(n=n_target, random_state=seed) if n_target > 0 else df_target.head(0)
-
-    # --- sample rest labeled from non-target pool (stratified globally) ---
-    if n_rest > 0:
-        if stratify_col in df_rest.columns and df_rest[stratify_col].nunique() > 1:
-            df_rest_lab = df_rest.groupby(stratify_col, group_keys=False).apply(
-                lambda g: g.sample(
-                    n=min(len(g), max(1, int(round(n_rest * len(g)/len(df_rest))))),
-                    random_state=seed
-                )
-            )
-            # correct to exact n_rest
-            if len(df_rest_lab) > n_rest:
-                df_rest_lab = df_rest_lab.sample(n=n_rest, random_state=seed)
-            elif len(df_rest_lab) < n_rest:
-                remaining = df_rest.drop(df_rest_lab.index)
-                need = n_rest - len(df_rest_lab)
-                if need > 0 and len(remaining) > 0:
-                    df_rest_lab = pd.concat([df_rest_lab, remaining.sample(n=min(need, len(remaining)), random_state=seed)])
-        else:
-            df_rest_lab = df_rest.sample(n=min(n_rest, len(df_rest)), random_state=seed)
-    else:
-        df_rest_lab = df_rest.head(0)
-
-    df_labeled = pd.concat([df_target_lab, df_rest_lab], ignore_index=False)
+    # ── Step 3: combine and split ─────────────────────────
+    df_labeled   = (
+        pd.concat([df_target_lab, df_rest_lab])
+        .sample(frac=1.0, random_state=seed)
+    )
     df_unlabeled = df_all_tr.drop(df_labeled.index)
 
-    # shuffle labeled for training
-    df_labeled = df_labeled.sample(frac=1.0, random_state=seed)
-    # print("df_labeled index sorted:", sorted(df_labeled.index.tolist()))
     return df_labeled, df_unlabeled
 
 

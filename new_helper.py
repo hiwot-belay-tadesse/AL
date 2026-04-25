@@ -322,6 +322,18 @@ def coreset_greedy(
     selected_positions = []  # positional indices into Z_tr_unlabeled
 
     for _ in range(k_actual):
+        Z_norm = Z_tr_unlabeled / (
+        np.linalg.norm(Z_tr_unlabeled, axis=1, keepdims=True) + 1e-8
+        )
+        C_norm = centers / (
+        np.linalg.norm(centers, axis=1, keepdims=True) + 1e-8
+        )
+
+        # Cosine similarity → distance
+        # shape: (n_unlabeled, n_centers)
+        # similarities = Z_norm @ C_norm.T
+        # distances    = 1 - similarities
+        # dists = np.min(distances, axis=1)
         # for each unlabeled point, find distance to nearest center
         dists = np.min(
             np.linalg.norm(
@@ -490,87 +502,270 @@ def plot_feature_space_tsne(
     df_tr_unlabeled,
     round_num,
     results_d,
+    target_participant,        
+    initial_labeled_count=None,
 ):
-    if (
-        Z_tr_labeled is None
-        or Z_tr_unlabeled is None
-        or df_tr_labeled is None
-        or df_tr_unlabeled is None
-    ):
+    from matplotlib import pyplot as plt
+    if any(x is None for x in [Z_tr_labeled, Z_tr_unlabeled,
+                                 df_tr_labeled, df_tr_unlabeled]):
         return
-    n_labeled = int(len(Z_tr_labeled))
-    n_unlabeled = int(len(Z_tr_unlabeled))
-    n_total = n_labeled + n_unlabeled
+
+    n_labeled   = len(Z_tr_labeled)
+    n_unlabeled = len(Z_tr_unlabeled)
+    n_total     = n_labeled + n_unlabeled
     if n_total < 3:
         return
 
-    try:
-        from matplotlib import pyplot as plt
-    except Exception:
-        return
-
-    Z_lab = np.asarray(Z_tr_labeled, dtype=np.float32)
-    Z_unlab = np.asarray(Z_tr_unlabeled, dtype=np.float32)
-    Z_all = np.vstack([Z_lab, Z_unlab])
-
-    perplexity = min(30.0, max(2.0, float((n_total - 1) // 3)))
-    tsne = TSNE(
-        n_components=2,
-        random_state=42,
-        init="pca",
-        learning_rate="auto",
-        perplexity=perplexity,
+    initial_labeled_count = max(
+        0, min(int(initial_labeled_count or n_labeled), n_labeled)
     )
-    emb = tsne.fit_transform(Z_all)
 
+    # ── Embed ──────────────────────────────────────────────
+    Z_all = np.vstack([
+        np.asarray(Z_tr_labeled,   dtype=np.float32),
+        np.asarray(Z_tr_unlabeled, dtype=np.float32),
+    ])
+    perplexity = min(30.0, max(2.0, float((n_total - 1) // 3)))
+    emb = TSNE(
+        n_components=2, random_state=42,
+        init="pca", learning_rate="auto",
+        perplexity=perplexity,
+    ).fit_transform(Z_all)
+
+    emb_lab   = emb[:n_labeled]
+    emb_unlab = emb[n_labeled:]
+
+    # ── Labels and participants ─────────────────────────────
+    uid_col   = "user_id"
+    label_col = "state_val"
+
+    labeled_uids   = df_tr_labeled[uid_col].astype(str).tolist()
+    unlabeled_uids = df_tr_unlabeled[uid_col].astype(str).tolist()
+    labeled_classes = (df_tr_labeled[label_col].tolist()
+                       if label_col in df_tr_labeled.columns
+                       else [None] * n_labeled)
+    all_uids = labeled_uids + unlabeled_uids
+
+    target_str = str(target_participant)
+    unique_uids = sorted(set(all_uids))
+
+    DISTINCT_COLORS = [
+        "#e6194b",  # red
+        "#3cb44b",  # green
+        "#4363d8",  # blue
+        "#f58231",  # orange
+        "#42d4f4",  # cyan
+        "#f032e6",  # magenta
+        "#bfef45",  # lime
+        "#469990",  # teal
+        "#9a6324",  # brown
+        "#000075",  # navy
+        "#a9a9a9",  # gray
+        "#000000",  # black
+        "#b8860b",  # dark gold
+        "#ff69b4",  # hot pink
+        "#7fffd4",  # aquamarine
+        "#dc143c",  # crimson      ← replaces maroon
+        "#00ced1",  # dark turquoise ← replaces olive
+        "#ff4500",  # red orange   ← replaces burnt orange
+        "#6a0dad",  # deep purple  ← replaces violet/purple duplicate
+        "#228b22",  # forest green ← replaces army green
+    ]
+    uid_color_map = {
+        uid: DISTINCT_COLORS[i % len(DISTINCT_COLORS)]
+        for i, uid in enumerate(unique_uids)
+    }
+
+    # Masks
+    lab_is_target   = np.array([u == target_str for u in labeled_uids])
+    unlab_is_target = np.array([u == target_str for u in unlabeled_uids])
+    lab_class       = np.array(labeled_classes)
+
+    # ── Diagnostic stats (shown in title/subtitle) ─────────
+    n_target_labeled   = lab_is_target.sum()
+    n_class0_labeled   = (lab_class == 0).sum()
+    n_class1_labeled   = (lab_class == 1).sum()
+
+    # Distance from labeled set to target's unlabeled data
+    if unlab_is_target.sum() > 0 and n_labeled > 0:
+        from scipy.spatial.distance import cdist
+        target_unlab_emb = emb_unlab[unlab_is_target]
+        dists = cdist(target_unlab_emb, emb_lab).min(axis=1)
+        mean_dist_to_labeled = dists.mean()
+    else:
+        mean_dist_to_labeled = float('nan')
+
+    # ── Infer likely AUC cause ─────────────────────────────
+    if n_target_labeled == 0:
+        likely_cause = "No target data labeled → model blind to target"
+        cause_color  = "red"
+    elif n_class0_labeled == 0 or n_class1_labeled == 0:
+        likely_cause = f"Only class {'1' if n_class0_labeled==0 else '0'} labeled → classifier collapsed"
+        cause_color  = "darkorange"
+    elif mean_dist_to_labeled > 10:   # threshold — tune to your data
+        likely_cause = f"Target data far from labeled set (dist={mean_dist_to_labeled:.1f}) → mismatch"
+        cause_color  = "darkorange"
+    else:
+        likely_cause = "No obvious cause — check early stopping"
+        cause_color  = "green"
+
+    # ── Plot ───────────────────────────────────────────────
+    fig, ax = plt.subplots(figsize=(9, 7))
+
+    # 1. Unlabeled points — participant-specific colors
+    for uid in unique_uids:
+        mask = np.array([u == uid for u in unlabeled_uids])
+        if mask.sum() == 0:
+            continue
+        ax.scatter(
+            emb_unlab[mask, 0],
+            emb_unlab[mask, 1],
+            c=[uid_color_map[uid]],
+            s=16,
+            alpha=0.35 if uid != target_str else 0.55,
+            edgecolors=("black" if uid == target_str else "none"),
+            linewidths=(0.8 if uid == target_str else 0),
+            zorder=1,
+        )
+
+    # 2. Labeled points — initial seed stays underneath X, later labeled points are squares
+    for uid in unique_uids:
+        mask = np.array([u == uid for u in labeled_uids])
+        if mask.sum() == 0:
+            continue
+        edge_color = "black" if uid == target_str else "white"
+        initial_mask = np.zeros(n_labeled, dtype=bool)
+        initial_mask[:initial_labeled_count] = True
+        seed_mask = mask & initial_mask
+        queried_mask = mask & ~initial_mask
+
+        if seed_mask.sum() > 0:
+            ax.scatter(
+                emb_lab[seed_mask, 0],
+                emb_lab[seed_mask, 1],
+                c=[uid_color_map[uid]],
+                s=78,
+                alpha=0.92,
+                edgecolors=edge_color,
+                linewidths=1.2,
+                zorder=3,
+            )
+
+        if queried_mask.sum() > 0:
+            ax.scatter(
+                emb_lab[queried_mask, 0],
+                emb_lab[queried_mask, 1],
+                c=[uid_color_map[uid]],
+                s=82,
+                alpha=0.95,
+                edgecolors=edge_color,
+                linewidths=1.2,
+                marker="s",
+                zorder=4,
+            )
+
+    # 3. Initial seed — X marker on top
+    if initial_labeled_count > 0:
+        ax.scatter(
+            emb_lab[:initial_labeled_count, 0],
+            emb_lab[:initial_labeled_count, 1],
+            marker="x", c="black",
+            s=170, zorder=5, linewidths=1.8,
+            label=f"Initial seed (n={initial_labeled_count})",
+        )
+
+    # ── Centroid of target unlabeled — circle ──────────────
+    if unlab_is_target.sum() > 0:
+        cx = emb_unlab[unlab_is_target, 0].mean()
+        cy = emb_unlab[unlab_is_target, 1].mean()
+        ax.scatter(cx, cy, marker="o", s=300,
+                   facecolors="none", edgecolors=uid_color_map.get(target_str, "black"),
+                   linewidths=2, zorder=6)
+        ax.text(cx, cy + 1.5, f"P{target_participant}\ncentroid",
+                fontsize=8, color=uid_color_map.get(target_str, "black"),
+                ha="center", va="bottom")
+
+    # ── Diagnostic annotation ──────────────────────────────
+    ax.text(0.02, 0.02,
+            f"Labeled from target: {n_target_labeled}/{n_labeled}\n"
+            f"Class balance: {n_class0_labeled}×0  {n_class1_labeled}×1\n"
+            f"Target dist to labeled: {mean_dist_to_labeled:.1f}\n\n"
+            f"Likely cause:\n{likely_cause}",
+            transform=ax.transAxes,
+            fontsize=8.5,
+            verticalalignment="bottom",
+            bbox=dict(boxstyle="round,pad=0.5",
+                      facecolor="white",
+                      edgecolor=cause_color,
+                      linewidth=1.5,
+                      alpha=0.92),
+            color=cause_color if likely_cause != "No obvious cause — check early stopping" 
+                  else "black",
+            zorder=10)
+
+    # ── Styling ─────────────────────────────────────────────
+    ax.set_title(
+        f"t-SNE — Round {int(round_num)} "
+        f"(Target: Participant {target_participant})",
+        fontsize=12, pad=10
+    )
+    ax.tick_params(left=False, bottom=False,
+                   labelleft=False, labelbottom=False)
+    ax.spines[["top", "right", "left", "bottom"]].set_visible(False)
+    participant_handles = [
+        plt.Line2D(
+            [0], [0],
+            marker="o",
+            linestyle="",
+            markersize=7,
+            markerfacecolor=uid_color_map[uid],
+            markeredgecolor=("black" if uid == target_str else "white"),
+            label=uid,
+        )
+        for uid in unique_uids
+    ]
+    participant_handles.append(
+        plt.Line2D(
+            [0], [0],
+            marker="x",
+            linestyle="",
+            color="black",
+            markersize=8,
+            label="Initial seed",
+        )
+    )
+    participant_handles.append(
+        plt.Line2D(
+            [0], [0],
+            marker="s",
+            linestyle="",
+            color="gray",
+            markerfacecolor="gray",
+            markersize=7,
+            label="Later labeled",
+        )
+    )
+    ax.legend(
+        handles=participant_handles,
+        loc="upper right",
+        fontsize=8,
+        framealpha=0.9,
+        markerscale=1.0,
+        ncol=2,
+    )
+
+    # ── Save ────────────────────────────────────────────────
     out_dir = Path(results_d) / "tsne_feature_space"
     out_dir.mkdir(parents=True, exist_ok=True)
-
-    fig, ax = plt.subplots(figsize=(8, 6))
-    ax.scatter(
-        emb[:n_labeled, 0],
-        emb[:n_labeled, 1],
-        c="red",
-        s=18,
-        alpha=0.75,
-        label=f"Labeled (n={n_labeled})",
-    )
-    ax.scatter(
-        emb[n_labeled:, 0],
-        emb[n_labeled:, 1],
-        c="blue",
-        s=18,
-        alpha=0.55,
-        label=f"Unlabeled (n={n_unlabeled})",
-    )
-    ax.set_title(f"t-SNE Feature Space - Round {int(round_num)}")
-    ax.set_xlabel("t-SNE 1")
-    ax.set_ylabel("t-SNE 2")
-    ax.legend(loc="best")
-    ax.grid(alpha=0.2)
-
-    labeled_user_ids = (
-        df_tr_labeled["user_id"].astype(str).tolist()
-        if "user_id" in df_tr_labeled.columns
-        else ["?"] * n_labeled
-    )
-    unlabeled_user_ids = (
-        df_tr_unlabeled["user_id"].astype(str).tolist()
-        if "user_id" in df_tr_unlabeled.columns
-        else ["?"] * n_unlabeled
-    )
-
-    for i, uid in enumerate(labeled_user_ids):
-        ax.annotate(uid, (emb[i, 0], emb[i, 1]), fontsize=6, alpha=0.8)
-    for j, uid in enumerate(unlabeled_user_ids):
-        k = n_labeled + j
-        ax.annotate(uid, (emb[k, 0], emb[k, 1]), fontsize=6, alpha=0.65)
-
     fig.tight_layout()
-    fig.savefig(out_dir / f"tsne_round_{int(round_num):02d}.png", dpi=180)
+    # plt.show()
 
+    fig.savefig(
+        out_dir / f"tsne_round_{int(round_num):02d}_P{target_participant}.png",
+        dpi=180, bbox_inches="tight"
+    )
     plt.close(fig)
-
+    
 
 def compute_budget(pool, df_tr, df_all_tr, uf_val, k_val):
     if pool == "personal":
@@ -867,6 +1062,7 @@ def run_experiment(exp_dir, exp_name, exp_kwargs, args, prep, clf_epochs, clf_pa
         warm_start=warm_start,
         seed=split_seed,
         input_df=args.input_df,
+        target_participant=args.user,
     )
 
     print('len of final labeled', len(df_tr_labeled_final))
@@ -1465,6 +1661,7 @@ def run_al_refactored(
     warm_start: bool = True,
     seed: int = 42,
     input_df: str = "processed",
+    target_participant=None,
 ):
     """
     Refactored Active Learning Loop - Main Entry Point.
@@ -1605,24 +1802,26 @@ def run_al_refactored(
         else:
             Z_tr_unlabeled = encode_single_df(df_tr_unlabeled, enc_hr, enc_st, pool)
 
-        # try:
-        #     plot_feature_space_tsne(
-        #         Z_tr_labeled,
-        #         Z_tr_unlabeled,
-        #         df_tr_labeled,
-        #         df_tr_unlabeled,
-        #         round_num,
-        #         results_d,
-        #     )
-        # except Exception as e:
-        #     print(f"Skipping t-SNE feature-space plot for round {round_num}: {e}")
+        try:
+            plot_feature_space_tsne(
+                Z_tr_labeled,
+                Z_tr_unlabeled,
+                df_tr_labeled,
+                df_tr_unlabeled,
+                round_num,
+                results_d,
+                target_participant=target_participant,
+                initial_labeled_count=len(round_labeled_history[0]),
+            )
+        except Exception as e:
+            print(f"Skipping t-SNE feature-space plot for round {round_num}: {e}")
 
         if Aq == "random":
-            queried_indices, df_queried = pick_random(k_actual, df_tr_unlabeled, seed=42+round_num)
-            # pos_query = len(df_tr_labeled[df_tr_labeled["state_val"] == 1])
-            # neg_query = len(df_tr_labeled[df_tr_labeled["state_val"] == 0])
-            # target_ratio = pos_query/(pos_query + neg_query) if (pos_query + neg_query) > 0 else 0
-            # df_queried = augment_labeled_windows(df_queried_original, target_ratio=target_ratio)
+            queried_indices, df_queried_original = pick_random(k_actual, df_tr_unlabeled, seed=42+round_num)
+            pos_query = len(df_tr_labeled[df_tr_labeled["state_val"] == 1])
+            neg_query = len(df_tr_labeled[df_tr_labeled["state_val"] == 0])
+            target_ratio = pos_query/(pos_query + neg_query) if (pos_query + neg_query) > 0 else 0
+            df_queried = augment_labeled_windows(df_queried_original, target_ratio=target_ratio)
 
         elif Aq == "uncertainty":
             queried_indices, df_queried = pick_most_uncertain(
@@ -1641,22 +1840,18 @@ def run_al_refactored(
             #     y_val=y_val
             # )
         elif Aq == "coreset":
-            # queried_indices, df_queried = coreset_greedy(
-            #     active_model, df_tr_labeled, Z_tr_labeled, df_tr_unlabeled, Z_tr_unlabeled, k_actual
-            # )
-            # pos_query = len(df_tr_labeled[df_tr_labeled["state_val"] == 1])
-            # neg_query = len(df_tr_labeled[df_tr_labeled["state_val"] == 0])
-            # target_ratio = pos_query/(pos_query + neg_query) if (pos_query + neg_query) > 0 else 0
-
-            queried_indices, df_queried = coreset_greedy(
+            queried_indices, df_queried_original = coreset_greedy(
                 active_model, df_tr_labeled, Z_tr_labeled, df_tr_unlabeled, Z_tr_unlabeled, k_actual
             )
-            
-            # user_stats = compute_user_stats(pd.concat([df_tr_labeled, df_tr_unlabeled], axis=0)) 
-            # df_queried = augment_labeled_windows(df_queried_original, target_ratio=target_ratio)
+            pos_query = len(df_tr_labeled[df_tr_labeled["state_val"] == 1])
+            neg_query = len(df_tr_labeled[df_tr_labeled["state_val"] == 0])
+            target_ratio = pos_query/(pos_query + neg_query) if (pos_query + neg_query) > 0 else 0
+
+
+            df_queried = augment_labeled_windows(df_queried_original, target_ratio=target_ratio)
                                             
             
-            # breakpoint()
+
         elif Aq == "kmeans":
             queried_indices, df_queried = kmeans_query_with_labeled_centroid(
                 df_tr_labeled, Z_tr_labeled, df_tr_unlabeled, Z_tr_unlabeled, k_actual
@@ -1804,14 +1999,6 @@ def build_fit_kwargs(fit_kwargs, es, use_early_stopping: bool = True):
         fit_kwargs_with_callbacks.pop("callbacks", None)
     return fit_kwargs_with_callbacks
 
-
-def compute_class_weight_map(y_lab):
-    unique_classes = np.unique(y_lab)
-    cw_vals = compute_class_weight("balanced", classes=unique_classes, y=y_lab)
-    class_weight = {int(cls): float(weight) for cls, weight in zip(unique_classes, cw_vals)}
-    if len(class_weight) < 2:
-        print(f"Warning: Only one class present in y_lab. Class weights: {class_weight}")
-    return class_weight
 
 def bootstrap_auc(
     y_true: np.ndarray,

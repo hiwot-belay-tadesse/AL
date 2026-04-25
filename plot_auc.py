@@ -314,7 +314,7 @@ def plot_aggregate_auc(rec, hp_plot_dir: Path):
         ax.set_ylabel("AUC Mean")
         ax.legend()
         fig.tight_layout()
-        plt.show()
+
         fig.savefig(hp_plot_dir / "aggregate_auc.png", dpi=150)
     plt.close(fig)
 
