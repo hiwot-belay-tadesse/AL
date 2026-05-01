@@ -44,7 +44,7 @@ else:
     BP_MODE = False
 
 # This is the base directory where the results will be stored.
-OUTPUT_DIR = os.environ.get("BANAL_OUTPUT_DIR") or set_output_dir(args.pool, BP_MODE)
+OUTPUT_DIR = os.environ.get("BAN_AL_OUTPUT_DIR") or set_output_dir(args.pool, BP_MODE)
 
 
 unlabeled_frac = [float(args.unlabeled_frac)]

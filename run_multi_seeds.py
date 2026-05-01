@@ -5,6 +5,8 @@ Run multiple seeds for all methods (uncertainty, random, coreset)
 import argparse
 import json
 import os
+import re
+import subprocess
 import sys
 from pathlib import Path
 from types import SimpleNamespace
@@ -14,6 +16,43 @@ import matplotlib.pyplot as plt
 import numpy as np
 import preprocess
 from sklearn.model_selection import train_test_split
+
+
+def submit_seed_job(repo_root, output_dir, template, exp_name, exp_dir, exp_kwargs):
+    exp_dir_path = Path(exp_dir)
+    mkdir_exp_dir = exp_dir_path if exp_dir_path.is_absolute() else repo_root / exp_dir_path
+    mkdir_exp_dir.mkdir(parents=True, exist_ok=True)
+
+    script = template.replace("# python -u run.py EXPDIR EXPNAME KWARGS\n", "")
+    script = script.replace(
+        "python -u refactor_run.py EXPDIR EXPNAME KWARGS",
+        'cd "REPOROOT"\nexport BAN_AL_OUTPUT_DIR="OUTPUTDIR"\npython -u run.py "EXPDIR" "EXPNAME" KWARGS',
+    )
+    script = script.replace("REPOROOT", str(repo_root))
+    script = script.replace("OUTPUTDIR", output_dir)
+    script = script.replace("EXPNAME", exp_name)
+    script = script.replace("EXPDIR", str(exp_dir))
+    script = script.replace("KWARGS", "'{}'".format(json.dumps(exp_kwargs)))
+
+    tmp_dir = repo_root / "tmp"
+    tmp_dir.mkdir(parents=True, exist_ok=True)
+    script_key = "_".join(
+        [
+            exp_name,
+            str(exp_kwargs.get("user", "user")),
+            str(exp_kwargs.get("seed", "noseed")),
+        ]
+    )
+    script_key = re.sub(r"[^A-Za-z0-9_.-]+", "_", script_key)
+    script_path = tmp_dir / f"slurm_{script_key}.sh"
+    script_path.write_text(script)
+
+    try:
+        ret = subprocess.call(["sbatch", str(script_path)])
+    except FileNotFoundError as exc:
+        raise SystemExit("sbatch was not found. Run with --local for sequential local execution.") from exc
+    if ret != 0:
+        print(f"Error code {ret} when submitting job for {script_path}")
 
 
 def main():
@@ -33,6 +72,19 @@ def main():
     pa.add_argument(
         "--outdir",
         default="multi_seed_results",
+    )
+    pa.add_argument(
+        "--submit",
+        dest="submit",
+        action="store_true",
+        default=True,
+        help="Submit each seed/method as a Slurm job instead of running locally.",
+    )
+    pa.add_argument(
+        "--local",
+        dest="submit",
+        action="store_false",
+        help="Run each seed/method locally instead of submitting Slurm jobs.",
     )
     pa.add_argument("--analyze_round0", action="store_true")
     args = pa.parse_args()
@@ -63,18 +115,19 @@ def main():
     if not outdir_path.is_absolute():
         outdir_path = repo_root / outdir_path
     outdir = str(outdir_path)
+    job_outdir = str(Path(args.outdir)) if args.submit else outdir
 
-    original_output_dir = os.environ.get("BANAL_OUTPUT_DIR")
-    os.environ["BANAL_OUTPUT_DIR"] = outdir
+    original_output_dir = os.environ.get("BAN_AL_OUTPUT_DIR")
+    os.environ["BAN_AL_OUTPUT_DIR"] = outdir
     sys.argv = run_argv
     try:
         import run as run_module
     finally:
         sys.argv = original_argv
         if original_output_dir is None:
-            os.environ.pop("BANAL_OUTPUT_DIR", None)
+            os.environ.pop("BAN_AL_OUTPUT_DIR", None)
         else:
-            os.environ["BANAL_OUTPUT_DIR"] = original_output_dir
+            os.environ["BAN_AL_OUTPUT_DIR"] = original_output_dir
 
     run_module.OUTPUT_DIR = outdir
 
@@ -90,8 +143,10 @@ def main():
     
     colors = {"uncertainty": "tab:blue", "random": "darkorange", "coreset": "seagreen"}
     base_dir = Path(run_module.OUTPUT_DIR)
+    job_base_dir = Path(job_outdir)
 
     scenario_dir = base_dir / args.pool / args.user / f"{args.fruit}_{args.scenario}"
+    job_scenario_dir = job_base_dir / args.pool / args.user / f"{args.fruit}_{args.scenario}"
     seed_dirs_by_aq = {aq: [] for aq in aq_methods}
     seeds_sorted = sorted(seeds)
     shade_vals = np.linspace(0.35, 0.95, max(len(seeds_sorted), 1))
@@ -103,7 +158,7 @@ def main():
 
     for seed in seeds:
         print(f"\n=== Running seed {seed} ===")
-        if hasattr(run_module, "reset_seeds"):
+        if not args.submit and hasattr(run_module, "reset_seeds"):
             run_module.reset_seeds(seed)
         for exp_name in aq_methods:
             exp_kwargs = {
@@ -122,13 +177,31 @@ def main():
                 "input_df": args.input_df,
                 "task": args.task,
                 "participant_id": args.participant_id,
+                "output_dir": job_outdir if args.submit else outdir,
             }
 
-            exp_dir = scenario_dir / exp_name
-            seed_dir = exp_dir / f"seed_{seed}"
-            seed_dir.mkdir(parents=True, exist_ok=True)
-            run_module.run(str(seed_dir), exp_name, exp_kwargs)
+            seed_dir = scenario_dir / exp_name / f"seed_{seed}"
+            if args.submit:
+                job_seed_dir = job_scenario_dir / exp_name / f"seed_{seed}"
+                with open(repo_root / "template.sh", "r") as f:
+                    template = f.read()
+                submit_seed_job(
+                    repo_root,
+                    job_outdir,
+                    template,
+                    exp_name,
+                    job_seed_dir,
+                    exp_kwargs,
+                )
+            else:
+                seed_dir.mkdir(parents=True, exist_ok=True)
+                run_module.run(str(seed_dir), exp_name, exp_kwargs)
             seed_dirs_by_aq[exp_name].append(seed_dir)
+
+    if args.submit:
+        total_jobs = len(seeds) * len(aq_methods)
+        print(f"Submitted {total_jobs} jobs. Use --local only when you want sequential local execution.")
+        return
 
     # Single plot: one line per seed for both methods (no averaging)
     plt.figure(figsize=(10, 6))

@@ -101,7 +101,7 @@ clean_logs:
 
 
 SEEDS ?= 41,42,43
-TARGET_USER ?= 15
+TARGET_USER ?= 20
 POOL ?= global
 FRUIT ?= BP
 SCENARIO ?= spike
@@ -110,7 +110,9 @@ DROPOUT_RATE ?= 0.5
 WARM_START ?= 0
 TASK ?= bp
 INPUT_DF ?= raw
-OUTDIR ?= multi_seed_results
+OUTDIR ?= multiseeds
+LOCAL ?= 1
+LOCAL_FLAG := $(if $(filter 1 true yes,$(LOCAL)),--local,)
 
 .PHONY: run_multi_seeds
 run_multi_seeds:
@@ -126,4 +128,4 @@ run_multi_seeds:
 	  --dropout_rate $(DROPOUT_RATE) \
 	  --warm_start $(WARM_START) \
 	  --task $(TASK) \
-	  --input_df $(INPUT_DF)
+	  --input_df $(INPUT_DF) $(LOCAL_FLAG)
