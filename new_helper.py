@@ -3,6 +3,7 @@ Helpers for refactor_run.py.
 """
 import json
 import os
+from pyexpat import model
 
 
 os.environ["KERAS_BACKEND"] = "tensorflow"
@@ -25,12 +26,12 @@ except Exception:
     sns = None
 
 from sklearn.utils import compute_class_weight
-from sklearn.metrics import log_loss
+from sklearn.metrics import average_precision_score, log_loss
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import NearestNeighbors
 from sklearn.manifold import TSNE
-
+import matplotlib.pyplot as plt
 from typing import Callable
 
 import utility
@@ -73,6 +74,10 @@ def reset_seeds(seed=42):
     random.seed(seed)
     np.random.seed(seed)
     tf.random.set_seed(seed)
+    try:
+        tf.random.set_global_generator(tf.random.Generator.from_seed(seed))
+    except Exception:
+        pass
 
 def parse_args():
     import argparse
@@ -84,14 +89,98 @@ def parse_args():
     pa.add_argument("--fruit", default="Nectarine")
     pa.add_argument("--scenario", default="Crave")
     pa.add_argument("--sample_mode", default="original")
-    pa.add_argument("--unlabeled_frac", default=0.0018)
-    # pa.add_argument("--unlabeled_frac", default=0.1)
+    # pa.add_argument("--unlabeled_frac", default=0.0018)
+    pa.add_argument("--unlabeled_frac", default=0.22)
 
     pa.add_argument("--dropout_rate", default=0.5)
     pa.add_argument("--warm_start", default=0) ## 0 is retrain from scratch each round, 1 is finetune each round
     pa.add_argument("--results_subdir", default="results")
     pa.add_argument("--input_df", default="raw", choices=["raw", "processed"])
     return pa.parse_known_args()
+
+def select_balanced_centroid_seed(df, n_per_class=2, label_col="state_val", random_state=42):
+    """
+    Select a small class-balanced initial seed from correctly aligned rows.
+
+    Uses k-centroids within each class: for each class, run k-means with
+    k=n_per_class and choose the closest real sample to each centroid.
+    """
+    if label_col not in df.columns:
+        raise ValueError(f"label_col={label_col!r} not found in dataframe.")
+
+    df_work = df.reset_index(drop=True).copy()
+    df_work["_seed_orig_pos"] = np.arange(len(df_work))
+    if "datetime_local" in df_work.columns:
+        df_work["datetime_local"] = pd.to_datetime(df_work["datetime_local"], errors="coerce")
+        df_work = df_work.sort_values("datetime_local").reset_index(drop=True)
+
+    y = df_work[label_col].values.astype("float32")
+    feature_cols = _processed_feature_cols(df_work)
+    feature_cols = [c for c in feature_cols if c != "_seed_orig_pos"]
+    drop_lag = [
+        c for c in feature_cols
+        if "lag" in c.lower()
+        or "spike" in c.lower()
+        or "time_since" in c.lower()
+        or "systolic" in c.lower()
+        or "diastolic" in c.lower()
+        or "datetime" in c.lower()
+        or "datetime_local" in c.lower()
+        or "time" in c.lower()
+        or "created_at" in c.lower()
+    ]
+    feature_cols = [c for c in feature_cols if c not in drop_lag]
+    if not feature_cols:
+        raise ValueError("No usable numeric feature columns found for centroid seed selection.")
+
+    X_df = df_work[feature_cols].copy()
+    X_df = X_df.apply(pd.to_numeric, errors="coerce")
+    X_df = X_df.replace([np.inf, -np.inf], np.nan)
+    X_df = X_df.fillna(X_df.median(numeric_only=True)).fillna(0.0)
+    X = StandardScaler().fit_transform(X_df.values).astype("float32")
+
+    selected_pos = []
+
+    for cls in [0, 1]:
+        cls_pos = np.where(y == cls)[0]
+        if len(cls_pos) < n_per_class:
+            raise ValueError(
+                f"Need at least {n_per_class} samples for class {cls}, found {len(cls_pos)}."
+            )
+        X_cls = X[cls_pos]
+        km = KMeans(
+            n_clusters=int(n_per_class),
+            random_state=int(random_state),
+            n_init=10,
+        )
+        cluster_id = km.fit_predict(X_cls)
+        centers = km.cluster_centers_
+        chosen_for_class = []
+
+        for cluster_idx in range(int(n_per_class)):
+            member_local = np.where(cluster_id == cluster_idx)[0]
+            if len(member_local) == 0:
+                continue
+            dists = np.linalg.norm(X_cls[member_local] - centers[cluster_idx], axis=1)
+            chosen_local = member_local[int(np.argmin(dists))]
+            chosen_for_class.append(int(cls_pos[chosen_local]))
+
+        if len(chosen_for_class) < n_per_class:
+            remaining = [int(pos) for pos in cls_pos if int(pos) not in chosen_for_class]
+            chosen_for_class.extend(remaining[: int(n_per_class) - len(chosen_for_class)])
+
+        selected_pos.extend(chosen_for_class)
+
+    selected_pos = sorted(selected_pos)
+    selected_orig_pos = df_work.iloc[selected_pos]["_seed_orig_pos"].astype(int).to_numpy()
+    df_labeled = df.iloc[selected_orig_pos].copy()
+    df_unlabeled = df.drop(df.index[selected_orig_pos]).copy()
+    print(
+        "[seed] selected initial label counts:",
+        df_labeled[label_col].value_counts().sort_index().to_dict(),
+    )
+
+    return df_labeled, df_unlabeled
 
 
 
@@ -224,7 +313,8 @@ def set_output_dir(pool, BP_MODE=None):
         if pool == "global":
         # return "Cardiomate_AL/G_SSL_all_val"
         # return "Cardiomate_AL/G_SSL_with_target_quota"
-            return "Cardiomate_AL/G_SSL_augmented"
+            return "Cardiomate_AL/G_SSL_no_augment_nn"
+            # return "Cardiomate_AL/G_SSL_aug_den_coreset"
         if pool == "global_supervised":
            return "Cardiomate_AL/GS"
         if pool == "p_global_ssl":
@@ -253,19 +343,24 @@ def pick_random(K, df_tr_unlabeled, seed=42):
 def pick_most_uncertain(
     clf, df_tr_unlabeled, Z_tr_unlabeled, K, T, mc_predict, density_k: int = 10
 ):
-    """MC-Dropout acquisition weighted by local density."""
+    """Margin-based acquisition for LR, with the old MC-Dropout path commented below."""
     # Freeze BatchNorm for MC dropout
-    for layer in clf.layers:
-        if isinstance(layer, tf.keras.layers.BatchNormalization):
-            layer.trainable = False
-    # Step 1: MC-Dropout uncertainty
-    _, std_p, BALD = mc_predict(clf, Z_tr_unlabeled, T=T)
+    if hasattr(clf, "layers"):
+        for layer in clf.layers:
+            if isinstance(layer, tf.keras.layers.BatchNormalization):
+                layer.trainable = False
+    ##for logistic regision, margin sampling 
+    uncertainty = np.asarray(compute_uncertainty_for_lr(clf, Z_tr_unlabeled)).ravel()
+    
+    # # Step 1: MC-Dropout uncertainty 
+    # _, std_p, BALD = mc_predict(clf, Z_tr_unlabeled, T=T)
 
-    if len(std_p) != len(df_tr_unlabeled):
-        raise ValueError(
-            f"std_p has {len(std_p)} entries but df_tr_unlabeled has {len(df_tr_unlabeled)} rows."
-        )
-    top_pos = np.argsort(std_p)[::-1][:K]
+    # if len(std_p) != len(df_tr_unlabeled):
+    #     raise ValueError(
+    #         f"std_p has {len(std_p)} entries but df_tr_unlabeled has {len(df_tr_unlabeled)} rows."
+    #     )
+    # top_pos = np.argsort(std_p)[::-1][:K]
+    top_pos = np.argsort(uncertainty)[::-1][:K]
     queried_indices = df_tr_unlabeled.iloc[top_pos].index.tolist()
     df_queried = df_tr_unlabeled.loc[queried_indices].copy()
     ## Revisit this 
@@ -305,6 +400,77 @@ def pick_most_uncertain(
     # df_queried = df_unlb.loc[queried_indices]
     return queried_indices, df_queried
 
+def density_coreset(
+    clf,
+    df_tr_labeled,
+    Z_tr_labeled,
+    df_tr_unlabeled,
+    Z_tr_unlabeled,
+    K,
+    density_weight=0.5,  # balance diversity vs density
+    k_neighbors=10,       # for density estimation
+):
+    """Density-aware coreset acquisition with the same interface as coreset_greedy."""
+    del clf, df_tr_labeled
+
+    selected = []
+    remaining = list(range(len(Z_tr_unlabeled)))
+    Z_lab_cur = Z_tr_labeled.copy()
+
+    # ── Precompute density (fixed throughout) ─────────
+    # KNN density: inverse of mean distance to k neighbors
+    from sklearn.preprocessing import normalize
+    Z_norm_all = normalize(Z_tr_unlabeled)
+    sim_all = Z_norm_all @ Z_norm_all.T
+    
+    # For each point, mean similarity to k nearest neighbors
+    # (excluding self)
+    np.fill_diagonal(sim_all, -1)
+    topk_sim = np.sort(sim_all, axis=1)[:, -k_neighbors:]
+    density = topk_sim.mean(axis=1)   # higher = denser
+    
+    # Normalize density to [0, 1]
+    density = (density - density.min()) / (
+               density.max() - density.min() + 1e-8)
+
+    for _ in range(min(int(K), len(remaining))):
+
+        # Cosine distance to nearest labeled point
+        Z_rem_norm = normalize(Z_tr_unlabeled[remaining])
+        Z_lab_norm = normalize(Z_lab_cur)
+        
+        similarities = Z_rem_norm @ Z_lab_norm.T
+        distances    = 1 - similarities
+        dists        = np.min(distances, axis=1)
+        
+        # Normalize distances to [0, 1]
+        if dists.max() > dists.min():
+            dists_norm = (dists - dists.min()) / (
+                          dists.max() - dists.min())
+        else:
+            dists_norm = dists
+
+        # Density of remaining points
+        rem_density = density[remaining]
+
+        # Combined utility
+        utility = (
+            (1 - density_weight) * dists_norm
+          +       density_weight  * rem_density
+        )
+
+        best_local = np.argmax(utility)
+        best_global = remaining[best_local]
+        selected.append(best_global)
+
+        Z_lab_cur = np.vstack([
+            Z_lab_cur, Z_tr_unlabeled[best_global]
+        ])
+        remaining.pop(best_local)
+    queried_indices = df_tr_unlabeled.iloc[selected].index.tolist()
+    df_queried = df_tr_unlabeled.loc[queried_indices].copy()
+    return queried_indices, df_queried
+
 def coreset_greedy(
     clf, df_tr_labeled, Z_tr_labeled, df_tr_unlabeled, Z_tr_unlabeled, K
 ):
@@ -329,12 +495,12 @@ def coreset_greedy(
         np.linalg.norm(centers, axis=1, keepdims=True) + 1e-8
         )
 
-        # Cosine similarity → distance
+        #Cosine similarity → distance
         # shape: (n_unlabeled, n_centers)
         # similarities = Z_norm @ C_norm.T
         # distances    = 1 - similarities
         # dists = np.min(distances, axis=1)
-        # for each unlabeled point, find distance to nearest center
+        # # for each unlabeled point, find distance to nearest center
         dists = np.min(
             np.linalg.norm(
                 Z_tr_unlabeled[:, None, :] - centers[None, :, :],
@@ -495,276 +661,94 @@ def plot_queried_windows(df_queried, round_num, results_d, max_n: int = 24):
     plt.close(fig)
 
 
-def plot_feature_space_tsne(
-    Z_tr_labeled,
-    Z_tr_unlabeled,
-    df_tr_labeled,
-    df_tr_unlabeled,
-    round_num,
-    results_d,
-    target_participant,        
-    initial_labeled_count=None,
-):
+def plot_tsne(Z: np.ndarray,
+              y: np.ndarray,
+              output_dir: Path,
+              round_num: int,
+              pid=None,
+              seed: int = 42,
+              target_participant=None,
+              initial_labeled_count=None):
+    del pid, target_participant, initial_labeled_count
+    print("  Running t-SNE...")
+
     from matplotlib import pyplot as plt
-    if any(x is None for x in [Z_tr_labeled, Z_tr_unlabeled,
-                                 df_tr_labeled, df_tr_unlabeled]):
-        return
 
-    n_labeled   = len(Z_tr_labeled)
-    n_unlabeled = len(Z_tr_unlabeled)
-    n_total     = n_labeled + n_unlabeled
-    if n_total < 3:
-        return
+    Z = np.asarray(Z, dtype=np.float32)
+    if Z.ndim == 1:
+        Z = Z.reshape(-1, 1)
+    elif Z.ndim > 2:
+        Z = Z.reshape(Z.shape[0], -1)
 
-    initial_labeled_count = max(
-        0, min(int(initial_labeled_count or n_labeled), n_labeled)
-    )
+    y = np.asarray(y).ravel()
+    n = len(Z)
+    if n < 3:
+        print(f"  Skipping t-SNE for round {round_num}: need at least 3 labeled samples.")
+        return None
+    if len(y) != n:
+        raise ValueError(f"Mismatch y rows ({len(y)}) vs Z rows ({n}).")
 
-    # ── Embed ──────────────────────────────────────────────
-    Z_all = np.vstack([
-        np.asarray(Z_tr_labeled,   dtype=np.float32),
-        np.asarray(Z_tr_unlabeled, dtype=np.float32),
-    ])
-    perplexity = min(30.0, max(2.0, float((n_total - 1) // 3)))
-    emb = TSNE(
-        n_components=2, random_state=42,
-        init="pca", learning_rate="auto",
+    perplexity = min(30.0, max(2.0, float((n - 1) // 3)))
+    if perplexity >= n:
+        perplexity = max(1.0, float(n - 1))
+    tsne = TSNE(
+        n_components=2,
+        random_state=seed,
+        init="pca",
+        learning_rate="auto",
         perplexity=perplexity,
-    ).fit_transform(Z_all)
+    )
+    Z2 = tsne.fit_transform(Z)
 
-    emb_lab   = emb[:n_labeled]
-    emb_unlab = emb[n_labeled:]
-
-    # ── Labels and participants ─────────────────────────────
-    uid_col   = "user_id"
-    label_col = "state_val"
-
-    labeled_uids   = df_tr_labeled[uid_col].astype(str).tolist()
-    unlabeled_uids = df_tr_unlabeled[uid_col].astype(str).tolist()
-    labeled_classes = (df_tr_labeled[label_col].tolist()
-                       if label_col in df_tr_labeled.columns
-                       else [None] * n_labeled)
-    all_uids = labeled_uids + unlabeled_uids
-
-    target_str = str(target_participant)
-    unique_uids = sorted(set(all_uids))
-
-    DISTINCT_COLORS = [
-        "#e6194b",  # red
-        "#3cb44b",  # green
-        "#4363d8",  # blue
-        "#f58231",  # orange
-        "#42d4f4",  # cyan
-        "#f032e6",  # magenta
-        "#bfef45",  # lime
-        "#469990",  # teal
-        "#9a6324",  # brown
-        "#000075",  # navy
-        "#a9a9a9",  # gray
-        "#000000",  # black
-        "#b8860b",  # dark gold
-        "#ff69b4",  # hot pink
-        "#7fffd4",  # aquamarine
-        "#dc143c",  # crimson      ← replaces maroon
-        "#00ced1",  # dark turquoise ← replaces olive
-        "#ff4500",  # red orange   ← replaces burnt orange
-        "#6a0dad",  # deep purple  ← replaces violet/purple duplicate
-        "#228b22",  # forest green ← replaces army green
-    ]
-    uid_color_map = {
-        uid: DISTINCT_COLORS[i % len(DISTINCT_COLORS)]
-        for i, uid in enumerate(unique_uids)
+    y_labels = pd.to_numeric(pd.Series(y), errors="coerce").fillna(-1).astype(int).astype(str).to_numpy()
+    class_color_map = {
+        "0": "#185FA5",
+        "1": "#E24B4A",
+        "-1": "#8a8a8a",
     }
+    fallback_class_colors = ["#54a24b", "#f58518", "#72b7b2", "#b279a2"]
+    unique_classes = sorted(set(y_labels))
+    for i, cls in enumerate(unique_classes):
+        class_color_map.setdefault(cls, fallback_class_colors[i % len(fallback_class_colors)])
 
-    # Masks
-    lab_is_target   = np.array([u == target_str for u in labeled_uids])
-    unlab_is_target = np.array([u == target_str for u in unlabeled_uids])
-    lab_class       = np.array(labeled_classes)
+    fig, ax = plt.subplots(figsize=(8, 6.5), constrained_layout=True)
 
-    # ── Diagnostic stats (shown in title/subtitle) ─────────
-    n_target_labeled   = lab_is_target.sum()
-    n_class0_labeled   = (lab_class == 0).sum()
-    n_class1_labeled   = (lab_class == 1).sum()
+    for cls in unique_classes:
+        mask = y_labels == cls
+        if cls == "0":
+            cls_name = "No spike"
+        elif cls == "1":
+            cls_name = "Spike"
+        else:
+            cls_name = "Unknown"
+        cls_label = f"{cls_name} (n={int(mask.sum())})"
 
-    # Distance from labeled set to target's unlabeled data
-    if unlab_is_target.sum() > 0 and n_labeled > 0:
-        from scipy.spatial.distance import cdist
-        target_unlab_emb = emb_unlab[unlab_is_target]
-        dists = cdist(target_unlab_emb, emb_lab).min(axis=1)
-        mean_dist_to_labeled = dists.mean()
-    else:
-        mean_dist_to_labeled = float('nan')
-
-    # ── Infer likely AUC cause ─────────────────────────────
-    if n_target_labeled == 0:
-        likely_cause = "No target data labeled → model blind to target"
-        cause_color  = "red"
-    elif n_class0_labeled == 0 or n_class1_labeled == 0:
-        likely_cause = f"Only class {'1' if n_class0_labeled==0 else '0'} labeled → classifier collapsed"
-        cause_color  = "darkorange"
-    elif mean_dist_to_labeled > 10:   # threshold — tune to your data
-        likely_cause = f"Target data far from labeled set (dist={mean_dist_to_labeled:.1f}) → mismatch"
-        cause_color  = "darkorange"
-    else:
-        likely_cause = "No obvious cause — check early stopping"
-        cause_color  = "green"
-
-    # ── Plot ───────────────────────────────────────────────
-    fig, ax = plt.subplots(figsize=(9, 7))
-
-    # 1. Unlabeled points — participant-specific colors
-    for uid in unique_uids:
-        mask = np.array([u == uid for u in unlabeled_uids])
-        if mask.sum() == 0:
-            continue
         ax.scatter(
-            emb_unlab[mask, 0],
-            emb_unlab[mask, 1],
-            c=[uid_color_map[uid]],
-            s=16,
-            alpha=0.35 if uid != target_str else 0.55,
-            edgecolors=("black" if uid == target_str else "none"),
-            linewidths=(0.8 if uid == target_str else 0),
-            zorder=1,
+            Z2[mask, 0],
+            Z2[mask, 1],
+            c=[class_color_map[cls]],
+            s=76,
+            alpha=0.9,
+            edgecolors="white",
+            linewidths=0.8,
+            label=cls_label,
         )
 
-    # 2. Labeled points — initial seed stays underneath X, later labeled points are squares
-    for uid in unique_uids:
-        mask = np.array([u == uid for u in labeled_uids])
-        if mask.sum() == 0:
-            continue
-        edge_color = "black" if uid == target_str else "white"
-        initial_mask = np.zeros(n_labeled, dtype=bool)
-        initial_mask[:initial_labeled_count] = True
-        seed_mask = mask & initial_mask
-        queried_mask = mask & ~initial_mask
-
-        if seed_mask.sum() > 0:
-            ax.scatter(
-                emb_lab[seed_mask, 0],
-                emb_lab[seed_mask, 1],
-                c=[uid_color_map[uid]],
-                s=78,
-                alpha=0.92,
-                edgecolors=edge_color,
-                linewidths=1.2,
-                zorder=3,
-            )
-
-        if queried_mask.sum() > 0:
-            ax.scatter(
-                emb_lab[queried_mask, 0],
-                emb_lab[queried_mask, 1],
-                c=[uid_color_map[uid]],
-                s=82,
-                alpha=0.95,
-                edgecolors=edge_color,
-                linewidths=1.2,
-                marker="s",
-                zorder=4,
-            )
-
-    # 3. Initial seed — X marker on top
-    if initial_labeled_count > 0:
-        ax.scatter(
-            emb_lab[:initial_labeled_count, 0],
-            emb_lab[:initial_labeled_count, 1],
-            marker="x", c="black",
-            s=170, zorder=5, linewidths=1.8,
-            label=f"Initial seed (n={initial_labeled_count})",
-        )
-
-    # ── Centroid of target unlabeled — circle ──────────────
-    if unlab_is_target.sum() > 0:
-        cx = emb_unlab[unlab_is_target, 0].mean()
-        cy = emb_unlab[unlab_is_target, 1].mean()
-        ax.scatter(cx, cy, marker="o", s=300,
-                   facecolors="none", edgecolors=uid_color_map.get(target_str, "black"),
-                   linewidths=2, zorder=6)
-        ax.text(cx, cy + 1.5, f"P{target_participant}\ncentroid",
-                fontsize=8, color=uid_color_map.get(target_str, "black"),
-                ha="center", va="bottom")
-
-    # ── Diagnostic annotation ──────────────────────────────
-    ax.text(0.02, 0.02,
-            f"Labeled from target: {n_target_labeled}/{n_labeled}\n"
-            f"Class balance: {n_class0_labeled}×0  {n_class1_labeled}×1\n"
-            f"Target dist to labeled: {mean_dist_to_labeled:.1f}\n\n"
-            f"Likely cause:\n{likely_cause}",
-            transform=ax.transAxes,
-            fontsize=8.5,
-            verticalalignment="bottom",
-            bbox=dict(boxstyle="round,pad=0.5",
-                      facecolor="white",
-                      edgecolor=cause_color,
-                      linewidth=1.5,
-                      alpha=0.92),
-            color=cause_color if likely_cause != "No obvious cause — check early stopping" 
-                  else "black",
-            zorder=10)
-
-    # ── Styling ─────────────────────────────────────────────
-    ax.set_title(
-        f"t-SNE — Round {int(round_num)} "
-        f"(Target: Participant {target_participant})",
-        fontsize=12, pad=10
-    )
-    ax.tick_params(left=False, bottom=False,
-                   labelleft=False, labelbottom=False)
+    ax.legend(loc="upper right", fontsize=9, framealpha=0.9)
+    ax.set_title(f"Labeled t-SNE by Spike Label - Round {int(round_num)}")
+    ax.tick_params(left=False, bottom=False, labelleft=False, labelbottom=False)
     ax.spines[["top", "right", "left", "bottom"]].set_visible(False)
-    participant_handles = [
-        plt.Line2D(
-            [0], [0],
-            marker="o",
-            linestyle="",
-            markersize=7,
-            markerfacecolor=uid_color_map[uid],
-            markeredgecolor=("black" if uid == target_str else "white"),
-            label=uid,
-        )
-        for uid in unique_uids
-    ]
-    participant_handles.append(
-        plt.Line2D(
-            [0], [0],
-            marker="x",
-            linestyle="",
-            color="black",
-            markersize=8,
-            label="Initial seed",
-        )
-    )
-    participant_handles.append(
-        plt.Line2D(
-            [0], [0],
-            marker="s",
-            linestyle="",
-            color="gray",
-            markerfacecolor="gray",
-            markersize=7,
-            label="Later labeled",
-        )
-    )
-    ax.legend(
-        handles=participant_handles,
-        loc="upper right",
-        fontsize=8,
-        framealpha=0.9,
-        markerscale=1.0,
-        ncol=2,
-    )
 
-    # ── Save ────────────────────────────────────────────────
-    out_dir = Path(results_d) / "tsne_feature_space"
+    fig.suptitle("Labeled SSL Representation Space", fontsize=13)
+
+    out_dir = Path(output_dir) / "tsne_feature_space"
     out_dir.mkdir(parents=True, exist_ok=True)
-    fig.tight_layout()
-    # plt.show()
-
-    fig.savefig(
-        out_dir / f"tsne_round_{int(round_num):02d}_P{target_participant}.png",
-        dpi=180, bbox_inches="tight"
-    )
+    path = out_dir / f"tsne_round_{int(round_num):02d}.png"
+    fig.savefig(path, dpi=180, bbox_inches="tight")
     plt.close(fig)
+    print(f"  Saved: {path}")
+    
+    return Z2
     
 
 def compute_budget(pool, df_tr, df_all_tr, uf_val, k_val):
@@ -907,30 +891,107 @@ def mc_predict(model, x, T, mc_seed=42):
 
     return mean_probs, std_probs, BALD
 
+# def build_lr_classifier(seed=42, class_weight="balanced"):
+#
+#     from sklearn.linear_model import LogisticRegression
+#     logistic_clf = LogisticRegression(
+#         penalty='l2',
+#         C=1e2,  # weaker regularization
+#         solver='lbfgs',
+#         max_iter=1000,
+#         class_weight=class_weight,
+#         random_state=seed,
+#     )
+#     return logistic_clf
 
-def build_classifier(input_dim, CLF_PATIENCE, dropout_rate, seed):
+
+def predict_positive_scores(model, X):
+    """
+    Return positive-class scores for either sklearn LR or the old Keras classifier.
+    """
+    if hasattr(model, "predict_proba"):
+        probs = model.predict_proba(X)
+        return np.asarray(probs)[:, 1]
+    return np.asarray(model.predict(X, verbose=0)).ravel()
     
-    # 7) Train classifier
-    reset_seeds(42)  # Ensure deterministic model initialization
+def build_classifier(input_dim, CLF_PATIENCE, 
+                     dropout_rate, seed):
+    
+    reset_seeds(seed)
+        
+    # ── Self-tune regulirzer based on label count ──────────
+    # if n_labeled < 20:
+    #     l2_strength = 1e-2
+    # elif n_labeled < 50:
+    #     l2_strength = 1e-3
+    # # elif n_labeled < 100:
+    # #     l2_strength = 1e-4  
+    # else:
+    #     l2_strength = 1e-4  
+    
     clf = Sequential([
-        layers.Dense(64, activation='relu', input_shape=(input_dim,), kernel_regularizer=l2(0.01)),
-        layers.BatchNormalization(), layers.Dropout(dropout_rate),
-        layers.Dense(32, activation='relu', kernel_regularizer=l2(0.01)), layers.Dropout(dropout_rate),
-        layers.Dense(16, activation='relu', kernel_regularizer=l2(0.01)), layers.Dropout(dropout_rate),
-        layers.Dense(1, activation='sigmoid')
-    ])
-    
+
+            layers.Dense(64, activation='relu',
+                        input_shape=(input_dim,),
+                        kernel_regularizer=l2(0.01)),
+            layers.BatchNormalization(),
+            layers.Dropout(dropout_rate),
+
+            layers.Dense(32, activation='relu',
+                        kernel_regularizer=l2(0.01)),
+            layers.BatchNormalization(), 
+            layers.Dropout(dropout_rate),
+
+            layers.Dense(16, activation='relu',
+                        kernel_regularizer=l2(0.01)),
+
+            layers.Dense(1, activation='sigmoid'),
+        ])
+
 
     clf.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3),
-                 loss='binary_crossentropy', metrics=['accuracy'])
+            loss='binary_crossentropy', metrics=['accuracy']) #tf.keras.metrics.AUC(name="auc")])
+    es = EarlyStopping(
+        monitor='val_loss',       
+        patience=CLF_PATIENCE,
+        restore_best_weights=True,
+        # mode='max',               
+        verbose=0
+    )
 
-    es  = EarlyStopping(monitor='val_loss', patience=CLF_PATIENCE,
-                                restore_best_weights=True, verbose=1)
-    lr_cb = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=5, verbose=1)
-    # cw_vals     = compute_class_weight("balanced", classes=np.unique(y_tr), y=y_tr)
-    # class_weight = {i: cw_vals[i] for i in range(len(cw_vals))}
+    lr_cb = ReduceLROnPlateau(
+        monitor='val_loss',
+        factor=0.5,
+        patience=5,
+        # mode='min',
+        verbose=0
+    )
 
-    return clf, [es, lr_cb] 
+    return clf, [es, lr_cb]
+
+# def build_classifier(input_dim, CLF_PATIENCE, dropout_rate, seed):
+    
+#     # 7) Train classifier
+#     reset_seeds(42)  # Ensure deterministic model initialization
+    # clf = Sequential([
+    #     layers.Dense(64, activation='relu', input_shape=(input_dim,), kernel_regularizer=l2(0.01)),
+    #     layers.BatchNormalization(), layers.Dropout(dropout_rate),
+    #     layers.Dense(32, activation='relu', kernel_regularizer=l2(0.01)), layers.Dropout(dropout_rate),
+    #     layers.Dense(16, activation='relu', kernel_regularizer=l2(0.01)), layers.Dropout(dropout_rate),
+    #     layers.Dense(1, activation='sigmoid')
+    # ])
+    
+    # clf.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3),
+    #              loss='binary_crossentropy', metrics=['accuracy'])
+
+    # es  = EarlyStopping(monitor='val_loss', patience=CLF_PATIENCE,
+    #                             restore_best_weights=True, verbose=1)
+    # lr_cb = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=5, verbose=1)
+    # # cw_vals     = compute_class_weight("balanced", classes=np.unique(y_tr), y=y_tr)
+    # # class_weight = {i: cw_vals[i] for i in range(len(cw_vals))}
+
+    # return clf, [es, lr_cb] 
+
 # def build_classifier(input_dim, CLF_PATIENCE, dropout_rate, seed):
 #     # init = tf.keras.initializers.GlorotUniform(seed=seed)
 #     inputs = tf.keras.Input(shape=(input_dim,), name="input")
@@ -1047,6 +1108,7 @@ def run_experiment(exp_dir, exp_name, exp_kwargs, args, prep, clf_epochs, clf_pa
         enc_hr,
         enc_st,
         build_classifier,
+        # build_lr_classifier,
         mc_predict,
         K,
         budget,
@@ -1080,6 +1142,7 @@ def run_experiment(exp_dir, exp_name, exp_kwargs, args, prep, clf_epochs, clf_pa
         "AUC_STD_Val",
         "AUC_Mean",
         "AUC_STD",
+        "AP_Test",
     ]
     keep_cols = [c for c in auc_cols if c in al_progress.columns]
     al_progress_min = al_progress[keep_cols].copy() if keep_cols else al_progress.copy()
@@ -1102,22 +1165,26 @@ def run_experiment(exp_dir, exp_name, exp_kwargs, args, prep, clf_epochs, clf_pa
             y_val_full = df_val["state_val"].values.astype("float32")
             Z_te = encode_single_df(df_te, enc_hr, enc_st, args.pool)
             y_te = df_te["state_val"].values.astype("float32")
-            auc_m, _, _, _, _, _, _, full_model = utility.fit_and_eval(
-                fit_kwargs,
-                build_classifier,
+            # full_model = build_lr_classifier(seed=split_seed)
+            # full_model.fit(Z_full, y_full)
+            full_model, callbacks = build_classifier(
                 Z_full.shape[1],
-                Z_full,
-                y_full,
-                Z_val_full,
-                y_val_full,
-                Z_te,
-                y_te,
                 clf_patience,
                 float(args.dropout_rate),
-                clf=None,
+                split_seed,
+                # n_labeled=len(df_full),
             )
-            upper_bound_auc = auc_m
-            full_probs_te = full_model.predict(Z_te, verbose=0).ravel()
+            classes = np.unique(y_full)
+            class_weight = None
+            if len(classes) == 2:
+                cw_vals = compute_class_weight("balanced", classes=classes, y=y_full)
+                class_weight = {int(cls): float(weight) for cls, weight in zip(classes, cw_vals)}
+            full_fit_kwargs = dict(fit_kwargs or {})
+            full_fit_kwargs["validation_data"] = (Z_val_full, y_val_full)
+            full_fit_kwargs = build_fit_kwargs(full_fit_kwargs, callbacks, use_early_stopping=True)
+            full_model.fit(Z_full, y_full, class_weight=class_weight, **full_fit_kwargs)
+            full_probs_te = predict_positive_scores(full_model, Z_te)
+            upper_bound_auc, _, _ = bootstrap_auc(y_te, full_probs_te)
             full_data_eval_payload = {
                 "y_true": np.asarray(y_te).ravel(),
                 "y_score": np.asarray(full_probs_te).ravel(),
@@ -1162,39 +1229,40 @@ def run_experiment(exp_dir, exp_name, exp_kwargs, args, prep, clf_epochs, clf_pa
         Z_val_final, y_val_final = encode_single_df(df_val, enc_hr, enc_st, args.pool), df_val["state_val"].values.astype("float32")
 
     
-        es = EarlyStopping(
-            monitor="val_loss",
-            patience=clf_patience,
-            restore_best_weights=True,
-            verbose=1,
-        )
-        lr_cb = ReduceLROnPlateau(
-            monitor="val_loss",
-            factor=0.5,
-            patience=5,
-            verbose=1,
-        )
-        final_model = build_classifier(
+        # es = EarlyStopping(
+        #     monitor="val_loss",
+        #     patience=clf_patience,
+        #     restore_best_weights=True,
+        #     verbose=1,
+        # )
+        # lr_cb = ReduceLROnPlateau(
+        #     monitor="val_loss",
+        #     factor=0.5,
+        #     patience=5,
+        #     verbose=1,
+        # )
+        # final_model = build_lr_classifier(seed=split_seed)
+        final_model, callbacks = build_classifier(
             input_dim=Z_final.shape[1],
             CLF_PATIENCE=clf_patience,
             dropout_rate=float(args.dropout_rate),
             seed=split_seed,
-        )[0]
-        final_model.fit(
-        Z_final,
-        y_final,
-        validation_data=(Z_val_final, y_val_final),
-        callbacks=[es, lr_cb],
-        epochs=200,
-        batch_size=16,
-        verbose=0,
-        shuffle=True,
+            # n_labeled=len(df_tr_labeled),
+        )
         
+        final_fit_kwargs = dict(fit_kwargs or {})
+        final_fit_kwargs["validation_data"] = (Z_val_final, y_val_final)
+        final_fit_kwargs = build_fit_kwargs(final_fit_kwargs, callbacks, use_early_stopping=True)
+        final_model.fit(
+            Z_final,
+            y_final,
+            **final_fit_kwargs,
+        )
 
-    )
         Z_te_final, y_te_final = encode_single_df(df_te, enc_hr, enc_st, args.pool), df_te["state_val"].values.astype("float32")
 
-        full_probs_te = final_model.predict(Z_te_final, verbose=0).ravel()
+        full_probs_te = predict_positive_scores(final_model, Z_te_final)
+
         upper_bound_auc, _, _ = bootstrap_auc(y_te_final, full_probs_te)
         full_data_eval_payload = {
             "y_true": np.asarray(y_te_final).ravel(),
@@ -1495,6 +1563,7 @@ def initialize_active_model(
     Z_val,
     y_val,
     build_classifier,
+    # build_lr_classifier,
     CLF_PATIENCE,
     dropout_rate,
     fit_kwargs,
@@ -1507,36 +1576,43 @@ def initialize_active_model(
     if pool in ["personal", "global"]:
         
         
-        # tf.keras.backend.clear_session()
-        # tf.random.set_global_generator(tf.random.Generator.from_seed(42))
-        # reset_seeds(42)
+        tf.keras.backend.clear_session()
+        # reset_seeds(seed)
+        # input_dim = Z_tr_labeled.shape[1]
+        # clf, callbacks = build_classifier(input_dim, CLF_PATIENCE, dropout_rate, seed, n_labeled=len(df_tr_labeled))
+        # # clf = build_lr_classifier(seed=seed)
+        # # if int(round_num) == 0:
+        # #     callbacks = [cb for cb in callbacks if not isinstance(cb, EarlyStopping)]
+        # fit_kwargs_with_callbacks = build_fit_kwargs(fit_kwargs, callbacks, use_early_stopping=True)
+
+        # unique_classes = np.unique(y_tr_labeled)
+        # cw_vals = compute_class_weight("balanced", classes=unique_classes, y=y_tr_labeled)
+        # class_weight = {int(cls): float(weight) for cls, weight in zip(unique_classes, cw_vals)}
+        # # # total_weights = check_model_initialization(clf, pool, round_num)
+        # reset_seeds(seed)
+        # clf.fit(
+        #     Z_tr_labeled,
+        #     y_tr_labeled,
+        #     class_weight=class_weight,
+        #     **fit_kwargs_with_callbacks,
+        # )
+
+        
         input_dim = Z_tr_labeled.shape[1]
         clf, [es, lr_cb ] = build_classifier(input_dim, CLF_PATIENCE, dropout_rate, seed)
         fit_kwargs_with_callbacks = fit_kwargs.copy() if fit_kwargs else {}
-        # if "shuffle" not in fit_kwargs_with_callbacks:
-        #     fit_kwargs_with_callbacks["shuffle"] = True
-        # if "callbacks" in fit_kwargs_with_callbacks:
-        #     callbacks = fit_kwargs_with_callbacks["callbacks"]
-        #     if not isinstance(callbacks, list):
-        #         callbacks = [callbacks]
-        #     callbacks = callbacks + [es, lr_cb]
-        #     fit_kwargs_with_callbacks["callbacks"] = callbacks
-        # else:
-        #     fit_kwargs_with_callbacks["callbacks"] = [es, lr_cb]
 
         unique_classes = np.unique(y_tr_labeled)
         cw_vals = compute_class_weight("balanced", classes=unique_classes, y=y_tr_labeled)
         class_weight = {int(cls): float(weight) for cls, weight in zip(unique_classes, cw_vals)}
-        # total_weights = check_model_initialization(clf, pool, round_num)
-        # reset_seeds(42)
-        # tf.random.set_global_generator(tf.random.Generator.from_seed(42))
-        # reset_seeds(42)
+
         clf.fit(
             Z_tr_labeled,
             y_tr_labeled,
             # class_weight=class_weight,
             **fit_kwargs_with_callbacks,
         )
+
         return clf
 
     elif pool == "global_supervised":
@@ -1572,16 +1648,17 @@ def initialize_active_model(
 
         reset_seeds(42)
 
+        callbacks = [lr_cb] if int(round_num) == 0 else [lr_cb, es]
         model.fit(
             X_init,
             y_init,
             validation_data=(Z_val, y_val),
             epochs=200,
-            batch_size=32,
+            batch_size=16,
             class_weight=class_weight,
             verbose=0,
             shuffle=True,
-            callbacks=[lr_cb,es]
+            callbacks=callbacks,
         )
 
         return model
@@ -1591,14 +1668,20 @@ def initialize_active_model(
 
 def pre_al_metrics(model, Z_tr_labeled, y_tr_labeled, Z_val, y_val, Z_te, y_te):
     
-    probs_train = model.predict(Z_tr_labeled, verbose=0).ravel()
-    probs_val = model.predict(Z_val, verbose=0).ravel()
-    probs_te = model.predict(Z_te, verbose=0).ravel()
-    
+    # probs_train = model.predict(Z_tr_labeled, verbose=0).ravel()
+
+    # probs_val = model.predict(Z_val, verbose=0).ravel()
+    # probs_te = model.predict(Z_te, verbose=0).ravel()
+    ##for LR
+    probs_train = predict_positive_scores(model, Z_tr_labeled)
+    probs_val = predict_positive_scores(model, Z_val)
+    probs_te = predict_positive_scores(model, Z_te)
+
     auc_m_pre, auc_s_pre, _ = bootstrap_auc(y_te, probs_te)
     auc_m_train_pre, auc_s_train_pre, _ = bootstrap_auc(y_tr_labeled, probs_train)
     auc_m_val_pre, auc_s_val_pre, _ = bootstrap_auc(y_val, probs_val)
-    
+
+
     m = pd.DataFrame(index=[0])
     m["round"] = 0
     m["AUC_Mean_Train"] = auc_m_train_pre
@@ -1607,13 +1690,202 @@ def pre_al_metrics(model, Z_tr_labeled, y_tr_labeled, Z_val, y_val, Z_te, y_te):
     m["AUC_STD_Val"] = auc_s_val_pre
     m["AUC_Mean"] = auc_m_pre
     m["AUC_STD"] = auc_s_pre
+    m["AP_Test"] = average_precision_score(y_te, probs_te)
     eval_payload = {
         "train": {"y_true": np.asarray(y_tr_labeled).ravel(), "y_score": np.asarray(probs_train).ravel()},
         "val": {"y_true": np.asarray(y_val).ravel(), "y_score": np.asarray(probs_val).ravel()},
         "test": {"y_true": np.asarray(y_te).ravel(), "y_score": np.asarray(probs_te).ravel()},
     }
+    
     return m, eval_payload
 
+
+def debug_round0_ranking(model, Z_tr_labeled, y_tr_labeled):
+    # DEBUG ONLY: inspect whether the round-0 model ranks positives above negatives.
+    y = np.asarray(y_tr_labeled).ravel()
+    if len(np.unique(y)) < 2:
+        print("[DEBUG round 0] Skipping ranking diagnostics: train labels have <2 classes.")
+        return
+
+    def print_score_summary(name, probs):
+        probs = np.asarray(probs).ravel()
+        pos = probs[y == 1]
+        neg = probs[y == 0]
+        print(f"[DEBUG round 0] {name} direct train auc: {roc_auc_score(y, probs):.4f}")
+        print(f"[DEBUG round 0] {name} flipped train auc: {roc_auc_score(y, 1 - probs):.4f}")
+        print(f"[DEBUG round 0] {name} pos mean: {pos.mean():.6f}")
+        print(f"[DEBUG round 0] {name} neg mean: {neg.mean():.6f}")
+        print(f"[DEBUG round 0] {name} score min/max: {probs.min():.6f}/{probs.max():.6f}")
+
+    probs_predict = predict_positive_scores(model, Z_tr_labeled)
+    print_score_summary("current predict", probs_predict)
+
+    try:
+        probs_train_mode = np.asarray(model(Z_tr_labeled, training=True)).ravel()
+        print_score_summary("current training=True", probs_train_mode)
+    except Exception as e:
+        print(f"[DEBUG round 0] Skipping training=True diagnostics: {e}")
+
+    # DEBUG ONLY: overfit sanity check on the same round-0 labels.
+    # If this cannot get train AUC well above 0.5, the issue is likely features,
+    # label noise, or X/y alignment rather than dropout or early stopping.
+    reset_seeds(1234)
+    debug_model = tf.keras.Sequential([
+        layers.Input(shape=(Z_tr_labeled.shape[1],)),
+        layers.Dense(16, activation="relu"),
+        layers.Dense(1, activation="sigmoid"),
+    ])
+    debug_model.compile(
+        optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3),
+        loss="binary_crossentropy",
+        metrics=[tf.keras.metrics.AUC(name="auc")],
+    )
+    debug_model.fit(
+        Z_tr_labeled,
+        y,
+        epochs=1000,
+        batch_size=8,
+        verbose=0,
+        shuffle=True,
+    )
+    debug_probs = debug_model.predict(Z_tr_labeled, verbose=0).ravel()
+    print_score_summary("debug overfit model", debug_probs)
+
+
+def build_debug_revised_no_bn_classifier(input_dim, dropout_rate, l2_strength=1e-4, lr=1e-3):
+    # DEBUG ONLY: revised version of the current dense classifier without BatchNorm.
+    model = Sequential([
+        layers.Dense(
+            64,
+            activation="relu",
+            input_shape=(input_dim,),
+            kernel_regularizer=l2(l2_strength),
+        ),
+        layers.Dropout(dropout_rate),
+        layers.Dense(32, activation="relu", kernel_regularizer=l2(l2_strength)),
+        layers.Dropout(dropout_rate),
+        layers.Dense(16, activation="relu", kernel_regularizer=l2(l2_strength)),
+        layers.Dense(1, activation="sigmoid"),
+    ])
+    model.compile(
+        optimizer=tf.keras.optimizers.Adam(learning_rate=lr),
+        loss="binary_crossentropy",
+        metrics=["accuracy", tf.keras.metrics.AUC(name="auc")],
+    )
+    return model
+
+
+def debug_full_data_revised_model(
+    Z_tr_labeled,
+    y_tr_labeled,
+    Z_tr_unlabeled,
+    y_tr_unlabeled,
+    Z_val,
+    y_val,
+    Z_te,
+    y_te,
+    dropout_rate,
+    fit_kwargs,
+):
+    # DEBUG ONLY: train the revised no-BatchNorm classifier on 100% of train data.
+    # This tests whether the revised architecture can perform well at full-data scale
+    # without changing the active-learning model used for the real experiment.
+    if Z_tr_unlabeled is not None and len(Z_tr_unlabeled) > 0:
+        X_full = np.concatenate([Z_tr_labeled, Z_tr_unlabeled], axis=0)
+        y_full = np.concatenate([y_tr_labeled, y_tr_unlabeled], axis=0)
+    else:
+        X_full = np.asarray(Z_tr_labeled)
+        y_full = np.asarray(y_tr_labeled)
+
+    y_full = np.asarray(y_full).ravel()
+    if len(np.unique(y_full)) < 2:
+        print("[DEBUG full revised] Skipping full-data check: train labels have <2 classes.")
+        return
+
+    reset_seeds(5678)
+    debug_model = build_debug_revised_no_bn_classifier(
+        input_dim=X_full.shape[1],
+        dropout_rate=dropout_rate,
+        l2_strength=1e-4,
+        lr=1e-3,
+    )
+    classes = np.unique(y_full)
+    cw_vals = compute_class_weight("balanced", classes=classes, y=y_full)
+    class_weight = {int(cls): float(weight) for cls, weight in zip(classes, cw_vals)}
+    epochs = int((fit_kwargs or {}).get("epochs", 200))
+    batch_size = int((fit_kwargs or {}).get("batch_size", 16))
+    callbacks = [
+        ReduceLROnPlateau(
+            monitor="val_auc",
+            factor=0.5,
+            patience=10,
+            mode="max",
+            min_lr=1e-6,
+            verbose=0,
+        ),
+        EarlyStopping(
+            monitor="val_auc",
+            patience=30,
+            restore_best_weights=True,
+            mode="max",
+            verbose=0,
+        ),
+    ]
+    debug_model.fit(
+        X_full,
+        y_full,
+        validation_data=(Z_val, y_val),
+        epochs=epochs,
+        batch_size=batch_size,
+        class_weight=class_weight,
+        callbacks=callbacks,
+        verbose=0,
+        shuffle=True,
+    )
+
+    print(
+        "[DEBUG full revised] trained no-BatchNorm model on "
+        f"n={len(y_full)} full-train samples "
+        f"(pos={(y_full == 1).sum()}, neg={(y_full == 0).sum()})"
+    )
+    for split_name, X_split, y_split in [
+        ("train", X_full, y_full),
+        ("val", Z_val, y_val),
+        ("test", Z_te, y_te),
+    ]:
+        y_split = np.asarray(y_split).ravel()
+        if len(np.unique(y_split)) < 2:
+            print(f"[DEBUG full revised] {split_name} auc: undefined (<2 classes)")
+            continue
+        probs = debug_model.predict(X_split, verbose=0).ravel()
+        auc_m, auc_s, _ = bootstrap_auc(y_split, probs)
+        print(
+            f"[DEBUG full revised] {split_name} direct auc: "
+            f"{roc_auc_score(y_split, probs):.4f}"
+        )
+        print(
+            f"[DEBUG full revised] {split_name} bootstrap auc: "
+            f"{auc_m:.4f} (±{auc_s:.4f})"
+        )
+
+
+def compute_uncertainty_for_lr(clf, Z_tr_unlabeled):
+    """
+    Returns uncertainty score for each unlabeled point.
+    Higher = more uncertain = should be labeled next.
+    """
+    # Option A: margin (simplest)
+    p = predict_positive_scores(clf, Z_tr_unlabeled)
+    uncertainty = 1 - np.abs(2 * p - 1)
+    
+    # Option B: entropy
+    # uncertainty = -(p*np.log(p+1e-8) + (1-p)*np.log(1-p+1e-8))
+    
+    # Option C: decision function distance
+    # scores = clf.decision_function(Z_unlabeled)
+    # uncertainty = 1 / (1 + np.abs(scores))
+    
+    return uncertainty
 
 def _coerce_eval_split_payload(split_payload):
     if not isinstance(split_payload, dict):
@@ -1646,6 +1918,7 @@ def run_al_refactored(
     enc_hr,
     enc_st,
     build_classifier,
+    # build_lr_classifier,
     mc_predict,
     K,
     budget,
@@ -1738,6 +2011,8 @@ def run_al_refactored(
         )
         y_tr_labeled = df_tr_labeled["state_val"].values.astype("float32")
 
+        # breakpoint()
+
     results = []
     queried_all = []
     queried_participants = {}
@@ -1755,6 +2030,7 @@ def run_al_refactored(
         Z_val,
         y_val,
         build_classifier,
+        # build_lr_classifier,
         CLF_PATIENCE,
         dropout_rate,
         fit_kwargs,
@@ -1765,6 +2041,7 @@ def run_al_refactored(
         input_df=input_df,
     )
     m0, eval_payload_0 = pre_al_metrics(active_model, Z_tr_labeled, y_tr_labeled, Z_val, y_val, Z_te, y_te)
+    # breakpoint()
     m0["Num_Labeled"] = int(len(df_tr_labeled))
     m0["Total_Data"] = total_data
     m0["Pct_Total_Labeled"] = (
@@ -1774,15 +2051,44 @@ def run_al_refactored(
     )
     results.append(m0)
     round_eval_payloads = {0: eval_payload_0}
+    try:
+        plot_tsne(
+            Z_tr_labeled,
+            y_tr_labeled,
+            output_dir=results_d,
+            round_num=0,
+            pid=None,
+        )
+    except Exception as e:
+        print(f"Skipping t-SNE feature-space plot for round 0: {e}")
 
     initial_unlabeled = len(df_tr_unlabeled)
-    # planned_rounds = int(np.ceil(initial_unlabeled / K)) if K and initial_unlabeled > 0 else 0
-    planned_rounds = 20
+    planned_rounds = int(np.ceil(initial_unlabeled / K)) if K and initial_unlabeled > 0 else 0
+    # planned_rounds = 20
+    
     round_num = 0
+    print("Round 0 AUC_Train: {:.4f} (±{:.4f})".format(m0["AUC_Mean_Train"].iloc[0], m0["AUC_STD_Train"].iloc[0]))
+    # DEBUG ONLY: temporary round-0 ranking diagnostics.
+    # debug_round0_ranking(active_model, Z_tr_labeled, y_tr_labeled)
+    # # DEBUG ONLY: temporary full-data AUC check for the revised no-BatchNorm classifier.
+    # (
+    #     Z_tr_labeled,
+    #     y_tr_labeled,
+    #     Z_tr_unlabeled,
+    #     y_tr_unlabeled,
+    #     Z_val,
+    #     y_val,
+    #     Z_te,
+    #     y_te,
+    #     dropout_rate,
+    #     fit_kwargs,
+    # )
 
+    # breakpoint()
     while len(df_tr_unlabeled) > 0 and round_num < planned_rounds:
         round_num += 1
         print(f"\n{'='*70}")
+
         print(f"AL Round {round_num}/{planned_rounds if planned_rounds > 0 else '?'}")
         print(f"  Labeled: {len(df_tr_labeled)}")
         print(f"  Unlabeled: {len(df_tr_unlabeled)}")
@@ -1802,32 +2108,18 @@ def run_al_refactored(
         else:
             Z_tr_unlabeled = encode_single_df(df_tr_unlabeled, enc_hr, enc_st, pool)
 
-        try:
-            plot_feature_space_tsne(
-                Z_tr_labeled,
-                Z_tr_unlabeled,
-                df_tr_labeled,
-                df_tr_unlabeled,
-                round_num,
-                results_d,
-                target_participant=target_participant,
-                initial_labeled_count=len(round_labeled_history[0]),
-            )
-        except Exception as e:
-            print(f"Skipping t-SNE feature-space plot for round {round_num}: {e}")
-
         if Aq == "random":
-            queried_indices, df_queried_original = pick_random(k_actual, df_tr_unlabeled, seed=42+round_num)
-            pos_query = len(df_tr_labeled[df_tr_labeled["state_val"] == 1])
-            neg_query = len(df_tr_labeled[df_tr_labeled["state_val"] == 0])
-            target_ratio = pos_query/(pos_query + neg_query) if (pos_query + neg_query) > 0 else 0
-            df_queried = augment_labeled_windows(df_queried_original, target_ratio=target_ratio)
+            queried_indices, df_queried = pick_random(k_actual, df_tr_unlabeled, seed=42+round_num)
+            # pos_query = len(df_tr_labeled[df_tr_labeled["state_val"] == 1])
+            # neg_query = len(df_tr_labeled[df_tr_labeled["state_val"] == 0])
+            # target_ratio = pos_query/(pos_query + neg_query) if (pos_query + neg_query) > 0 else 0
+            # df_queried = augment_labeled_windows(df_queried_original, target_ratio=target_ratio)
 
         elif Aq == "uncertainty":
             queried_indices, df_queried = pick_most_uncertain(
                 active_model, df_tr_unlabeled, Z_tr_unlabeled, k_actual, T, mc_predict
             )
-        
+
             df_queried_original = df_queried.copy()
             # queried_indices, df_queried = pick_most_uncertain_ensemble(
             #     df_tr_labeled=df_tr_labeled,
@@ -1840,15 +2132,18 @@ def run_al_refactored(
             #     y_val=y_val
             # )
         elif Aq == "coreset":
-            queried_indices, df_queried_original = coreset_greedy(
+            queried_indices, df_queried = coreset_greedy(
                 active_model, df_tr_labeled, Z_tr_labeled, df_tr_unlabeled, Z_tr_unlabeled, k_actual
             )
-            pos_query = len(df_tr_labeled[df_tr_labeled["state_val"] == 1])
-            neg_query = len(df_tr_labeled[df_tr_labeled["state_val"] == 0])
-            target_ratio = pos_query/(pos_query + neg_query) if (pos_query + neg_query) > 0 else 0
+            # queried_indices, df_queried_original = density_coreset(
+            # #     active_model, df_tr_labeled, Z_tr_labeled, df_tr_unlabeled, Z_tr_unlabeled, k_actual
+            # # )
+            # pos_query = len(df_tr_labeled[df_tr_labeled["state_val"] == 1])
+            # neg_query = len(df_tr_labeled[df_tr_labeled["state_val"] == 0])
+            # target_ratio = pos_query/(pos_query + neg_query) if (pos_query + neg_query) > 0 else 0
 
 
-            df_queried = augment_labeled_windows(df_queried_original, target_ratio=target_ratio)
+            # df_queried = augment_labeled_windows(df_queried_original, target_ratio=target_ratio)
                                             
             
 
@@ -1884,8 +2179,8 @@ def run_al_refactored(
         #df_tr_labeled = df_tr_labeled.sort_index()
 
         ##Sort only on true final round (before querying next round)
-        if len(df_tr_unlabeled) <= K:
-            df_tr_labeled = df_tr_labeled.sort_index()
+        # if len(df_tr_unlabeled) <= K:
+        #     df_tr_labeled = df_tr_labeled.sort_index()
 
         if input_df == "processed":
             Z_tr_labeled, y_tr_labeled, _, _, _ = build_XY_from_processed(
@@ -1901,7 +2196,16 @@ def run_al_refactored(
             Z_tr_labeled = encode_single_df(df_tr_labeled, enc_hr, enc_st, pool)
             y_tr_labeled = df_tr_labeled["state_val"].values.astype("float32")
         # Restore RNG state before training so both methods are equivalent
-
+        try:
+            plot_tsne(
+                Z_tr_labeled,
+                y_tr_labeled,
+                output_dir=results_d,
+                round_num=round_num,
+                pid=None,
+            )
+        except Exception as e:
+            print(f"Skipping t-SNE feature-space plot for round {round_num}: {e}")
 
         use_class_weight = True
         (
@@ -1911,6 +2215,7 @@ def run_al_refactored(
             auc_s_val_post,
             auc_m_train_post,
             auc_s_train_post,
+            ap_test,
             active_model,
             eval_payload,
         ) = train_and_evaluate_by_pool(
@@ -1923,6 +2228,7 @@ def run_al_refactored(
             Z_te=Z_te,
             y_te=y_te,
             build_classifier=build_classifier,
+            # build_lr_classifier=build_lr_classifier,
             CLF_PATIENCE=CLF_PATIENCE,
             dropout_rate=dropout_rate,
             fit_kwargs=fit_kwargs,
@@ -1948,6 +2254,7 @@ def run_al_refactored(
         metrics["AUC_STD_Val"] = auc_s_val_post
         metrics["AUC_Mean"] = auc_m_post
         metrics["AUC_STD"] = auc_s_post
+        metrics["AP_Test"] = ap_test
         metrics["Num_Labeled"] = int(len(df_tr_labeled))
         metrics["Total_Data"] = total_data
         metrics["Pct_Total_Labeled"] = (
@@ -1955,6 +2262,7 @@ def run_al_refactored(
             if total_data > 0
             else np.nan
         )
+        print(f"Round {round_num} AUC_train:{metrics['AUC_Mean_Train']} ")
         results.append(metrics)
 
         df_counts_wide = (
@@ -1981,23 +2289,25 @@ def run_al_refactored(
     )
 
 
-def build_fit_kwargs(fit_kwargs, es, use_early_stopping: bool = True):
+def build_fit_kwargs(fit_kwargs, callbacks, use_early_stopping: bool = True):
     fit_kwargs_with_callbacks = fit_kwargs.copy() if fit_kwargs else {}
-    # if "shuffle" not in fit_kwargs_with_callbacks:
-        # Keep batch order fixed for reproducible round-to-round retraining.
-        # fit_kwargs_with_callbacks["shuffle"] = True
+    # Keep batch order fixed for reproducible round-to-round retraining.
+    # fit_kwargs_with_callbacks["shuffle"] = True
     if use_early_stopping:
-        if "callbacks" in fit_kwargs_with_callbacks:
-            callbacks = fit_kwargs_with_callbacks["callbacks"]
-            if not isinstance(callbacks, list):
-                callbacks = [callbacks]
-            callbacks = callbacks + [es]
-            fit_kwargs_with_callbacks["callbacks"] = callbacks
-        else:
-            fit_kwargs_with_callbacks["callbacks"] = [es]
+        callbacks_to_add = callbacks if isinstance(callbacks, (list, tuple)) else [callbacks]
+        callbacks_to_add = [cb for cb in callbacks_to_add if cb is not None]
+        if callbacks_to_add:
+            existing_callbacks = fit_kwargs_with_callbacks.get("callbacks")
+            if existing_callbacks is None:
+                existing_callbacks = []
+            elif not isinstance(existing_callbacks, (list, tuple)):
+                existing_callbacks = [existing_callbacks]
+            fit_kwargs_with_callbacks["callbacks"] = list(existing_callbacks) + callbacks_to_add
     else:
         fit_kwargs_with_callbacks.pop("callbacks", None)
     return fit_kwargs_with_callbacks
+
+
 
 
 def bootstrap_auc(
@@ -2275,6 +2585,7 @@ def train_and_evaluate_by_pool(
     Z_te,
     y_te,
     build_classifier,
+    # build_lr_classifier,
     CLF_PATIENCE,
     dropout_rate,
     fit_kwargs,
@@ -2292,7 +2603,7 @@ def train_and_evaluate_by_pool(
 ):
     """
     Unified train+eval for both MLP and global-supervised CNN.
-    Returns: auc_mean, auc_std, auc_m_val, auc_s_val, auc_m_train, auc_s_train, model
+    Returns: auc_mean, auc_std, auc_m_val, auc_s_val, auc_m_train, auc_s_train, ap_test, model, eval_payload
     """
     if pool in ["personal", "global"]:
 
@@ -2312,21 +2623,39 @@ def train_and_evaluate_by_pool(
         # y_tr_labeled = y_tr_labeled[perm]
 
         tf.keras.backend.clear_session()
+        # reset_seeds(seed)
         tf.random.set_global_generator(tf.random.Generator.from_seed(42))
         reset_seeds(42)
         
-        clf, es = build_classifier(Z_tr_labeled.shape[1], CLF_PATIENCE, dropout_rate, seed)
-        # class_weight = compute_class_weight_map(y_tr_labeled) if use_class_weight else {0: 1.0, 1: 1.0}
-        fit_kwargs_with_callbacks = build_fit_kwargs(fit_kwargs, es, use_early_stopping=use_early_stopping)
+        clf, es = build_classifier(
+            Z_tr_labeled.shape[1],
+            CLF_PATIENCE,
+            dropout_rate,
+            seed,
+            # n_labeled=len(df_tr_labeled),
+        )
+        # lr_class_weight = "balanced" if use_class_weight else None
+        # clf = build_lr_classifier(seed=seed, class_weight=lr_class_weight)
+        # classes = np.unique(y_tr_labeled)
+        # if use_class_weight:
+        #     cw_vals = compute_class_weight("balanced", classes=classes, y=y_tr_labeled)
+        #     class_weight = {int(cls): float(weight) for cls, weight in zip(classes, cw_vals)}
+        # else:
+        #     class_weight = {0: 1.0, 1: 1.0}
+        fit_kwargs_with_callbacks = build_fit_kwargs(
+            fit_kwargs,
+            es,
+            use_early_stopping=use_early_stopping,
+        )
        
-        print(f"First weight after build: {clf.get_weights()[0].flatten()[0]:.10f}")
+        # print(f"First weight after build: {clf.get_weights()[0].flatten()[0]:.10f}")
 
         print("\n=== Class Weights Check ===")
         print(
             f"Training class distribution: Positive (1): {(y_tr_labeled == 1).sum()}, "
             f"Negative (0): {(y_tr_labeled == 0).sum()}"
         )
-        
+         
         tf.random.set_global_generator(tf.random.Generator.from_seed(42))
         reset_seeds(42)
         # clf.fit(Z_tr_labeled, y_tr_labeled, class_weight=class_weight, **fit_kwargs_with_callbacks)
@@ -2337,12 +2666,18 @@ def train_and_evaluate_by_pool(
         # Z_tr_labeled = Z_tr_labeled[perm]
         # y_tr_labeled = y_tr_labeled[perm]
         # clf.fit(Z_tr_labeled, y_tr_labeled, class_weight=class_weight, shuffle=True, **fit_kwargs_with_callbacks) ## to match 10_pct_eval
-        clf.fit(Z_tr_labeled, y_tr_labeled, **fit_kwargs_with_callbacks)
+        clf.fit(
+            Z_tr_labeled,
+            y_tr_labeled,
+            # class_weight=class_weight,
+            **fit_kwargs_with_callbacks,
+        )
+        # clf.fit(Z_tr_labeled, y_tr_labeled)
 
-        print(f"First weight after fit: {clf.get_weights()[0].flatten()[0]:.10f}")
+        # print(f"First weight after fit: {clf.get_weights()[0].flatten()[0]:.10f}")
         # 
-        all_weights = np.concatenate([w.flatten() for w in clf.get_weights()])
-        print(f"Method: {method}, Weight sum: {all_weights.sum():.10f}, norm: {np.linalg.norm(all_weights):.10f}")
+        # all_weights = np.concatenate([w.flatten() for w in clf.get_weights()])
+        # print(f"Method: {method}, Weight sum: {all_weights.sum():.10f}, norm: {np.linalg.norm(all_weights):.10f}")
         # clf.summary()
 
         
@@ -2350,10 +2685,12 @@ def train_and_evaluate_by_pool(
         # Save weights per method to compare
         # np.save(f"weights_{method}.npy", all_weights)
         
-        probs_train = clf.predict(Z_tr_labeled, verbose=0).ravel()
-
-        probs_te = clf.predict(Z_te, verbose=0).ravel()
-        probs_val = clf.predict(Z_val, verbose=0).ravel()
+        # probs_train = clf.predict(Z_tr_labeled, verbose=0).ravel()
+        # probs_te = clf.predict(Z_te, verbose=0).ravel()
+        # probs_val = clf.predict(Z_val, verbose=0).ravel()
+        probs_train = predict_positive_scores(clf, Z_tr_labeled)
+        probs_te = predict_positive_scores(clf, Z_te)
+        probs_val = predict_positive_scores(clf, Z_val)
 
         # val_auc = roc_auc_score(y_val, probs_val)
         # print(f"Validation AUC = {val_auc:.3f}")
@@ -2372,6 +2709,11 @@ def train_and_evaluate_by_pool(
         auc_m_post, auc_s_post, _ = bootstrap_auc(y_te, probs_te)
         auc_m_train_post, auc_s_train_post, _ = bootstrap_auc(y_tr_labeled, probs_train)
         auc_m_val_post, auc_s_val_post, _ = bootstrap_auc(y_val, probs_val)
+        
+        ## compute average_pericison
+        from sklearn.metrics import average_precision_score
+        ap_test = average_precision_score(y_te, probs_te)
+        print(f"Test Average Precision: {ap_test:.3f}")
         eval_payload = _build_eval_payload(
             y_tr_labeled=y_tr_labeled,
             probs_train=probs_train,
@@ -2388,6 +2730,7 @@ def train_and_evaluate_by_pool(
             auc_s_val_post,
             auc_m_train_post,
             auc_s_train_post,
+            ap_test,
             clf,
             eval_payload,
         )
@@ -2428,7 +2771,7 @@ def train_and_evaluate_by_pool(
                 class_weight=class_weight,
                 verbose=0,
                 shuffle=True,
-                callbacks=[lr_cb, es]
+                callbacks=[lr_cb, es],
             )
 
         #     ##Note the below is the changes for the ensemble
@@ -2520,6 +2863,7 @@ def train_and_evaluate_by_pool(
         auc_m_post, auc_s_post, _ = bootstrap_auc(y_te, probs_te)
         auc_m_train_post, auc_s_train_post, _ = bootstrap_auc(y_tr_labeled, probs_train)
         auc_m_val_post, auc_s_val_post, _ = bootstrap_auc(y_val, probs_val)
+        ap_test = average_precision_score(y_te, probs_te)
         eval_payload = _build_eval_payload(
             y_tr_labeled=y_tr_labeled,
             probs_train=probs_train,
@@ -2535,6 +2879,7 @@ def train_and_evaluate_by_pool(
             auc_s_val_post,
             auc_m_train_post,
             auc_s_train_post,
+            ap_test,
             active_model,
             eval_payload,
         )

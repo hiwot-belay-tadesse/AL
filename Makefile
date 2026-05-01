@@ -59,8 +59,9 @@ run_all_cp: cp_Nectarine_Crave cp_Nectarine_Use
 
 ## runs active learning for Cardiomate data
 # BP_IDS ?= 10 15 16 17 18 20 22 23 24 25 26 30 31 32 33 34 35 36 39 40
-BP_IDS ?=  20
-# BP_IDS ?= 20 22 25 30 35 39
+
+BP_IDS ?=  15
+#24 25 26 30 31 33 39
 ## Users to report AL: 15, 20, 22, 24, 25, 26, 30, 31, 33, 39
 .PHONY: run_bp_submit
 run_bp_submit:
@@ -99,3 +100,30 @@ clean_logs:
 
 
 
+SEEDS ?= 41,42,43
+TARGET_USER ?= 15
+POOL ?= global
+FRUIT ?= BP
+SCENARIO ?= spike
+UNLABELED_FRAC ?= 0.22
+DROPOUT_RATE ?= 0.5
+WARM_START ?= 0
+TASK ?= bp
+INPUT_DF ?= raw
+OUTDIR ?= multi_seed_results
+
+.PHONY: run_multi_seeds
+run_multi_seeds:
+	python run_multi_seeds.py \
+	  --outdir $(OUTDIR) \
+	  --seeds $(SEEDS) \
+	  --user $(TARGET_USER) \
+	  --participant_id $(TARGET_USER) \
+	  --pool $(POOL) \
+	  --fruit $(FRUIT) \
+	  --scenario $(SCENARIO) \
+	  --unlabeled_frac $(UNLABELED_FRAC) \
+	  --dropout_rate $(DROPOUT_RATE) \
+	  --warm_start $(WARM_START) \
+	  --task $(TASK) \
+	  --input_df $(INPUT_DF)

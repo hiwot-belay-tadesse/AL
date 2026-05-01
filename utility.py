@@ -1368,6 +1368,7 @@ def run_al(Aq, df_tr_labeled, df_tr_unlabeled, df_val, df_te,
         enc_hr, enc_st, pool
     )
 
+
     # Z_tr_labeled = (encode_single_df(df_tr_labeled, enc_hr, enc_st, pool)).astype('float32')
     y_tr_labeled = df_tr_labeled['state_val'].values.astype('float32')
     

@@ -8,7 +8,9 @@ from matplotlib.backends.backend_pdf import PdfPages
 from pandas.errors import EmptyDataError
 
 
-ROOT_DIR = Path("Cardiomate_AL/G_SSL_augmented")
+ROOT_DIR = Path("Cardiomate_AL/G_SSL_no_augment_nn")
+# ROOT_DIR = Path("cluster_results/nn_no_augment_l2/G_SSL_no_augmented_l2")
+
 BP_MODE = True
 PLOTS_DIR = ROOT_DIR / ("AUC_plots_bp" if BP_MODE else "AUC_plots")
 POOLS = ["global"]
@@ -19,6 +21,7 @@ METHOD_COLORS = {
     "coreset": "green",
 }
 CORESET_ONLY = False
+SHOW_TRAIN_AUC = True
 
 
 def get_bp_users():
@@ -111,6 +114,12 @@ def get_x_series(df):
     return df["Pct_Total_Labeled"]
 
 
+def get_round_series(df):
+    if df is None or "round" not in df.columns:
+        return None
+    return pd.to_numeric(df["round"], errors="coerce")
+
+
 def set_percentage_ticks(ax, x_values):
     vals = pd.to_numeric(pd.Series(x_values), errors="coerce").dropna()
     if vals.empty:
@@ -139,20 +148,41 @@ def set_sparse_percentage_ticks(ax, x_values):
 
 
 
-def plot_with_variance(ax, df, label, color):
+def plot_with_variance(ax, df, label, color, show_train_auc=SHOW_TRAIN_AUC):
     if df is None or "AUC_Mean" not in df.columns:
         return []
     x = get_x_series(df)
     if x is None:
         return []
-    y = df["AUC_Mean"]
-    ax.plot(x, y, marker="o", color=color, label=label, linewidth=3.0)
+
+    x = pd.to_numeric(pd.Series(x), errors="coerce").reset_index(drop=True)
+    y = pd.to_numeric(df["AUC_Mean"], errors="coerce").reset_index(drop=True)
+    mask = x.notna() & y.notna()
+    if not mask.any():
+        return []
+
+    ax.plot(x[mask], y[mask], marker="o", color=color, label=label, linewidth=3.0)
+    if show_train_auc and "AUC_Mean_Train" in df.columns:
+        y_train = pd.to_numeric(df["AUC_Mean_Train"], errors="coerce").reset_index(drop=True)
+        train_mask = x.notna() & y_train.notna()
+        if train_mask.any():
+            ax.plot(
+                x[train_mask],
+                y_train[train_mask],
+                marker="s",
+                color=color,
+                linestyle="--",
+                linewidth=2.0,
+                alpha=0.7,
+                label=f"{label} train",
+            )
+
     if "AUC_STD" in df.columns:
-        s = df["AUC_STD"].fillna(0.0)
+        s = pd.to_numeric(df["AUC_STD"], errors="coerce").fillna(0.0).reset_index(drop=True)
         ax.errorbar(
-            x,
-            y,
-            yerr=s,
+            x[mask],
+            y[mask],
+            yerr=s[mask],
             fmt="none",
             ecolor=color,
             elinewidth=2.5,
@@ -160,7 +190,24 @@ def plot_with_variance(ax, df, label, color):
             capthick=2.5,
             alpha=0.9,
         )
-    return x.tolist()
+    
+
+
+    return x[mask].tolist()
+
+
+def plot_metric(ax, df, x_col, y_col, label, color):
+    if df is None or y_col not in df.columns:
+        return []
+    if x_col not in df.columns:
+        return []
+    x = pd.to_numeric(df[x_col], errors="coerce")
+    y = pd.to_numeric(df[y_col], errors="coerce")
+    mask = x.notna() & y.notna()
+    if not mask.any():
+        return []
+    ax.plot(x[mask], y[mask], marker="o", color=color, label=label, linewidth=3.0)
+    return x[mask].tolist()
 
 
 def find_summary_files(user, fruit_scenario, pool):
@@ -319,15 +366,58 @@ def plot_aggregate_auc(rec, hp_plot_dir: Path):
     plt.close(fig)
 
 
+def plot_aggregate_ap(rec, hp_plot_dir: Path):
+    fig, ax = plt.subplots(1, 1, figsize=(7, 5))
+    plotted_rounds = []
+    for method_name in METHODS:
+        agg_df = rec.get("aggregated_auc_by_method", {}).get(method_name)
+        plotted_rounds.extend(
+            plot_metric(ax, agg_df, "round", "AP_Test", method_name, METHOD_COLORS[method_name])
+        )
+    if plotted_rounds:
+        ax.set_xticks(sorted(pd.Series(plotted_rounds).dropna().astype(int).unique().tolist()))
+        ax.set_xlabel("Round")
+        ax.set_ylabel("AP Test")
+        ax.set_title("Aggregated AP Test")
+        ax.legend()
+        fig.tight_layout()
+        fig.savefig(hp_plot_dir / "aggregate_ap.png", dpi=150)
+    plt.close(fig)
+
+
 def plot_user_auc(rec, hp_plot_dir: Path):
     if not any(rec.get(name) is not None for name in ["uncertainty", "random", "coreset"]):
         return
 
     fig, ax = plt.subplots(1, 1, figsize=(7, 5))
     plotted_x_values = []
-    plotted_x_values.extend(plot_with_variance(ax, rec.get("uncertainty"), "uncertainty", METHOD_COLORS["uncertainty"]))
-    plotted_x_values.extend(plot_with_variance(ax, rec.get("random"), "random", METHOD_COLORS["random"]))
-    plotted_x_values.extend(plot_with_variance(ax, rec.get("coreset"), "coreset", METHOD_COLORS["coreset"]))
+    plotted_x_values.extend(
+        plot_with_variance(
+            ax,
+            rec.get("uncertainty"),
+            "uncertainty",
+            METHOD_COLORS["uncertainty"],
+            show_train_auc=True,
+        )
+    )
+    plotted_x_values.extend(
+        plot_with_variance(
+            ax,
+            rec.get("random"),
+            "random",
+            METHOD_COLORS["random"],
+            show_train_auc=True,
+        )
+    )
+    plotted_x_values.extend(
+        plot_with_variance(
+            ax,
+            rec.get("coreset"),
+            "coreset",
+            METHOD_COLORS["coreset"],
+            show_train_auc=True,
+        )
+    )
 
     if rec.get("upper_bound_auc") is not None:
         ax.axhline(
@@ -349,9 +439,34 @@ def plot_user_auc(rec, hp_plot_dir: Path):
     plt.close(fig)
 
 
+def plot_user_ap(rec, hp_plot_dir: Path):
+    if not any(rec.get(name) is not None for name in ["uncertainty", "random", "coreset"]):
+        return
+
+    fig, ax = plt.subplots(1, 1, figsize=(7, 5))
+    plotted_rounds = []
+    plotted_rounds.extend(plot_metric(ax, rec.get("uncertainty"), "round", "AP_Test", "uncertainty", METHOD_COLORS["uncertainty"]))
+    plotted_rounds.extend(plot_metric(ax, rec.get("random"), "round", "AP_Test", "random", METHOD_COLORS["random"]))
+    plotted_rounds.extend(plot_metric(ax, rec.get("coreset"), "round", "AP_Test", "coreset", METHOD_COLORS["coreset"]))
+
+    if not plotted_rounds:
+        plt.close(fig)
+        return
+
+    ax.set_xticks(sorted(pd.Series(plotted_rounds).dropna().astype(int).unique().tolist()))
+    ax.set_xlabel("Round")
+    ax.set_ylabel("AP Test")
+    ax.set_title(f"Per-User AP ({rec['user']})")
+    ax.legend()
+    fig.tight_layout()
+    fig.savefig(hp_plot_dir / f"{rec['user']}_ap.png", dpi=150)
+    plt.close(fig)
+
+
 def plot_for_user_scenario(user, fruit_scenario, pool):
     records = load_user_scenario(user, fruit_scenario, pool)
     if not records:
+        print(f"No records found for user={user}, scenario={fruit_scenario}, pool={pool}")
         return
 
     scenario_dir = PLOTS_DIR / fruit_scenario
@@ -361,7 +476,9 @@ def plot_for_user_scenario(user, fruit_scenario, pool):
         hp_plot_dir = scenario_dir / rec["hp_folder"]
         hp_plot_dir.mkdir(parents=True, exist_ok=True)
         plot_aggregate_auc(rec, hp_plot_dir)
+        # plot_aggregate_ap(rec, hp_plot_dir)
         plot_user_auc(rec, hp_plot_dir)
+        # plot_user_ap(rec, hp_plot_dir)
 
 
 def plot_grid_by_participant(source_dir, ncols=3, rows_per_page=3, output_pdf="grid_by_participant.pdf"):
@@ -452,10 +569,47 @@ def plot_all_users_by_scenario(results_map, suffix):
         plt.close(fig)
 
 
+def plot_all_users_ap_by_scenario(results_map, suffix):
+    for scenario, users in SCENARIO_USERS.items():
+        fig, ax = plt.subplots(figsize=(9, 6))
+        plotted_rounds = []
+        any_plotted = False
+
+        for user in users:
+            df = results_map.get(f"{user}_{scenario}")
+            if df is None or "round" not in df.columns or "AP_Test" not in df.columns:
+                continue
+            x = pd.to_numeric(df["round"], errors="coerce")
+            y = pd.to_numeric(df["AP_Test"], errors="coerce")
+            mask = x.notna() & y.notna()
+            if not mask.any():
+                continue
+            ax.plot(x[mask], y[mask], marker="o", label=user)
+            plotted_rounds.extend(x[mask].tolist())
+            any_plotted = True
+
+        if not any_plotted:
+            plt.close(fig)
+            continue
+
+        ax.set_xticks(sorted(pd.Series(plotted_rounds).dropna().astype(int).unique().tolist()))
+        ax.set_xlabel("Round")
+        ax.set_ylabel("AP Test")
+        ax.set_title(f"{scenario.replace('_', ' ')} - {suffix.title()} AP Test per User")
+        ax.legend()
+        fig.tight_layout()
+
+        out_path = (PLOTS_DIR / scenario) / f"all_users_{suffix}_ap.png"
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        fig.savefig(out_path, dpi=150)
+        plt.close(fig)
+
+
 for fruit_scenario, users in SCENARIO_USERS.items():
     for user in users:
         for pool in POOLS:
             plot_for_user_scenario(user, fruit_scenario, pool)
 
 plot_grids_for_all_hp_folders()
-plot_all_users_by_scenario(combined_random, "random")
+# plot_all_users_by_scenario(combined_random, "random")
+# plot_all_users_ap_by_scenario(combined_random, "random")

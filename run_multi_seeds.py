@@ -5,17 +5,15 @@ Run multiple seeds for all methods (uncertainty, random, coreset)
 import argparse
 import json
 import os
+import sys
 from pathlib import Path
 from types import SimpleNamespace
 
-import run as run_module
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import preprocess
 from sklearn.model_selection import train_test_split
-
-run_module.OUTPUT_DIR = "/Users/hiwotbelaytadesse/Desktop/Banaware_AL/multi_seed_results"
 
 
 def main():
@@ -23,16 +21,62 @@ def main():
     pa.add_argument("--seeds", default="41,42,43", help="Comma-separated seeds")
     pa.add_argument("--results_subdir", default="results")
     pa.add_argument("--user", default="35")
+    pa.add_argument("--participant_id", default=None)
     pa.add_argument("--pool", default="global")
     pa.add_argument("--fruit", default="BP") 
     pa.add_argument("--scenario", default="spike")
-    pa.add_argument("--unlabeled_frac", default="0.00018")
+    pa.add_argument("--unlabeled_frac", default="0.22")
     pa.add_argument("--dropout_rate", default="0.5")
     pa.add_argument("--warm_start", default="0")
     pa.add_argument("--task", default="bp")
     pa.add_argument("--input_df", default="raw")
+    pa.add_argument(
+        "--outdir",
+        default="multi_seed_results",
+    )
     pa.add_argument("--analyze_round0", action="store_true")
     args = pa.parse_args()
+
+    if args.task == "bp":
+        args.participant_id = args.participant_id or args.user
+        args.user = str(args.participant_id)
+
+    # run.py parses CLI args at import time. Give it BP-safe args, then restore
+    # this script's argv so run_multi_seeds remains the command-line owner.
+    original_argv = sys.argv[:]
+    run_argv = [
+        original_argv[0],
+        "--task", args.task,
+        "--user", str(args.user),
+        "--pool", args.pool,
+        "--fruit", args.fruit,
+        "--scenario", args.scenario,
+        "--unlabeled_frac", str(args.unlabeled_frac),
+        "--dropout_rate", str(args.dropout_rate),
+        "--warm_start", str(args.warm_start),
+        "--input_df", args.input_df,
+    ]
+    if args.task == "bp":
+        run_argv.extend(["--participant_id", str(args.participant_id)])
+    repo_root = Path(__file__).resolve().parent
+    outdir_path = Path(args.outdir)
+    if not outdir_path.is_absolute():
+        outdir_path = repo_root / outdir_path
+    outdir = str(outdir_path)
+
+    original_output_dir = os.environ.get("BANAL_OUTPUT_DIR")
+    os.environ["BANAL_OUTPUT_DIR"] = outdir
+    sys.argv = run_argv
+    try:
+        import run as run_module
+    finally:
+        sys.argv = original_argv
+        if original_output_dir is None:
+            os.environ.pop("BANAL_OUTPUT_DIR", None)
+        else:
+            os.environ["BANAL_OUTPUT_DIR"] = original_output_dir
+
+    run_module.OUTPUT_DIR = outdir
 
     seeds = [int(s.strip()) for s in args.seeds.split(",") if s.strip()]
     if not seeds:
@@ -77,6 +121,7 @@ def main():
                 "T": run_module.T[0],
                 "input_df": args.input_df,
                 "task": args.task,
+                "participant_id": args.participant_id,
             }
 
             exp_dir = scenario_dir / exp_name
@@ -129,6 +174,8 @@ def main():
             pool=args.pool,
             fruit=args.fruit,
             scenario=args.scenario,
+            task=args.task,
+            participant_id=args.participant_id,
             unlabeled_frac=float(args.unlabeled_frac),
             dropout_rate=float(args.dropout_rate),
             warm_start=int(args.warm_start),

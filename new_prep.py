@@ -129,6 +129,23 @@ def _collect_processed_rows(df_processed: pd.DataFrame, days) -> pd.DataFrame:
     return df_processed[day_index.isin(days_norm)].copy()
 
 
+def _bp_load_processed_data(pid):
+    in_file = Path("processed") / f"hp{pid}" / "processed_bp_prediction_data.csv"
+    if not in_file.exists():
+        raise FileNotFoundError(f"Missing processed BP file: {in_file}")
+
+    df = _safe_read_csv(in_file, f"processed bp ({in_file.name})")
+    if "datetime_local" not in df.columns:
+        raise ValueError(f"{in_file} missing 'datetime_local'")
+    if "BP_spike" not in df.columns:
+        raise ValueError(f"{in_file} missing 'BP_spike'")
+
+    df["datetime_local"] = pd.to_datetime(df["datetime_local"]).dt.tz_localize(None)
+    df = df.sort_values("datetime_local").reset_index(drop=True)
+    df["state_val"] = df["BP_spike"].astype(int)
+    return df
+
+
     
 def prepare_data(
     args,
@@ -218,22 +235,6 @@ def prepare_data(
                 if scenario == "None":
                     return neg_df.copy()
                 return pos_df.copy()
-
-            def _bp_load_processed_data(pid):
-                in_file = Path("processed") / f"hp{pid}" / "processed_bp_prediction_data.csv"
-                if not in_file.exists():
-                    raise FileNotFoundError(f"Missing processed BP file: {in_file}")
-
-                df = _safe_read_csv(in_file, f"processed bp ({in_file.name})")
-                if "datetime_local" not in df.columns:
-                    raise ValueError(f"{in_file} missing 'datetime_local'")
-                if "BP_spike" not in df.columns:
-                    raise ValueError(f"{in_file} missing 'BP_spike'")
-
-                df["datetime_local"] = pd.to_datetime(df["datetime_local"]).dt.tz_localize(None)
-                df = df.sort_values("datetime_local").reset_index(drop=True)
-                df["state_val"] = df["BP_spike"].astype(int)
-                return df
 
             def _load_rows(pid, days):
                 df = _bp_load_processed_data(pid)
@@ -429,6 +430,8 @@ def prepare_data(
             [v["df"] for v in val_info.values()],
             ignore_index=True
         )
+        # df_val = val_info[uid]["df"].copy()
+        
         df_tr = train_info[uid]["df"].copy()
     
         if input_df == "raw":

@@ -44,24 +44,28 @@ else:
     BP_MODE = False
 
 # This is the base directory where the results will be stored.
-OUTPUT_DIR = set_output_dir(args.pool, BP_MODE)
+OUTPUT_DIR = os.environ.get("BANAL_OUTPUT_DIR") or set_output_dir(args.pool, BP_MODE)
 
 
 unlabeled_frac = [float(args.unlabeled_frac)]
 dropout_rate = [float(args.dropout_rate)]
 warm_start = [bool(int(args.warm_start))]
 T = [50]
-K = [3]
+K = [100]
 # K = [100]
+
 Budget = [None]
+
 
 
 QUEUE = [
     # ("uncertainty", dict(
     #     user=[args.user], pool=[args.pool], fruit=[args.fruit], scenario=[args.scenario],
     #     task=[args.task], participant_id=[args.participant_id],
-    #     T=T, K=K, Budget=Budget, unlabeled_frac=unlabeled_frac, dropout_rate=dropout_rate, warm_start=warm_start
+    #     T=T, K=K, Budget=Budget, unlabeled_frac=unlabeled_frac, dropout_rate=dropout_rate, warm_start=warm_start,
+    #     input_df=[args.input_df]
     # )),
+
     ("random", dict(
         user=[args.user], pool=[args.pool], fruit=[args.fruit], scenario=[args.scenario],
         task=[args.task], participant_id=[args.participant_id],
@@ -222,12 +226,15 @@ def run(exp_dir, exp_name, exp_kwargs):
         random_state=split_seed,
     )
 
+  
+    # df_tr_labeled, df_tr_unlabeled = new_helper.select_balanced_centroid_seed(split_source, n_per_class=2, label_col="state_val")
+
 
     # df_tr_labeled, df_tr_unlabeled = new_helper.split_labeled_unlabeled_kmeans(
     #     split_source, B=10, n_clusters=k_val, random_state=split_seed
     # )
     
-    # breakpoint()
+
     run_out = run_experiment(
         str(exp_dir_path),
         exp_name,
@@ -255,10 +262,6 @@ def run(exp_dir, exp_name, exp_kwargs):
     _PER_USER_ROUND_EVAL[user_key] = run_out.get("round_eval_payloads")
     _PER_USER_FULL_DATA_EVAL[user_key] = run_out.get("full_data_eval_payload")
 
-    # Write aggregates outside user/scenario folders:
-    #   <OUTPUT_DIR>/<pool>/<method>/aggregates/<hp_folder>/...
-    # Example:
-    #   .../global/random/aggregates/UF.../
     aggregate_dir = Path(OUTPUT_DIR) / args_ns.pool / "aggregates" /exp_name/hp_folder
     aggregate_dir.mkdir(parents=True, exist_ok=True)
 
