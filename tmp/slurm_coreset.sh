@@ -9,5 +9,5 @@
 #SBATCH -o Cardiomate_AL/G_SSL_no_augment_nn/global/15/BP_spike/coreset/out_%j.txt # File to which STDOUT will be written
 #SBATCH -e Cardiomate_AL/G_SSL_no_augment_nn/global/15/BP_spike/coreset/err_%j.txt # File to which STDERR will be written
 
-# python -u run.py Cardiomate_AL/G_SSL_no_augment_nn/global/15/BP_spike/coreset coreset '{"user": "15", "pool": "global", "fruit": "BP", "scenario": "spike", "task": "bp", "participant_id": "15", "K": 100, "Budget": null, "unlabeled_frac": 0.22, "dropout_rate": 0.5, "warm_start": false, "input_df": "raw"}'
-python -u refactor_run.py Cardiomate_AL/G_SSL_no_augment_nn/global/15/BP_spike/coreset coreset '{"user": "15", "pool": "global", "fruit": "BP", "scenario": "spike", "task": "bp", "participant_id": "15", "K": 100, "Budget": null, "unlabeled_frac": 0.22, "dropout_rate": 0.5, "warm_start": false, "input_df": "raw"}'
+# python -u run.py Cardiomate_AL/G_SSL_no_augment_nn/global/15/BP_spike/coreset coreset '{"user": "15", "pool": "global", "fruit": "BP", "scenario": "spike", "task": "bp", "participant_id": "15", "K": 3, "Budget": null, "unlabeled_frac": 0.2, "dropout_rate": 0.5, "warm_start": false, "input_df": "raw"}'
+python -u refactor_run.py Cardiomate_AL/G_SSL_no_augment_nn/global/15/BP_spike/coreset coreset '{"user": "15", "pool": "global", "fruit": "BP", "scenario": "spike", "task": "bp", "participant_id": "15", "K": 3, "Budget": null, "unlabeled_frac": 0.2, "dropout_rate": 0.5, "warm_start": false, "input_df": "raw"}'

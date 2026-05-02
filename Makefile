@@ -60,8 +60,8 @@ run_all_cp: cp_Nectarine_Crave cp_Nectarine_Use
 ## runs active learning for Cardiomate data
 # BP_IDS ?= 10 15 16 17 18 20 22 23 24 25 26 30 31 32 33 34 35 36 39 40
 
-BP_IDS ?=  15
-#24 25 26 30 31 33 39
+BP_IDS ?= 15
+# 15 20 22 24 25 26 30 31 33 39
 ## Users to report AL: 15, 20, 22, 24, 25, 26, 30, 31, 33, 39
 .PHONY: run_bp_submit
 run_bp_submit:

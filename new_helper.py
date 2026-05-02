@@ -64,6 +64,8 @@ tf.random.set_global_generator(tf.random.Generator.from_seed(42))
 sampling_rng = tf.random.Generator.from_seed(123)
 training_rng = tf.random.Generator.from_seed(456)
 
+
+
 # 
 ####Hyperparameters for global SSL model
 
@@ -89,8 +91,8 @@ def parse_args():
     pa.add_argument("--fruit", default="Nectarine")
     pa.add_argument("--scenario", default="Crave")
     pa.add_argument("--sample_mode", default="original")
-    # pa.add_argument("--unlabeled_frac", default=0.0018)
-    pa.add_argument("--unlabeled_frac", default=0.22)
+    pa.add_argument("--unlabeled_frac", default=0.2)
+    # pa.add_argument("--unlabeled_frac", default=0.01)
 
     pa.add_argument("--dropout_rate", default=0.5)
     pa.add_argument("--warm_start", default=0) ## 0 is retrain from scratch each round, 1 is finetune each round
@@ -183,116 +185,29 @@ def select_balanced_centroid_seed(df, n_per_class=2, label_col="state_val", rand
     return df_labeled, df_unlabeled
 
 
+def split_df_w_k_center(df, Z, n_clusters):
+    from sklearn.decomposition import PCA
 
-def split_labeled_unlabeled_kmeans(
-    df_tr_all,
-    B,
-    n_clusters=10,
-    random_state=42,
-    feature_cols=None,
-):
-    """
-    Split full training dataframe into labeled and unlabeled sets using k-means.
-
-    Args:
-        df_tr_all: Full training dataframe.
-        B: Label budget (number of samples to place in labeled set).
-        n_clusters: Number of k-means clusters.
-        random_state: Random seed for reproducibility.
-        feature_cols: Optional list of numeric columns to use for clustering.
-                      If None, numeric columns are auto-selected.
-
-    Returns:
-        df_tr_labeled, df_tr_unlabeled
-    """
-    if df_tr_all is None or len(df_tr_all) == 0:
-        return df_tr_all.copy(), df_tr_all.copy()
-
-    df_all = df_tr_all.copy()
-    N = len(df_all)
-    B = min(max(1, int(B)), N)
-
-    if feature_cols is not None:
-        X = df_all[feature_cols].to_numpy(dtype=float)
-    else:
-        excluded = {"state_val", "label", "target"}
-        candidate_cols = [c for c in df_all.columns if c not in excluded]
-        feat_df = pd.DataFrame(index=df_all.index)
-
-        # 1) Use native numeric columns directly.
-        numeric_cols = df_all[candidate_cols].select_dtypes(include=[np.number, "bool"]).columns.tolist()
-        if numeric_cols:
-            feat_df = pd.concat([feat_df, df_all[numeric_cols].astype(float)], axis=1)
-
-        # 2) Convert datetime columns to numeric timestamps.
-        datetime_cols = df_all[candidate_cols].select_dtypes(include=["datetime64[ns]", "datetimetz"]).columns.tolist()
-        for col in datetime_cols:
-            feat_df[f"{col}_ts"] = pd.to_datetime(df_all[col], errors="coerce").astype("int64") / 1e9
-
-        # 3) For sequence/object cols (e.g., hr_seq, st_seq), derive compact stats.
-        obj_cols = df_all[candidate_cols].select_dtypes(include=["object"]).columns.tolist()
-        for col in obj_cols:
-            series = df_all[col]
-            first_valid = next((v for v in series if v is not None and not (isinstance(v, float) and np.isnan(v))), None)
-            if isinstance(first_valid, (list, tuple, np.ndarray)):
-                arrs = series.apply(lambda v: np.asarray(v, dtype=float) if isinstance(v, (list, tuple, np.ndarray)) else np.asarray([], dtype=float))
-                feat_df[f"{col}_mean"] = arrs.apply(lambda a: float(np.nanmean(a)) if a.size else np.nan)
-                feat_df[f"{col}_std"] = arrs.apply(lambda a: float(np.nanstd(a)) if a.size else np.nan)
-                feat_df[f"{col}_min"] = arrs.apply(lambda a: float(np.nanmin(a)) if a.size else np.nan)
-                feat_df[f"{col}_max"] = arrs.apply(lambda a: float(np.nanmax(a)) if a.size else np.nan)
-
-        # Keep only finite/numeric columns and fill missing values.
-        feat_df = feat_df.apply(pd.to_numeric, errors="coerce")
-        feat_df = feat_df.replace([np.inf, -np.inf], np.nan)
-
-        if feat_df.shape[1] == 0:
-            raise ValueError(
-                "No usable k-means features found in df_tr_all. "
-                "Pass feature_cols explicitly."
-            )
-
-        # Median-impute column-wise; any all-NaN columns fall back to 0.
-        med = feat_df.median(numeric_only=True)
-        feat_df = feat_df.fillna(med).fillna(0.0)
-        X = feat_df.to_numpy(dtype=float)
-
-    Xs = StandardScaler().fit_transform(X)
-
-    km = KMeans(n_clusters=min(int(n_clusters), N), random_state=random_state, n_init=10)
-    cluster_id = km.fit_predict(Xs)
-    centers = km.cluster_centers_
-
-    counts = np.bincount(cluster_id, minlength=km.n_clusters)
-    alloc = np.floor(B * counts / counts.sum()).astype(int)
-
-    non_empty = np.where(counts > 0)[0]
-    for c in non_empty:
-        if alloc[c] == 0 and alloc.sum() < B:
-            alloc[c] = 1
-
-    while alloc.sum() < B:
-        c = int(np.argmax(counts - alloc))
-        alloc[c] += 1
-    while alloc.sum() > B:
-        c = int(np.argmax(alloc))
-        alloc[c] -= 1
-
-    labeled_pos = []
-    for c in range(km.n_clusters):
-        members = np.where(cluster_id == c)[0]
-        if len(members) == 0 or alloc[c] == 0:
-            continue
-        d = np.linalg.norm(Xs[members] - centers[c], axis=1)
-        chosen = members[np.argsort(d)[: alloc[c]]]
-        labeled_pos.extend(chosen.tolist())
-
-    labeled_pos = np.array(sorted(set(labeled_pos)), dtype=int)
-    unlabeled_mask = np.ones(N, dtype=bool)
-    unlabeled_mask[labeled_pos] = False
-
-    df_tr_labeled = df_all.iloc[labeled_pos].copy()
-    df_tr_unlabeled = df_all.iloc[np.where(unlabeled_mask)[0]].copy()
-    return df_tr_labeled, df_tr_unlabeled
+    # pca = PCA(n_components=10)
+    pca = PCA(n_components=12)
+    Z_reduced = pca.fit_transform(Z)
+    kmeans = KMeans(n_clusters=n_clusters, random_state=0).fit(Z_reduced)
+    
+    centers = kmeans.cluster_centers_
+    labels = kmeans.labels_
+    
+    selected_pos = []
+    for cluster_idx in range(n_clusters):
+        members = np.where(labels == cluster_idx)[0]
+        dists = np.linalg.norm(Z_reduced[members] - centers[cluster_idx], axis=1)
+        closest = members[np.argmin(dists)]
+        selected_pos.append(closest)
+    
+    # Use positional index — works for both Z and df since they're aligned
+    df_labeled = df.iloc[selected_pos].copy()
+    df_unlabeled = df.drop(df.index[selected_pos]).copy()
+    
+    return df_labeled, df_unlabeled
 
 
 
@@ -2063,8 +1978,8 @@ def run_al_refactored(
         print(f"Skipping t-SNE feature-space plot for round 0: {e}")
 
     initial_unlabeled = len(df_tr_unlabeled)
-    planned_rounds = int(np.ceil(initial_unlabeled / K)) if K and initial_unlabeled > 0 else 0
-    # planned_rounds = 20
+    # planned_rounds = int(np.ceil(initial_unlabeled / K)) if K and initial_unlabeled > 0 else 0
+    planned_rounds = 20
     
     round_num = 0
     print("Round 0 AUC_Train: {:.4f} (±{:.4f})".format(m0["AUC_Mean_Train"].iloc[0], m0["AUC_STD_Train"].iloc[0]))

@@ -131,6 +131,35 @@ def main():
 
     run_module.OUTPUT_DIR = outdir
 
+    if args.submit and args.pool == "global" and args.input_df == "raw":
+        top_out = Path(run_module.OUTPUT_DIR)
+        warmup_args = SimpleNamespace(
+            user=args.user,
+            pool=args.pool,
+            fruit=args.fruit,
+            scenario=args.scenario,
+            task=args.task,
+            participant_id=args.participant_id,
+            unlabeled_frac=float(args.unlabeled_frac),
+            dropout_rate=float(args.dropout_rate),
+            warm_start=int(args.warm_start),
+            results_subdir=args.results_subdir,
+            input_df=args.input_df,
+        )
+        print(f"Preparing shared global encoders under {top_out / '_global_encoders'}")
+        run_module.prepare_data(
+            args=warmup_args,
+            top_out=top_out,
+            shared_enc_root=top_out / "_global_encoders",
+            shared_cnn_root=top_out / "global_cnns",
+            batch_ssl=32,
+            ssl_epochs=100,
+            pool=args.pool,
+            task=args.task,
+            input_df=args.input_df,
+        )
+        print("Shared global encoders are ready; submitting seed/method jobs.")
+
     seeds = [int(s.strip()) for s in args.seeds.split(",") if s.strip()]
     if not seeds:
         raise SystemExit("No seeds provided.")

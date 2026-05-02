@@ -51,8 +51,8 @@ unlabeled_frac = [float(args.unlabeled_frac)]
 dropout_rate = [float(args.dropout_rate)]
 warm_start = [bool(int(args.warm_start))]
 T = [50]
-K = [100]
 # K = [100]
+K = [3]
 
 Budget = [None]
 
@@ -146,7 +146,7 @@ def run(exp_dir, exp_name, exp_kwargs):
         print(f"Skipping user {args_ns.user}: prepare_data returned no data.")
         return
     
-    df_tr, df_all_tr, *_ = prep
+    (df_tr, df_all_tr, df_val, df_te, enc_hr, enc_st, *_,) = prep
 
     if df_all_tr is not None:
         pre_hash, pre_meta = utility.split_fingerprint(df_all_tr)
@@ -219,11 +219,27 @@ def run(exp_dir, exp_name, exp_kwargs):
     # )
    
     # reset_seeds(42)  
-    df_tr_labeled, df_tr_unlabeled = train_test_split(
+    # df_tr_labeled, df_tr_unlabeled = train_test_split(
+    #     split_source,
+    #     test_size=(1- uf_val),
+    #     stratify=split_source["state_val"],
+    #     random_state=split_seed,
+    # )
+    split_source = df_all_tr.reset_index(drop=True)
+
+    Z_split = utility.encode_single_df(
         split_source,
-        test_size=(1- uf_val),
-        stratify=split_source["state_val"],
-        random_state=split_seed,
+        enc_hr,
+        enc_st,
+        args_ns.pool,
+    )
+    n_clusters = int(round(uf_val * len(split_source)))
+    n_clusters = max(1, min(n_clusters, len(split_source)))
+
+    df_tr_labeled, df_tr_unlabeled = new_helper.split_df_w_k_center(
+        split_source,
+        Z_split,
+        n_clusters=n_clusters,
     )
 
   
