@@ -1,0 +1,48 @@
+============================================================
+BP SPIKE DATASET ANALYSIS — SUMMARY
+============================================================
+
+Participants:         13
+Mean spike rate:      69.2%
+Low spike rate (<10%): 0/13 participants
+
+SSL Representation Analysis:
+  Within-spike sim:    0.8802
+  Within-nospike sim:  0.784
+  Between-class sim:   0.8199
+  Separability ratio:  1.0149
+
+Upper Bound AUC (global-train ceiling):
+  Mean UB AUC:              0.735
+  Participants with UB<0.65: 4/13
+
+Isolation (high = needs own labels): 0/13
+
+============================================================
+WHY THIS DATASET IS HARD FOR ACTIVE LEARNING
+============================================================
+
+1. Label noise:
+   BP spike labels are self-reported via EMA.
+   Participants may misremember or misattribute spikes.
+   This creates an irreducible noise floor.
+
+2. Class imbalance:
+  Mean spike rate = 69.2%.
+   Rare positive events make selection unstable.
+
+3. Low global-train upper bound:
+  Pooled grand AUC = 0.720  AP = 0.626.
+  Mean per-participant test UB = 0.735 ± 0.080.
+   Even with aggregated training labels, performance is limited.
+   No selection strategy can exceed this ceiling.
+
+4. Participant heterogeneity:
+  0/13 participants are isolated in SSL space.
+   Collective labeling transfers poorly to isolated participants.
+
+Conclusion:
+   These properties make it impossible to demonstrate
+   active learning benefit in this dataset.
+   We validate the framework on WESAD where labels
+   are protocol-controlled and reliable.

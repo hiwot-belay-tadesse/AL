@@ -100,7 +100,7 @@ clean_logs:
 
 
 
-SEEDS ?= 41,42,43
+SEEDS ?= 41,42,43,44,45,46,47,48,49,50
 TARGET_USER ?= 20
 POOL ?= global
 FRUIT ?= BP

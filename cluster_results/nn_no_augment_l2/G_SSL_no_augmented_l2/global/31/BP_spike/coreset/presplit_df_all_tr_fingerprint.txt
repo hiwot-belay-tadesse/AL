@@ -1,0 +1,4 @@
+source=run.py
+rows=2644
+time_col=hawaii_createdat_time
+sha256=630344a3a26c031a882f0f77a4992f4657cba6d4fa573830fd34f2fe48ea43d3

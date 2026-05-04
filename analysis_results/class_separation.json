@@ -1,0 +1,6 @@
+{
+  "within_spike_sim": 0.8802,
+  "within_nospike_sim": 0.784,
+  "between_class_sim": 0.8199,
+  "separability_ratio": 1.0149
+}

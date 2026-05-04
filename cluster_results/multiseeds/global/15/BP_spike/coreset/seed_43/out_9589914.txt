@@ -1,0 +1,636 @@
+[]
+Running experiment coreset:
+Results are stored in: multiseeds/global/15/BP_spike/coreset/seed_43
+with hyperparameters {'user': '15', 'pool': 'global', 'fruit': 'BP', 'scenario': 'spike', 'unlabeled_frac': 0.22, 'dropout_rate': 0.5, 'warm_start': 0, 'seed': 43, 'aq': 'coreset', 'K': 100, 'Budget': None, 'T': 50, 'input_df': 'raw', 'task': 'bp', 'participant_id': '15', 'output_dir': 'multiseeds'}
+
+
+Skipping user 10: Unable to find a TEST split with ≥2 windows and ≥2 positives & negatives after 10 tries
+Skipping user 16: Unable to find a TEST split with ≥2 windows and ≥2 positives & negatives after 10 tries
+Skipping user 17: Unable to find a TEST split with ≥2 windows and ≥2 positives & negatives after 10 tries
+Skipping user 18: Unable to find a TEST split with ≥2 windows and ≥2 positives & negatives after 10 tries
+Skipping user 34: Unable to find a TEST split with ≥2 windows and ≥2 positives & negatives after 10 tries
+Skipping user 36: Unable to find a TEST split with ≥2 windows and ≥2 positives & negatives after 10 tries
+Skipping user 40: Unable to find a TEST split with ≥2 windows and ≥2 positives & negatives after 10 tries
+Skipping user 10: no valid train/val/test splits.
+Skipping user 16: no valid train/val/test splits.
+Skipping user 17: no valid train/val/test splits.
+Skipping user 18: no valid train/val/test splits.
+Skipping user 34: no valid train/val/test splits.
+Skipping user 36: no valid train/val/test splits.
+Skipping user 40: no valid train/val/test splits.
+[SimCLR   1/100]  train=0.8239  val=0.4287
+[SimCLR   2/100]  train=0.3965  val=0.2865
+[SimCLR   3/100]  train=0.3346  val=0.2468
+[SimCLR   4/100]  train=0.2907  val=0.2058
+[SimCLR   5/100]  train=0.2576  val=0.1795
+[SimCLR   6/100]  train=0.2321  val=0.1760
+[SimCLR   7/100]  train=0.2240  val=0.1510
+[SimCLR   8/100]  train=0.2118  val=0.1330
+[SimCLR   9/100]  train=0.2096  val=0.1452
+[SimCLR  10/100]  train=0.2020  val=0.1922
+[SimCLR  11/100]  train=0.1871  val=0.1377
+[SimCLR  12/100]  train=0.1870  val=0.1159
+[SimCLR  13/100]  train=0.1727  val=0.1385
+[SimCLR  14/100]  train=0.1760  val=0.1184
+[SimCLR  15/100]  train=0.1733  val=0.1011
+[SimCLR  16/100]  train=0.1650  val=0.1113
+[SimCLR  17/100]  train=0.1661  val=0.1169
+[SimCLR  18/100]  train=0.1651  val=0.1030
+[SimCLR  19/100]  train=0.1507  val=0.0985
+[SimCLR  20/100]  train=0.1527  val=0.1130
+[SimCLR  21/100]  train=0.1469  val=0.1132
+[SimCLR  22/100]  train=0.1532  val=0.0903
+[SimCLR  23/100]  train=0.1402  val=0.0881
+[SimCLR  24/100]  train=0.1410  val=0.0962
+[SimCLR  25/100]  train=0.1514  val=0.1037
+[SimCLR  26/100]  train=0.1463  val=0.0951
+[SimCLR  27/100]  train=0.1368  val=0.0827
+[SimCLR  28/100]  train=0.1353  val=0.0912
+[SimCLR  29/100]  train=0.1337  val=0.0830
+[SimCLR  30/100]  train=0.1316  val=0.0826
+[SimCLR  31/100]  train=0.1330  val=0.0839
+[SimCLR  32/100]  train=0.1330  val=0.0785
+[SimCLR  33/100]  train=0.1328  val=0.0789
+[SimCLR  34/100]  train=0.1332  val=0.0780
+[SimCLR  35/100]  train=0.1225  val=0.0803
+[SimCLR  36/100]  train=0.1285  val=0.0763
+[SimCLR  37/100]  train=0.1369  val=0.0811
+[SimCLR  38/100]  train=0.1303  val=0.0845
+[SimCLR  39/100]  train=0.1288  val=0.0830
+[SimCLR  40/100]  train=0.1270  val=0.0749
+[SimCLR  41/100]  train=0.1267  val=0.0760
+[SimCLR  42/100]  train=0.1211  val=0.0714
+[SimCLR  43/100]  train=0.1190  val=0.0681
+[SimCLR  44/100]  train=0.1228  val=0.0759
+[SimCLR  45/100]  train=0.1191  val=0.0699
+[SimCLR  46/100]  train=0.1223  val=0.0703
+[SimCLR  47/100]  train=0.1193  val=0.0661
+[SimCLR  48/100]  train=0.1154  val=0.0863
+[SimCLR  49/100]  train=0.1203  val=0.0767
+[SimCLR  50/100]  train=0.1171  val=0.0732
+[SimCLR  51/100]  train=0.1146  val=0.0733
+[SimCLR] reducing lr to 5.00e-04
+[SimCLR  52/100]  train=0.1123  val=0.0719
+[SimCLR  53/100]  train=0.1026  val=0.0590
+[SimCLR  54/100]  train=0.1043  val=0.0547
+[SimCLR  55/100]  train=0.0996  val=0.0592
+[SimCLR  56/100]  train=0.1002  val=0.0519
+[SimCLR  57/100]  train=0.1001  val=0.0548
+[SimCLR  58/100]  train=0.1011  val=0.0560
+[SimCLR  59/100]  train=0.1016  val=0.0562
+[SimCLR  60/100]  train=0.0938  val=0.0595
+[SimCLR] reducing lr to 2.50e-04
+[SimCLR  61/100]  train=0.0944  val=0.0565
+[SimCLR  62/100]  train=0.0926  val=0.0499
+[SimCLR  63/100]  train=0.0878  val=0.0505
+[SimCLR  64/100]  train=0.0898  val=0.0498
+[SimCLR  65/100]  train=0.0925  val=0.0487
+[SimCLR  66/100]  train=0.0912  val=0.0507
+[SimCLR  67/100]  train=0.0906  val=0.0511
+[SimCLR  68/100]  train=0.0883  val=0.0495
+[SimCLR  69/100]  train=0.0925  val=0.0499
+[SimCLR] reducing lr to 1.25e-04
+[SimCLR  70/100]  train=0.0903  val=0.0491
+[SimCLR  71/100]  train=0.0860  val=0.0491
+[SimCLR  72/100]  train=0.0821  val=0.0479
+[SimCLR  73/100]  train=0.0862  val=0.0466
+[SimCLR  74/100]  train=0.0872  val=0.0460
+[SimCLR  75/100]  train=0.0839  val=0.0467
+[SimCLR  76/100]  train=0.0832  val=0.0473
+[SimCLR  77/100]  train=0.0869  val=0.0471
+[SimCLR  78/100]  train=0.0854  val=0.0463
+[SimCLR  79/100]  train=0.0836  val=0.0460
+[SimCLR  80/100]  train=0.0878  val=0.0466
+[SimCLR  81/100]  train=0.0858  val=0.0457
+[SimCLR  82/100]  train=0.0853  val=0.0443
+[SimCLR  83/100]  train=0.0859  val=0.0451
+[SimCLR  84/100]  train=0.0833  val=0.0452
+[SimCLR  85/100]  train=0.0779  val=0.0460
+[SimCLR  86/100]  train=0.0789  val=0.0454
+[SimCLR] reducing lr to 6.25e-05
+[SimCLR  87/100]  train=0.0849  val=0.0461
+[SimCLR  88/100]  train=0.0831  val=0.0441
+[SimCLR  89/100]  train=0.0840  val=0.0439
+[SimCLR  90/100]  train=0.0831  val=0.0442
+[SimCLR  91/100]  train=0.0858  val=0.0446
+[SimCLR  92/100]  train=0.0835  val=0.0438
+[SimCLR  93/100]  train=0.0822  val=0.0448
+[SimCLR  94/100]  train=0.0818  val=0.0446
+[SimCLR  95/100]  train=0.0824  val=0.0441
+[SimCLR  96/100]  train=0.0824  val=0.0443
+[SimCLR] reducing lr to 3.13e-05
+[SimCLR  97/100]  train=0.0789  val=0.0439
+[SimCLR  98/100]  train=0.0821  val=0.0433
+[SimCLR  99/100]  train=0.0782  val=0.0432
+[SimCLR 100/100]  train=0.0782  val=0.0437
+[SimCLR   1/100]  train=0.8261  val=0.4787
+[SimCLR   2/100]  train=0.4690  val=0.3692
+[SimCLR   3/100]  train=0.4154  val=0.4031
+[SimCLR   4/100]  train=0.3734  val=0.3187
+[SimCLR   5/100]  train=0.3450  val=0.3106
+[SimCLR   6/100]  train=0.3301  val=0.2947
+[SimCLR   7/100]  train=0.3198  val=0.2814
+[SimCLR   8/100]  train=0.3136  val=0.2671
+[SimCLR   9/100]  train=0.3212  val=0.2628
+[SimCLR  10/100]  train=0.2976  val=0.2551
+[SimCLR  11/100]  train=0.3011  val=0.2582
+[SimCLR  12/100]  train=0.2751  val=0.2704
+[SimCLR  13/100]  train=0.2872  val=0.2472
+[SimCLR  14/100]  train=0.2749  val=0.2406
+[SimCLR  15/100]  train=0.2793  val=0.2390
+[SimCLR  16/100]  train=0.2805  val=0.2300
+[SimCLR  17/100]  train=0.2715  val=0.2343
+[SimCLR  18/100]  train=0.2819  val=0.2566
+[SimCLR  19/100]  train=0.2622  val=0.2412
+[SimCLR  20/100]  train=0.2659  val=0.2370
+[SimCLR] reducing lr to 5.00e-04
+[SimCLR  21/100]  train=0.2773  val=0.2470
+[SimCLR  22/100]  train=0.2458  val=0.2137
+[SimCLR  23/100]  train=0.2432  val=0.2071
+[SimCLR  24/100]  train=0.2266  val=0.1984
+[SimCLR  25/100]  train=0.2317  val=0.2006
+[SimCLR  26/100]  train=0.2421  val=0.1998
+[SimCLR  27/100]  train=0.2404  val=0.2004
+[SimCLR  28/100]  train=0.2349  val=0.2157
+[SimCLR] reducing lr to 2.50e-04
+[SimCLR  29/100]  train=0.2376  val=0.2026
+[SimCLR  30/100]  train=0.2249  val=0.1981
+[SimCLR  31/100]  train=0.2266  val=0.1882
+[SimCLR  32/100]  train=0.2237  val=0.1908
+[SimCLR  33/100]  train=0.2251  val=0.1918
+[SimCLR  34/100]  train=0.2224  val=0.1863
+[SimCLR  35/100]  train=0.2180  val=0.1856
+[SimCLR  36/100]  train=0.2207  val=0.1871
+[SimCLR  37/100]  train=0.2170  val=0.1873
+[SimCLR  38/100]  train=0.2142  val=0.1885
+[SimCLR  39/100]  train=0.2235  val=0.1864
+[SimCLR  40/100]  train=0.2176  val=0.1850
+[SimCLR  41/100]  train=0.2158  val=0.1908
+[SimCLR  42/100]  train=0.2196  val=0.1864
+[SimCLR  43/100]  train=0.2252  val=0.1811
+[SimCLR  44/100]  train=0.2184  val=0.1985
+[SimCLR  45/100]  train=0.2232  val=0.1825
+[SimCLR  46/100]  train=0.2147  val=0.1912
+[SimCLR  47/100]  train=0.2206  val=0.1809
+[SimCLR  48/100]  train=0.2159  val=0.1804
+[SimCLR  49/100]  train=0.2078  val=0.1827
+[SimCLR  50/100]  train=0.2233  val=0.1852
+[SimCLR  51/100]  train=0.2208  val=0.1833
+[SimCLR  52/100]  train=0.2154  val=0.1817
+[SimCLR  53/100]  train=0.2128  val=0.1803
+[SimCLR  54/100]  train=0.2104  val=0.1807
+[SimCLR  55/100]  train=0.2225  val=0.1884
+[SimCLR  56/100]  train=0.2088  val=0.1803
+[SimCLR  57/100]  train=0.2107  val=0.1791
+[SimCLR  58/100]  train=0.2151  val=0.1800
+[SimCLR  59/100]  train=0.2028  val=0.1853
+[SimCLR  60/100]  train=0.2164  val=0.1864
+[SimCLR  61/100]  train=0.2129  val=0.1821
+[SimCLR] reducing lr to 1.25e-04
+[SimCLR  62/100]  train=0.2144  val=0.1799
+[SimCLR  63/100]  train=0.2073  val=0.1723
+[SimCLR  64/100]  train=0.2054  val=0.1733
+[SimCLR  65/100]  train=0.2161  val=0.1756
+[SimCLR  66/100]  train=0.2048  val=0.1730
+[SimCLR  67/100]  train=0.2026  val=0.1725
+[SimCLR] reducing lr to 6.25e-05
+[SimCLR  68/100]  train=0.2145  val=0.1793
+[SimCLR  69/100]  train=0.2086  val=0.1670
+[SimCLR  70/100]  train=0.1983  val=0.1676
+[SimCLR  71/100]  train=0.2052  val=0.1680
+[SimCLR  72/100]  train=0.1996  val=0.1712
+[SimCLR  73/100]  train=0.1995  val=0.1682
+[SimCLR] reducing lr to 3.13e-05
+[SimCLR  74/100]  train=0.2124  val=0.1700
+[SimCLR  75/100]  train=0.2093  val=0.1676
+[SimCLR  76/100]  train=0.2099  val=0.1684
+[SimCLR  77/100]  train=0.1954  val=0.1651
+[SimCLR  78/100]  train=0.1980  val=0.1652
+[SimCLR  79/100]  train=0.2001  val=0.1640
+[SimCLR  80/100]  train=0.2006  val=0.1648
+[SimCLR  81/100]  train=0.2089  val=0.1646
+[SimCLR  82/100]  train=0.2038  val=0.1644
+[SimCLR  83/100]  train=0.2067  val=0.1655
+[SimCLR] reducing lr to 1.56e-05
+[SimCLR  84/100]  train=0.1957  val=0.1650
+[SimCLR  85/100]  train=0.2036  val=0.1645
+[SimCLR  86/100]  train=0.2011  val=0.1640
+[SimCLR  87/100]  train=0.1985  val=0.1638
+[SimCLR  88/100]  train=0.2026  val=0.1632
+[SimCLR  89/100]  train=0.2003  val=0.1637
+[SimCLR  90/100]  train=0.1925  val=0.1636
+[SimCLR  91/100]  train=0.1948  val=0.1616
+[SimCLR  92/100]  train=0.2004  val=0.1622
+[SimCLR  93/100]  train=0.1904  val=0.1617
+[SimCLR  94/100]  train=0.2041  val=0.1614
+[SimCLR  95/100]  train=0.2025  val=0.1615
+[SimCLR  96/100]  train=0.2059  val=0.1623
+[SimCLR  97/100]  train=0.1999  val=0.1618
+[SimCLR  98/100]  train=0.1936  val=0.1613
+[SimCLR  99/100]  train=0.1998  val=0.1610
+[SimCLR 100/100]  train=0.2012  val=0.1607
+Saved exp_summary.json to: multiseeds/global/15/BP_spike/coreset/seed_43/UF22.0_K100_B6_T50_DR50/exp_summary.json
+  Running t-SNE...
+  Saved: multiseeds/15/BP_spike/global/results/tsne_feature_space/tsne_round_00.png
+Round 0 AUC_Train: 0.8201 (±0.0208)
+
+======================================================================
+AL Round 1/21
+  Labeled: 581
+  Unlabeled: 2063
+======================================================================
+Skipping queried-window plot for round 1: local variable 'df_queried_original' referenced before assignment
+  Running t-SNE...
+  Saved: multiseeds/15/BP_spike/global/results/tsne_feature_space/tsne_round_01.png
+
+=== Class Weights Check ===
+Training class distribution: Positive (1): 316, Negative (0): 365
+Test probs: min=0.004, max=0.686, mean=0.345
+Direct Test AUC: 0.824
+Flipped Test AUC: 0.176
+Test Average Precision: 0.871
+Round 1 AUC_train:0    0.76108
+Name: AUC_Mean_Train, dtype: float64 
+  → Round 1: AUC=0.824 ± 0.044
+
+======================================================================
+AL Round 2/21
+  Labeled: 681
+  Unlabeled: 1963
+======================================================================
+Skipping queried-window plot for round 2: local variable 'df_queried_original' referenced before assignment
+  Running t-SNE...
+  Saved: multiseeds/15/BP_spike/global/results/tsne_feature_space/tsne_round_02.png
+
+=== Class Weights Check ===
+Training class distribution: Positive (1): 361, Negative (0): 420
+Test probs: min=0.025, max=0.789, mean=0.335
+Direct Test AUC: 0.791
+Flipped Test AUC: 0.209
+Test Average Precision: 0.820
+Round 2 AUC_train:0    0.782318
+Name: AUC_Mean_Train, dtype: float64 
+  → Round 2: AUC=0.791 ± 0.050
+
+======================================================================
+AL Round 3/21
+  Labeled: 781
+  Unlabeled: 1863
+======================================================================
+Skipping queried-window plot for round 3: local variable 'df_queried_original' referenced before assignment
+  Running t-SNE...
+  Saved: multiseeds/15/BP_spike/global/results/tsne_feature_space/tsne_round_03.png
+
+=== Class Weights Check ===
+Training class distribution: Positive (1): 414, Negative (0): 467
+Test probs: min=0.030, max=0.709, mean=0.340
+Direct Test AUC: 0.825
+Flipped Test AUC: 0.175
+Test Average Precision: 0.845
+Round 3 AUC_train:0    0.766021
+Name: AUC_Mean_Train, dtype: float64 
+  → Round 3: AUC=0.826 ± 0.044
+
+======================================================================
+AL Round 4/21
+  Labeled: 881
+  Unlabeled: 1763
+======================================================================
+Skipping queried-window plot for round 4: local variable 'df_queried_original' referenced before assignment
+  Running t-SNE...
+  Saved: multiseeds/15/BP_spike/global/results/tsne_feature_space/tsne_round_04.png
+
+=== Class Weights Check ===
+Training class distribution: Positive (1): 464, Negative (0): 517
+Test probs: min=0.040, max=0.730, mean=0.329
+Direct Test AUC: 0.820
+Flipped Test AUC: 0.180
+Test Average Precision: 0.871
+Round 4 AUC_train:0    0.760764
+Name: AUC_Mean_Train, dtype: float64 
+  → Round 4: AUC=0.819 ± 0.045
+
+======================================================================
+AL Round 5/21
+  Labeled: 981
+  Unlabeled: 1663
+======================================================================
+Skipping queried-window plot for round 5: local variable 'df_queried_original' referenced before assignment
+  Running t-SNE...
+  Saved: multiseeds/15/BP_spike/global/results/tsne_feature_space/tsne_round_05.png
+
+=== Class Weights Check ===
+Training class distribution: Positive (1): 519, Negative (0): 562
+Test probs: min=0.009, max=0.723, mean=0.329
+Direct Test AUC: 0.802
+Flipped Test AUC: 0.198
+Test Average Precision: 0.840
+Round 5 AUC_train:0    0.757018
+Name: AUC_Mean_Train, dtype: float64 
+  → Round 5: AUC=0.801 ± 0.051
+
+======================================================================
+AL Round 6/21
+  Labeled: 1081
+  Unlabeled: 1563
+======================================================================
+Skipping queried-window plot for round 6: local variable 'df_queried_original' referenced before assignment
+  Running t-SNE...
+  Saved: multiseeds/15/BP_spike/global/results/tsne_feature_space/tsne_round_06.png
+
+=== Class Weights Check ===
+Training class distribution: Positive (1): 576, Negative (0): 605
+Test probs: min=0.057, max=0.702, mean=0.361
+Direct Test AUC: 0.787
+Flipped Test AUC: 0.213
+Test Average Precision: 0.857
+Round 6 AUC_train:0    0.738118
+Name: AUC_Mean_Train, dtype: float64 
+  → Round 6: AUC=0.787 ± 0.054
+
+======================================================================
+AL Round 7/21
+  Labeled: 1181
+  Unlabeled: 1463
+======================================================================
+Skipping queried-window plot for round 7: local variable 'df_queried_original' referenced before assignment
+  Running t-SNE...
+  Saved: multiseeds/15/BP_spike/global/results/tsne_feature_space/tsne_round_07.png
+
+=== Class Weights Check ===
+Training class distribution: Positive (1): 631, Negative (0): 650
+Test probs: min=0.021, max=0.682, mean=0.345
+Direct Test AUC: 0.785
+Flipped Test AUC: 0.215
+Test Average Precision: 0.810
+Round 7 AUC_train:0    0.736383
+Name: AUC_Mean_Train, dtype: float64 
+  → Round 7: AUC=0.785 ± 0.051
+
+======================================================================
+AL Round 8/21
+  Labeled: 1281
+  Unlabeled: 1363
+======================================================================
+Skipping queried-window plot for round 8: local variable 'df_queried_original' referenced before assignment
+  Running t-SNE...
+  Saved: multiseeds/15/BP_spike/global/results/tsne_feature_space/tsne_round_08.png
+
+=== Class Weights Check ===
+Training class distribution: Positive (1): 676, Negative (0): 705
+Test probs: min=0.020, max=0.677, mean=0.346
+Direct Test AUC: 0.800
+Flipped Test AUC: 0.200
+Test Average Precision: 0.847
+Round 8 AUC_train:0    0.725336
+Name: AUC_Mean_Train, dtype: float64 
+  → Round 8: AUC=0.801 ± 0.049
+
+======================================================================
+AL Round 9/21
+  Labeled: 1381
+  Unlabeled: 1263
+======================================================================
+Skipping queried-window plot for round 9: local variable 'df_queried_original' referenced before assignment
+  Running t-SNE...
+  Saved: multiseeds/15/BP_spike/global/results/tsne_feature_space/tsne_round_09.png
+
+=== Class Weights Check ===
+Training class distribution: Positive (1): 737, Negative (0): 744
+Test probs: min=0.034, max=0.666, mean=0.357
+Direct Test AUC: 0.825
+Flipped Test AUC: 0.175
+Test Average Precision: 0.863
+Round 9 AUC_train:0    0.721324
+Name: AUC_Mean_Train, dtype: float64 
+  → Round 9: AUC=0.825 ± 0.045
+
+======================================================================
+AL Round 10/21
+  Labeled: 1481
+  Unlabeled: 1163
+======================================================================
+Skipping queried-window plot for round 10: local variable 'df_queried_original' referenced before assignment
+  Running t-SNE...
+  Saved: multiseeds/15/BP_spike/global/results/tsne_feature_space/tsne_round_10.png
+
+=== Class Weights Check ===
+Training class distribution: Positive (1): 794, Negative (0): 787
+Test probs: min=0.030, max=0.706, mean=0.340
+Direct Test AUC: 0.809
+Flipped Test AUC: 0.191
+Test Average Precision: 0.858
+Round 10 AUC_train:0    0.734633
+Name: AUC_Mean_Train, dtype: float64 
+  → Round 10: AUC=0.809 ± 0.047
+
+======================================================================
+AL Round 11/21
+  Labeled: 1581
+  Unlabeled: 1063
+======================================================================
+Skipping queried-window plot for round 11: local variable 'df_queried_original' referenced before assignment
+  Running t-SNE...
+  Saved: multiseeds/15/BP_spike/global/results/tsne_feature_space/tsne_round_11.png
+
+=== Class Weights Check ===
+Training class distribution: Positive (1): 846, Negative (0): 835
+Test probs: min=0.032, max=0.673, mean=0.330
+Direct Test AUC: 0.801
+Flipped Test AUC: 0.199
+Test Average Precision: 0.843
+Round 11 AUC_train:0    0.714817
+Name: AUC_Mean_Train, dtype: float64 
+  → Round 11: AUC=0.801 ± 0.049
+
+======================================================================
+AL Round 12/21
+  Labeled: 1681
+  Unlabeled: 963
+======================================================================
+Skipping queried-window plot for round 12: local variable 'df_queried_original' referenced before assignment
+  Running t-SNE...
+  Saved: multiseeds/15/BP_spike/global/results/tsne_feature_space/tsne_round_12.png
+
+=== Class Weights Check ===
+Training class distribution: Positive (1): 905, Negative (0): 876
+Test probs: min=0.013, max=0.702, mean=0.354
+Direct Test AUC: 0.797
+Flipped Test AUC: 0.203
+Test Average Precision: 0.850
+Round 12 AUC_train:0    0.725342
+Name: AUC_Mean_Train, dtype: float64 
+  → Round 12: AUC=0.797 ± 0.050
+
+======================================================================
+AL Round 13/21
+  Labeled: 1781
+  Unlabeled: 863
+======================================================================
+Skipping queried-window plot for round 13: local variable 'df_queried_original' referenced before assignment
+  Running t-SNE...
+  Saved: multiseeds/15/BP_spike/global/results/tsne_feature_space/tsne_round_13.png
+
+=== Class Weights Check ===
+Training class distribution: Positive (1): 950, Negative (0): 931
+Test probs: min=0.037, max=0.687, mean=0.343
+Direct Test AUC: 0.805
+Flipped Test AUC: 0.195
+Test Average Precision: 0.842
+Round 13 AUC_train:0    0.709819
+Name: AUC_Mean_Train, dtype: float64 
+  → Round 13: AUC=0.805 ± 0.049
+
+======================================================================
+AL Round 14/21
+  Labeled: 1881
+  Unlabeled: 763
+======================================================================
+Skipping queried-window plot for round 14: local variable 'df_queried_original' referenced before assignment
+  Running t-SNE...
+  Saved: multiseeds/15/BP_spike/global/results/tsne_feature_space/tsne_round_14.png
+
+=== Class Weights Check ===
+Training class distribution: Positive (1): 993, Negative (0): 988
+Test probs: min=0.023, max=0.660, mean=0.337
+Direct Test AUC: 0.797
+Flipped Test AUC: 0.203
+Test Average Precision: 0.846
+Round 14 AUC_train:0    0.707604
+Name: AUC_Mean_Train, dtype: float64 
+  → Round 14: AUC=0.797 ± 0.050
+
+======================================================================
+AL Round 15/21
+  Labeled: 1981
+  Unlabeled: 663
+======================================================================
+Skipping queried-window plot for round 15: local variable 'df_queried_original' referenced before assignment
+  Running t-SNE...
+  Saved: multiseeds/15/BP_spike/global/results/tsne_feature_space/tsne_round_15.png
+
+=== Class Weights Check ===
+Training class distribution: Positive (1): 1034, Negative (0): 1047
+Test probs: min=0.022, max=0.674, mean=0.337
+Direct Test AUC: 0.795
+Flipped Test AUC: 0.205
+Test Average Precision: 0.842
+Round 15 AUC_train:0    0.706484
+Name: AUC_Mean_Train, dtype: float64 
+  → Round 15: AUC=0.795 ± 0.050
+
+======================================================================
+AL Round 16/21
+  Labeled: 2081
+  Unlabeled: 563
+======================================================================
+Skipping queried-window plot for round 16: local variable 'df_queried_original' referenced before assignment
+  Running t-SNE...
+  Saved: multiseeds/15/BP_spike/global/results/tsne_feature_space/tsne_round_16.png
+
+=== Class Weights Check ===
+Training class distribution: Positive (1): 1073, Negative (0): 1108
+Test probs: min=0.024, max=0.653, mean=0.334
+Direct Test AUC: 0.814
+Flipped Test AUC: 0.186
+Test Average Precision: 0.858
+Round 16 AUC_train:0    0.696141
+Name: AUC_Mean_Train, dtype: float64 
+  → Round 16: AUC=0.815 ± 0.047
+
+======================================================================
+AL Round 17/21
+  Labeled: 2181
+  Unlabeled: 463
+======================================================================
+Skipping queried-window plot for round 17: local variable 'df_queried_original' referenced before assignment
+  Running t-SNE...
+  Saved: multiseeds/15/BP_spike/global/results/tsne_feature_space/tsne_round_17.png
+
+=== Class Weights Check ===
+Training class distribution: Positive (1): 1115, Negative (0): 1166
+Test probs: min=0.024, max=0.636, mean=0.330
+Direct Test AUC: 0.805
+Flipped Test AUC: 0.195
+Test Average Precision: 0.869
+Round 17 AUC_train:0    0.690933
+Name: AUC_Mean_Train, dtype: float64 
+  → Round 17: AUC=0.806 ± 0.050
+
+======================================================================
+AL Round 18/21
+  Labeled: 2281
+  Unlabeled: 363
+======================================================================
+Skipping queried-window plot for round 18: local variable 'df_queried_original' referenced before assignment
+  Running t-SNE...
+  Saved: multiseeds/15/BP_spike/global/results/tsne_feature_space/tsne_round_18.png
+
+=== Class Weights Check ===
+Training class distribution: Positive (1): 1147, Negative (0): 1234
+Test probs: min=0.020, max=0.670, mean=0.326
+Direct Test AUC: 0.794
+Flipped Test AUC: 0.206
+Test Average Precision: 0.864
+Round 18 AUC_train:0    0.709546
+Name: AUC_Mean_Train, dtype: float64 
+  → Round 18: AUC=0.795 ± 0.052
+
+======================================================================
+AL Round 19/21
+  Labeled: 2381
+  Unlabeled: 263
+======================================================================
+Skipping queried-window plot for round 19: local variable 'df_queried_original' referenced before assignment
+  Running t-SNE...
+  Saved: multiseeds/15/BP_spike/global/results/tsne_feature_space/tsne_round_19.png
+
+=== Class Weights Check ===
+Training class distribution: Positive (1): 1180, Negative (0): 1301
+Test probs: min=0.023, max=0.658, mean=0.332
+Direct Test AUC: 0.797
+Flipped Test AUC: 0.203
+Test Average Precision: 0.850
+Round 19 AUC_train:0    0.703221
+Name: AUC_Mean_Train, dtype: float64 
+  → Round 19: AUC=0.797 ± 0.051
+
+======================================================================
+AL Round 20/21
+  Labeled: 2481
+  Unlabeled: 163
+======================================================================
+Skipping queried-window plot for round 20: local variable 'df_queried_original' referenced before assignment
+  Running t-SNE...
+  Saved: multiseeds/15/BP_spike/global/results/tsne_feature_space/tsne_round_20.png
+
+=== Class Weights Check ===
+Training class distribution: Positive (1): 1224, Negative (0): 1357
+Test probs: min=0.017, max=0.625, mean=0.340
+Direct Test AUC: 0.805
+Flipped Test AUC: 0.195
+Test Average Precision: 0.861
+Round 20 AUC_train:0    0.69702
+Name: AUC_Mean_Train, dtype: float64 
+  → Round 20: AUC=0.806 ± 0.050
+
+======================================================================
+AL Round 21/21
+  Labeled: 2581
+  Unlabeled: 63
+======================================================================
+Skipping queried-window plot for round 21: local variable 'df_queried_original' referenced before assignment
+  Running t-SNE...
+  Saved: multiseeds/15/BP_spike/global/results/tsne_feature_space/tsne_round_21.png
+
+=== Class Weights Check ===
+Training class distribution: Positive (1): 1244, Negative (0): 1400
+Test probs: min=0.010, max=0.620, mean=0.326
+Direct Test AUC: 0.808
+Flipped Test AUC: 0.192
+Test Average Precision: 0.874
+Round 21 AUC_train:0    0.708378
+Name: AUC_Mean_Train, dtype: float64 
+  → Round 21: AUC=0.808 ± 0.050
+len of final labeled 2644
+len of final unlabeled 0
