@@ -4,9 +4,9 @@ Plot multi-seed AL progress from existing al_progress.csv files.
 This plots mean AUC per round across seeds with +/- 1 std shaded bands.
 python plot_multi_seed_results.py \
   --outdir multiseeds \
-  --user 20 \
+  --user 15 \
   --participant_id 20 \
-  --seeds 41,42,43
+  --seeds 41,42,43,44,45,46,47,48,49,50
 
 """
 
@@ -20,7 +20,7 @@ import pandas as pd
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--outdir", default="multiseeds")
+    parser.add_argument("--outdir", default="cluster_results/multiseeds")
     parser.add_argument("--seeds", default="41,42,43", help="Comma-separated seeds")
     parser.add_argument("--user", default="15")
     parser.add_argument("--participant_id", default=None)
@@ -44,7 +44,7 @@ def main():
     seeds_sorted = sorted(int(s.strip()) for s in args.seeds.split(",") if s.strip())
     aq_methods = [m.strip() for m in args.methods.split(",") if m.strip()]
     scenario_dir = base_dir / args.pool / args.user / f"{args.fruit}_{args.scenario}"
-
+    breakpoint()
     method_colors = {
         "uncertainty": "tab:blue",
         "random": "darkorange",

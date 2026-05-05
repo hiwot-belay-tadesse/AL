@@ -1978,8 +1978,8 @@ def run_al_refactored(
         print(f"Skipping t-SNE feature-space plot for round 0: {e}")
 
     initial_unlabeled = len(df_tr_unlabeled)
-    # planned_rounds = int(np.ceil(initial_unlabeled / K)) if K and initial_unlabeled > 0 else 0
-    planned_rounds = 20
+    max_pool_rounds = int(np.ceil(initial_unlabeled / K)) if K and initial_unlabeled > 0 else 0
+    planned_rounds = min(int(budget), max_pool_rounds) if budget is not None else max_pool_rounds
     
     round_num = 0
     print("Round 0 AUC_Train: {:.4f} (±{:.4f})".format(m0["AUC_Mean_Train"].iloc[0], m0["AUC_STD_Train"].iloc[0]))
