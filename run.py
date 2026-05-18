@@ -220,12 +220,13 @@ def run(exp_dir, exp_name, exp_kwargs):
     # )
    
     # reset_seeds(42)  
-    # df_tr_labeled, df_tr_unlabeled = train_test_split(
-    #     split_source,
-    #     test_size=(1- uf_val),
-    #     stratify=split_source["state_val"],
-    #     random_state=split_seed,
-    # )
+    df_tr_labeled, df_tr_unlabeled = train_test_split(
+        split_source,
+        test_size=(1- uf_val),
+        stratify=split_source["state_val"],
+        # random_state=split_seed, #commented this for avg roc auc computation in avg_auc.py
+        random_state=42,
+    )
     split_source = df_all_tr.reset_index(drop=True)
 
     Z_split = utility.encode_single_df(
@@ -278,11 +279,11 @@ def run(exp_dir, exp_name, exp_kwargs):
     n_clusters = int(round(uf_val * len(split_source)))
     n_clusters = max(1, min(n_clusters, len(split_source)))
 
-    df_tr_labeled, df_tr_unlabeled = new_helper.split_df_w_k_center(
-        split_source,
-        Z_split,
-        n_clusters=n_clusters,
-    )
+    # df_tr_labeled, df_tr_unlabeled = new_helper.split_df_w_k_center(
+    #     split_source,
+    #     Z_split,
+    #     n_clusters=n_clusters,
+    # )
 
   
     # df_tr_labeled, df_tr_unlabeled = new_helper.select_balanced_centroid_seed(split_source, n_per_class=2, label_col="state_val")
