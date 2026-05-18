@@ -140,6 +140,7 @@ def run(exp_dir, exp_name, exp_kwargs):
         pool=args_ns.pool,
         task=args_ns.task,
         input_df=args_ns.input_df,
+        seed=split_seed,
     )
     
     if prep is None:
@@ -233,6 +234,47 @@ def run(exp_dir, exp_name, exp_kwargs):
         enc_st,
         args_ns.pool,
     )
+
+    # Within-user, within-class spread vs. between-class spread.
+    # For each (user, class), mean pairwise cosine distance between embeddings,
+    # averaged across users. Compare to between-class centroid distance.
+    # Higher within = noisier; ratio between/within is what matters.
+    from embedding_spread import compute_user_class_spread
+    compute_user_class_spread(
+        Z=Z_split,
+        df=split_source,
+        user_id=args_ns.user,
+        label_col="state_val",
+        user_col="user_id",
+        out_path=exp_dir_path / "embedding_spread.json",
+    )
+
+    # Diagnostic: check encoder output norms
+    # import numpy as np
+    # norms = np.linalg.norm(Z_split, axis=1)
+    # print(f"[encoder norms] min={norms.min():.4f} max={norms.max():.4f} "
+    #     f"mean={norms.mean():.4f} std={norms.std():.4f}")
+    # import matplotlib.pyplot as plt
+    # plt.hist(norms, bins=50)
+    # plt.xlabel("L2 norm")
+    # plt.ylabel("count")
+    # plt.title(f"Encoder output norms (D={Z_split.shape[1]})")
+    # plt.show()
+    # Per-participant informative-region diagnostic
+    # from informative_neighbor_analysis import informative_neighbor_signature
+
+    # Z_val = utility.encode_single_df(df_val, enc_hr, enc_st, args_ns.pool)
+    # signature = informative_neighbor_signature(
+    #     Z_pool=Z_split,
+    #     df_pool=split_source,
+    #     Z_val=Z_val,
+    #     out_path=exp_dir_path / "informative_signature.json",
+    #     k_neighbors_per_val=50,
+    #     user_id=args_ns.user,
+    # )
+
+
+
     n_clusters = int(round(uf_val * len(split_source)))
     n_clusters = max(1, min(n_clusters, len(split_source)))
 

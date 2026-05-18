@@ -33,7 +33,7 @@ from sklearn.neighbors import NearestNeighbors
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 from typing import Callable
-
+import coreset_acquisition
 import utility
 from src import compare_pipelines as cp
 from utility import (
@@ -91,7 +91,7 @@ def parse_args():
     pa.add_argument("--fruit", default="Nectarine")
     pa.add_argument("--scenario", default="Crave")
     pa.add_argument("--sample_mode", default="original")
-    pa.add_argument("--unlabeled_frac", default=0.2)
+    pa.add_argument("--unlabeled_frac", default=0.0018)
     # pa.add_argument("--unlabeled_frac", default=0.01)
 
     pa.add_argument("--dropout_rate", default=0.5)
@@ -187,11 +187,13 @@ def select_balanced_centroid_seed(df, n_per_class=2, label_col="state_val", rand
 
 def split_df_w_k_center(df, Z, n_clusters):
     from sklearn.decomposition import PCA
+    from sklearn.preprocessing import normalize
 
     # pca = PCA(n_components=10)
     pca = PCA(n_components=12)
-    Z_reduced = pca.fit_transform(Z)
-    kmeans = KMeans(n_clusters=n_clusters, random_state=0).fit(Z_reduced)
+    Z_norm = normalize(Z)
+    # Z_reduced = pca.fit_transform(Z)
+    kmeans = KMeans(n_clusters=n_clusters, random_state=0).fit(Z_norm)
     
     centers = kmeans.cluster_centers_
     labels = kmeans.labels_
@@ -199,7 +201,7 @@ def split_df_w_k_center(df, Z, n_clusters):
     selected_pos = []
     for cluster_idx in range(n_clusters):
         members = np.where(labels == cluster_idx)[0]
-        dists = np.linalg.norm(Z_reduced[members] - centers[cluster_idx], axis=1)
+        dists = np.linalg.norm(Z_norm[members] - centers[cluster_idx], axis=1)
         closest = members[np.argmin(dists)]
         selected_pos.append(closest)
     
@@ -576,18 +578,9 @@ def plot_queried_windows(df_queried, round_num, results_d, max_n: int = 24):
     plt.close(fig)
 
 
-def plot_tsne(Z: np.ndarray,
-              y: np.ndarray,
-              output_dir: Path,
-              round_num: int,
-              pid=None,
-              seed: int = 42,
-              target_participant=None,
-              initial_labeled_count=None):
-    del pid, target_participant, initial_labeled_count
-    print("  Running t-SNE...")
-
-    from matplotlib import pyplot as plt
+def _compute_tsne_coords(Z: np.ndarray, seed: int = 42) -> np.ndarray:
+    """Run t-SNE once on the full pool and return shared 2D coordinates."""
+    from sklearn.preprocessing import normalize
 
     Z = np.asarray(Z, dtype=np.float32)
     if Z.ndim == 1:
@@ -595,41 +588,104 @@ def plot_tsne(Z: np.ndarray,
     elif Z.ndim > 2:
         Z = Z.reshape(Z.shape[0], -1)
 
-    y = np.asarray(y).ravel()
     n = len(Z)
     if n < 3:
-        print(f"  Skipping t-SNE for round {round_num}: need at least 3 labeled samples.")
-        return None
-    if len(y) != n:
-        raise ValueError(f"Mismatch y rows ({len(y)}) vs Z rows ({n}).")
+        raise ValueError(f"Need at least 3 pool samples for t-SNE; got {n}.")
 
+    Z_norm = normalize(Z.astype(np.float64))
     perplexity = min(30.0, max(2.0, float((n - 1) // 3)))
     if perplexity >= n:
         perplexity = max(1.0, float(n - 1))
+
+    print(f"  Computing t-SNE once on pool of {n} points...")
     tsne = TSNE(
         n_components=2,
         random_state=seed,
         init="pca",
         learning_rate="auto",
         perplexity=perplexity,
+        metric="cosine",
     )
-    Z2 = tsne.fit_transform(Z)
+    return tsne.fit_transform(Z_norm)
 
-    y_labels = pd.to_numeric(pd.Series(y), errors="coerce").fillna(-1).astype(int).astype(str).to_numpy()
+
+def plot_tsne(Z_pool: np.ndarray,
+              y_pool: np.ndarray,
+              labeled_positions,
+              output_dir: Path,
+              round_num: int,
+              pid=None,
+              seed: int = 42,
+              target_participant=None,
+              initial_labeled_count=None,
+              cached_coords: np.ndarray = None):
+    """
+    Plot the full pool in gray with labeled points overlaid by class.
+
+    Parameters
+    ----------
+    Z_pool : (n_pool, d) array — encodings of every point in the pool.
+    y_pool : (n_pool,) array — labels for every pool point.
+    labeled_positions : array_like of int — positional indices into Z_pool
+        marking which points are labeled at this round.
+    cached_coords : optional precomputed t-SNE projection of Z_pool. Pass
+        this in to reuse the same projection across rounds (recommended).
+    """
+    del pid, target_participant, initial_labeled_count
+    from matplotlib import pyplot as plt
+
+    Z_pool = np.asarray(Z_pool, dtype=np.float32)
+    if Z_pool.ndim == 1:
+        Z_pool = Z_pool.reshape(-1, 1)
+    elif Z_pool.ndim > 2:
+        Z_pool = Z_pool.reshape(Z_pool.shape[0], -1)
+
+    y_pool = np.asarray(y_pool).ravel()
+    n_pool = len(Z_pool)
+    if len(y_pool) != n_pool:
+        raise ValueError(f"Mismatch y_pool rows ({len(y_pool)}) vs Z_pool rows ({n_pool}).")
+    if n_pool < 3:
+        print(f"  Skipping t-SNE for round {round_num}: need at least 3 pool samples.")
+        return None
+
+    if cached_coords is not None and len(cached_coords) == n_pool:
+        Z2 = cached_coords
+    else:
+        Z2 = _compute_tsne_coords(Z_pool, seed=seed)
+
+    labeled_positions = np.asarray(labeled_positions, dtype=int).ravel()
+    labeled_mask = np.zeros(n_pool, dtype=bool)
+    if len(labeled_positions) > 0:
+        valid = (labeled_positions >= 0) & (labeled_positions < n_pool)
+        labeled_mask[labeled_positions[valid]] = True
+
+    y_str = pd.to_numeric(pd.Series(y_pool), errors="coerce").fillna(-1).astype(int).astype(str).to_numpy()
     class_color_map = {
         "0": "#185FA5",
         "1": "#E24B4A",
         "-1": "#8a8a8a",
     }
     fallback_class_colors = ["#54a24b", "#f58518", "#72b7b2", "#b279a2"]
-    unique_classes = sorted(set(y_labels))
+    unique_classes = sorted(set(y_str))
     for i, cls in enumerate(unique_classes):
         class_color_map.setdefault(cls, fallback_class_colors[i % len(fallback_class_colors)])
 
     fig, ax = plt.subplots(figsize=(8, 6.5), constrained_layout=True)
 
+    ax.scatter(
+        Z2[~labeled_mask, 0],
+        Z2[~labeled_mask, 1],
+        c="#cfcfcf",
+        s=10,
+        alpha=0.5,
+        linewidths=0,
+        label=f"unlabeled (n={int((~labeled_mask).sum())})",
+    )
+
     for cls in unique_classes:
-        mask = y_labels == cls
+        mask = (y_str == cls) & labeled_mask
+        if not mask.any():
+            continue
         if cls == "0":
             cls_name = "No spike"
         elif cls == "1":
@@ -643,18 +699,18 @@ def plot_tsne(Z: np.ndarray,
             Z2[mask, 1],
             c=[class_color_map[cls]],
             s=76,
-            alpha=0.9,
+            alpha=0.95,
             edgecolors="white",
             linewidths=0.8,
             label=cls_label,
         )
 
     ax.legend(loc="upper right", fontsize=9, framealpha=0.9)
-    ax.set_title(f"Labeled t-SNE by Spike Label - Round {int(round_num)}")
+    ax.set_title(f"Labeled vs Unlabeled t-SNE - Round {int(round_num)}")
     ax.tick_params(left=False, bottom=False, labelleft=False, labelbottom=False)
     ax.spines[["top", "right", "left", "bottom"]].set_visible(False)
 
-    fig.suptitle("Labeled SSL Representation Space", fontsize=13)
+    fig.suptitle("SSL Representation Space (full pool + labeled selections)", fontsize=13)
 
     out_dir = Path(output_dir) / "tsne_feature_space"
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -662,7 +718,7 @@ def plot_tsne(Z: np.ndarray,
     fig.savefig(path, dpi=180, bbox_inches="tight")
     plt.close(fig)
     print(f"  Saved: {path}")
-    
+
     return Z2
     
 
@@ -1099,7 +1155,10 @@ def run_experiment(exp_dir, exp_name, exp_kwargs, args, prep, clf_epochs, clf_pa
             full_fit_kwargs = build_fit_kwargs(full_fit_kwargs, callbacks, use_early_stopping=True)
             full_model.fit(Z_full, y_full, class_weight=class_weight, **full_fit_kwargs)
             full_probs_te = predict_positive_scores(full_model, Z_te)
-            upper_bound_auc, _, _ = bootstrap_auc(y_te, full_probs_te)
+            # upper_bound_auc, _, _ = bootstrap_auc(y_te, full_probs_te)
+            ## for multi_seeds roc auc computation in avg_auc.py
+            upper_bound_auc = roc_auc_score(y_te, full_probs_te)
+
             full_data_eval_payload = {
                 "y_true": np.asarray(y_te).ravel(),
                 "y_score": np.asarray(full_probs_te).ravel(),
@@ -1592,11 +1651,15 @@ def pre_al_metrics(model, Z_tr_labeled, y_tr_labeled, Z_val, y_val, Z_te, y_te):
     probs_val = predict_positive_scores(model, Z_val)
     probs_te = predict_positive_scores(model, Z_te)
 
-    auc_m_pre, auc_s_pre, _ = bootstrap_auc(y_te, probs_te)
-    auc_m_train_pre, auc_s_train_pre, _ = bootstrap_auc(y_tr_labeled, probs_train)
-    auc_m_val_pre, auc_s_val_pre, _ = bootstrap_auc(y_val, probs_val)
-
-
+    # auc_m_pre, auc_s_pre, _ = bootstrap_auc(y_te, probs_te)
+    # auc_m_train_pre, auc_s_train_pre, _ = bootstrap_auc(y_tr_labeled, probs_train)
+    # auc_m_val_pre, auc_s_val_pre, _ = bootstrap_auc(y_val, probs_val)
+    
+    ##for direct AUC without bootstrapping to be using by averaging in multi-seed
+    auc_m_pre  = roc_auc_score(y_te, probs_te)
+    auc_m_train_pre = roc_auc_score(y_tr_labeled, probs_train)
+    auc_m_val_pre = roc_auc_score(y_val, probs_val)
+    auc_s_pre, auc_s_train_pre, auc_s_val_pre = None, None, None
     m = pd.DataFrame(index=[0])
     m["round"] = 0
     m["AUC_Mean_Train"] = auc_m_train_pre
@@ -1935,6 +1998,17 @@ def run_al_refactored(
     round_labeled_history = {0: df_tr_labeled.copy()}
     total_data = int(len(df_tr_labeled) + len(df_tr_unlabeled))
     df_counts_wide = pd.DataFrame()
+
+    # Build the master pool ONCE so every t-SNE plot uses the same projection.
+    df_pool_master = pd.concat([df_tr_labeled, df_tr_unlabeled], ignore_index=False).copy()
+    Z_pool_master = np.concatenate([Z_tr_labeled, Z_tr_unlabeled], axis=0)
+    y_pool_master = df_pool_master["state_val"].to_numpy().astype("float32")
+    pool_index_to_pos = {idx: pos for pos, idx in enumerate(df_pool_master.index)}
+    try:
+        tsne_coords_master = _compute_tsne_coords(Z_pool_master, seed=42)
+    except Exception as e:
+        print(f"Skipping pool t-SNE projection: {e}")
+        tsne_coords_master = None
     
 
     active_model = initialize_active_model(
@@ -1967,22 +2041,30 @@ def run_al_refactored(
     results.append(m0)
     round_eval_payloads = {0: eval_payload_0}
     try:
+        labeled_pos_round0 = [
+            pool_index_to_pos[idx]
+            for idx in df_tr_labeled.index
+            if idx in pool_index_to_pos
+        ]
         plot_tsne(
-            Z_tr_labeled,
-            y_tr_labeled,
+            Z_pool_master,
+            y_pool_master,
+            labeled_positions=labeled_pos_round0,
             output_dir=results_d,
             round_num=0,
             pid=None,
+            cached_coords=tsne_coords_master,
         )
     except Exception as e:
         print(f"Skipping t-SNE feature-space plot for round 0: {e}")
 
-    initial_unlabeled = len(df_tr_unlabeled)
-    max_pool_rounds = int(np.ceil(initial_unlabeled / K)) if K and initial_unlabeled > 0 else 0
-    planned_rounds = min(int(budget), max_pool_rounds) if budget is not None else max_pool_rounds
-    
+    # initial_unlabeled = len(df_tr_unlabeled)
+    # max_pool_rounds = int(np.ceil(initial_unlabeled / K)) if K and initial_unlabeled > 0 else 0
+    # planned_rounds = min(int(budget), max_pool_rounds) if budget is not None else max_pool_rounds
+    planned_rounds = 20
     round_num = 0
-    print("Round 0 AUC_Train: {:.4f} (±{:.4f})".format(m0["AUC_Mean_Train"].iloc[0], m0["AUC_STD_Train"].iloc[0]))
+
+    # print("Round 0 AUC_Train: {:.4f} (±{:.4f})".format(m0["AUC_Mean_Train"].iloc[0], m0["AUC_STD_Train"].iloc[0]))
     # DEBUG ONLY: temporary round-0 ranking diagnostics.
     # debug_round0_ranking(active_model, Z_tr_labeled, y_tr_labeled)
     # # DEBUG ONLY: temporary full-data AUC check for the revised no-BatchNorm classifier.
@@ -2050,9 +2132,14 @@ def run_al_refactored(
             queried_indices, df_queried = coreset_greedy(
                 active_model, df_tr_labeled, Z_tr_labeled, df_tr_unlabeled, Z_tr_unlabeled, k_actual
             )
-            # queried_indices, df_queried_original = density_coreset(
-            # #     active_model, df_tr_labeled, Z_tr_labeled, df_tr_unlabeled, Z_tr_unlabeled, k_actual
-            # # )
+            # queried_indices, df_queried  = coreset_acquisition.coreset_margin(active_model,
+            # df_tr_labeled, Z_tr_labeled, df_tr_unlabeled, Z_tr_unlabeled, k_actual)
+            # queried_indices, df_queried = coreset_acquisition.coreset_adaptive(
+            #     active_model, df_tr_labeled, Z_tr_labeled, df_tr_unlabeled, Z_tr_unlabeled, k_actual
+            # )
+            # queried_indices, df_queried = density_coreset(
+            #     active_model, df_tr_labeled, Z_tr_labeled, df_tr_unlabeled, Z_tr_unlabeled, k_actual
+            # )
             # pos_query = len(df_tr_labeled[df_tr_labeled["state_val"] == 1])
             # neg_query = len(df_tr_labeled[df_tr_labeled["state_val"] == 0])
             # target_ratio = pos_query/(pos_query + neg_query) if (pos_query + neg_query) > 0 else 0
@@ -2112,12 +2199,19 @@ def run_al_refactored(
             y_tr_labeled = df_tr_labeled["state_val"].values.astype("float32")
         # Restore RNG state before training so both methods are equivalent
         try:
+            labeled_pos_round = [
+                pool_index_to_pos[idx]
+                for idx in df_tr_labeled.index
+                if idx in pool_index_to_pos
+            ]
             plot_tsne(
-                Z_tr_labeled,
-                y_tr_labeled,
+                Z_pool_master,
+                y_pool_master,
+                labeled_positions=labeled_pos_round,
                 output_dir=results_d,
                 round_num=round_num,
                 pid=None,
+                cached_coords=tsne_coords_master,
             )
         except Exception as e:
             print(f"Skipping t-SNE feature-space plot for round {round_num}: {e}")
@@ -2188,7 +2282,7 @@ def run_al_refactored(
         df_counts_wide.index.name = "round"
         df_counts_wide.columns.name = "user_id"
 
-        print(f"  → Round {round_num}: AUC={auc_m_post:.3f} ± {auc_s_post:.3f}")
+        # print(f"  → Round {round_num}: AUC={auc_m_post:.3f} ± {auc_s_post:.3f}")
 
     al_progress = pd.concat(results, ignore_index=True) if results else pd.DataFrame()
     
@@ -2621,9 +2715,16 @@ def train_and_evaluate_by_pool(
             print(f"Flipped Test AUC: {flipped_auc:.3f}")
 
 
-        auc_m_post, auc_s_post, _ = bootstrap_auc(y_te, probs_te)
-        auc_m_train_post, auc_s_train_post, _ = bootstrap_auc(y_tr_labeled, probs_train)
-        auc_m_val_post, auc_s_val_post, _ = bootstrap_auc(y_val, probs_val)
+        # auc_m_post, auc_s_post, _ = bootstrap_auc(y_te, probs_te)
+        # auc_m_train_post, auc_s_train_post, _ = bootstrap_auc(y_tr_labeled, probs_train)
+        # auc_m_val_post, auc_s_val_post, _ = bootstrap_auc(y_val, probs_val)
+        
+        ## this is for average auc computation in run_multi_seeds.py
+        auc_m_post = roc_auc_score(y_te, probs_te)
+        auc_m_train_post = roc_auc_score(y_tr_labeled, probs_train)
+        auc_m_val_post  = roc_auc_score(y_val, probs_val)
+        auc_s_train_post,auc_s_val_post, auc_s_post  = None, None, None
+        
         
         ## compute average_pericison
         from sklearn.metrics import average_precision_score

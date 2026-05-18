@@ -1,7 +1,16 @@
+from __future__ import annotations
+
 #!/usr/bin/env python3
 """Build a single titled grid from plot images in a folder."""
+'''
+python scripts/plot_grid.py \
+  --input-dir Cardiomate_AL/G_SSL_no_augment_nn/20/BP_spike/global/results/tsne_feature_space \
+  --output Cardiomate_AL/G_SSL_no_augment_nn/20/BP_spike/global/results/tsne_feature_space/tsne_grid.png \
+  --filename-regex '^tsne_round_' \
+  --count 21 \
+  --ncols 5
+'''
 
-from __future__ import annotations
 
 import argparse
 import math

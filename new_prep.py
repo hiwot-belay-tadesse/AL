@@ -157,6 +157,7 @@ def prepare_data(
     pool: str,
     task: str = "fruit",
     input_df: str | None = None,
+    seed: int | None = None,
 ):
     # random.seed(42)
     # np.random.seed(42)
@@ -285,12 +286,14 @@ def prepare_data(
                         pos_df, neg_df, hr_df, st_df,
                         df_processed=df_processed,
                         input_df="processed",
+                        seed=seed,
                     )
                     
                 else:
                     tr_u, val_u, te_u = ensure_train_val_test_days(
                         pos_df, neg_df, hr_df, st_df,
                         input_df="raw",
+                        seed=seed,
                     )
                 all_splits[pid] = (tr_u, val_u, te_u)
             except RuntimeError as e:
@@ -349,7 +352,7 @@ def prepare_data(
 
             try:
                 tr_u, val_u, te_u = ensure_train_val_test_days(
-                    pos_df, neg_df, hr_df, st_df
+                    pos_df, neg_df, hr_df, st_df, seed=seed
                 )
                 all_splits[u] = (tr_u, val_u, te_u)
             except RuntimeError as e:

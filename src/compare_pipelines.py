@@ -498,7 +498,7 @@ def sample_train_info(train_info, mode, random_state=42):
 # Helper 1: Day Split without Validation
 #=====================================================================
 
-def ensure_train_val_test_days(pos_df, neg_df, hr_df, st_df, df_processed=None, input_df='raw'):
+def ensure_train_val_test_days(pos_df, neg_df, hr_df, st_df, df_processed=None, input_df='raw', Seed=None):
     """
     1) Split off ~20% of days as TEST (no strat).
     2) From remaining ~80%, stratify into 75/25 → TRAIN (~60%) / VAL (~20%).
@@ -588,13 +588,13 @@ def ensure_train_val_test_days(pos_df, neg_df, hr_df, st_df, df_processed=None, 
                 trval_days,
                 test_size=0.25,               # 0.25 of the 80% → 20% overall
                 stratify=trval_counts,
-                random_state=42  # Fixed random state
+                random_state=Seed  # Fixed random state
             )
         except ValueError:
             train_days, val_days = train_test_split(
                 trval_days,
                 test_size=0.25,
-                random_state=42  # Fixed random state
+                random_state=Seed  # Fixed random state
             )
 
         # final sanity check: VAL must have at least MIN_TEST_WINDOWS as well
@@ -651,7 +651,7 @@ def select_threshold_train(model, X, y,
 
     return float(best_thr)
 
-def ensure_train_val_test_days(pos_df, neg_df, hr_df, st_df, df_processed=None, input_df='raw'):
+def ensure_train_val_test_days(pos_df, neg_df, hr_df, st_df, df_processed=None, input_df='raw', seed=None):
     """
     1) Split off ~20% of days as TEST (no strat).
     2) From remaining ~80%, stratify into 75/25 → TRAIN (~60%) / VAL (~20%).
@@ -707,7 +707,7 @@ def ensure_train_val_test_days(pos_df, neg_df, hr_df, st_df, df_processed=None, 
     for i, test_size in enumerate(test_sizes):
         # 1) carve off TEST - always use same random_state
         trval_days, test_days = train_test_split(
-            days, test_size=test_size, random_state=42
+            days, test_size=test_size, random_state=seed
         )
         # check total windows
         n_test = sum(day_counts[d] for d in test_days)
@@ -728,13 +728,13 @@ def ensure_train_val_test_days(pos_df, neg_df, hr_df, st_df, df_processed=None, 
                 trval_days,
                 test_size=0.25,               # 0.25 of the 80% → 20% overall
                 stratify=trval_counts,
-                random_state=42  # Fixed random state
+                random_state=seed  # Fixed random state
             )
         except ValueError:
             train_days, val_days = train_test_split(
                 trval_days,
                 test_size=0.25,
-                random_state=42  # Fixed random state
+                random_state=seed  # Fixed random state
             )
 
         # final sanity check: VAL must have at least MIN_TEST_WINDOWS as well
