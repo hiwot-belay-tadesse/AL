@@ -1198,10 +1198,6 @@ def run_experiment(exp_dir, exp_name, exp_kwargs, args, prep, clf_epochs, clf_pa
             y_val_full = df_val["state_val"].values.astype("float32")
             Z_te = encode_single_df(df_te, enc_hr, enc_st, args.pool)
             y_te = df_te["state_val"].values.astype("float32")
-            # Under LR, fold val into the ceiling training set to match the AL-loop merge.
-            if _CLASSIFIER_KIND == "lr" and len(Z_val_full) > 0:
-                Z_full = np.concatenate([Z_full, Z_val_full], axis=0)
-                y_full = np.concatenate([y_full, y_val_full], axis=0)
             # full_model = build_lr_classifier(seed=split_seed)
             # full_model.fit(Z_full, y_full)
             full_model, callbacks = build_classifier(
@@ -1217,8 +1213,7 @@ def run_experiment(exp_dir, exp_name, exp_kwargs, args, prep, clf_epochs, clf_pa
                 cw_vals = compute_class_weight("balanced", classes=classes, y=y_full)
                 class_weight = {int(cls): float(weight) for cls, weight in zip(classes, cw_vals)}
             full_fit_kwargs = dict(fit_kwargs or {})
-            if _CLASSIFIER_KIND != "lr":
-                full_fit_kwargs["validation_data"] = (Z_val_full, y_val_full)
+            full_fit_kwargs["validation_data"] = (Z_val_full, y_val_full)
             full_fit_kwargs = build_fit_kwargs(full_fit_kwargs, callbacks, use_early_stopping=True)
             full_model.fit(Z_full, y_full, class_weight=class_weight, **full_fit_kwargs)
             full_probs_te = predict_positive_scores(full_model, Z_te)
@@ -1268,12 +1263,8 @@ def run_experiment(exp_dir, exp_name, exp_kwargs, args, prep, clf_epochs, clf_pa
         Z_final = encode_single_df(df_all_tr, enc_hr, enc_st, args.pool)
         y_final = df_all_tr["state_val"].values.astype("float32")
         Z_val_final, y_val_final = encode_single_df(df_val, enc_hr, enc_st, args.pool), df_val["state_val"].values.astype("float32")
-        # Under LR, fold val into the ceiling training set to match the AL-loop merge.
-        if _CLASSIFIER_KIND == "lr" and len(Z_val_final) > 0:
-            Z_final = np.concatenate([Z_final, Z_val_final], axis=0)
-            y_final = np.concatenate([y_final, y_val_final], axis=0)
 
-    
+
         # es = EarlyStopping(
         #     monitor="val_loss",
         #     patience=clf_patience,
@@ -1296,8 +1287,7 @@ def run_experiment(exp_dir, exp_name, exp_kwargs, args, prep, clf_epochs, clf_pa
         )
         
         final_fit_kwargs = dict(fit_kwargs or {})
-        if _CLASSIFIER_KIND != "lr":
-            final_fit_kwargs["validation_data"] = (Z_val_final, y_val_final)
+        final_fit_kwargs["validation_data"] = (Z_val_final, y_val_final)
         final_fit_kwargs = build_fit_kwargs(final_fit_kwargs, callbacks, use_early_stopping=True)
         final_model.fit(
             Z_final,
@@ -1730,7 +1720,7 @@ def pre_al_metrics(model, Z_tr_labeled, y_tr_labeled, Z_val, y_val, Z_te, y_te):
     ##for direct AUC without bootstrapping to be using by averaging in multi-seed
     auc_m_pre  = roc_auc_score(y_te, probs_te)
     auc_m_train_pre = roc_auc_score(y_tr_labeled, probs_train)
-    # Under LR, val is folded into the labeled set upstream, so val is empty and val AUC is undefined.
+    # Under LR, val is folded into the training pool upstream in run.py, so val is empty and val AUC is undefined.
     auc_m_val_pre = float("nan") if _CLASSIFIER_KIND == "lr" else roc_auc_score(y_val, probs_val)
     auc_s_pre, auc_s_train_pre, auc_s_val_pre = None, None, None
     m = pd.DataFrame(index=[0])
@@ -2063,15 +2053,6 @@ def run_al_refactored(
         y_tr_labeled = df_tr_labeled["state_val"].values.astype("float32")
 
         # breakpoint()
-
-    # LR has no early-stopping signal, so the val split is unused labels.
-    # Fold val into the labeled training set once, then drop it from downstream eval.
-    if _CLASSIFIER_KIND == "lr" and Z_val is not None and len(Z_val) > 0:
-        Z_tr_labeled = np.concatenate([Z_tr_labeled, Z_val], axis=0)
-        y_tr_labeled = np.concatenate([y_tr_labeled, np.asarray(y_val).ravel()], axis=0)
-        df_tr_labeled = pd.concat([df_tr_labeled, df_val], ignore_index=False)
-        Z_val = np.empty((0, Z_tr_labeled.shape[1]), dtype=Z_tr_labeled.dtype)
-        y_val = np.empty((0,), dtype=y_tr_labeled.dtype)
 
     results = []
     queried_all = []
@@ -2801,7 +2782,7 @@ def train_and_evaluate_by_pool(
         ## this is for average auc computation in run_multi_seeds.py
         auc_m_post = roc_auc_score(y_te, probs_te)
         auc_m_train_post = roc_auc_score(y_tr_labeled, probs_train)
-        # Under LR, val is folded into the labeled set upstream, so val is empty and val AUC is undefined.
+        # Under LR, val is folded into the training pool upstream in run.py, so val is empty and val AUC is undefined.
         auc_m_val_post  = float("nan") if _CLASSIFIER_KIND == "lr" else roc_auc_score(y_val, probs_val)
         auc_s_train_post,auc_s_val_post, auc_s_post  = None, None, None
         
@@ -2958,7 +2939,7 @@ def train_and_evaluate_by_pool(
         probs_val = active_model.predict(Z_val, verbose=0).ravel()
         auc_m_post, auc_s_post, _ = bootstrap_auc(y_te, probs_te)
         auc_m_train_post, auc_s_train_post, _ = bootstrap_auc(y_tr_labeled, probs_train)
-        # Under LR, val is folded into the labeled set upstream, so val is empty and val AUC is undefined.
+        # Under LR, val is folded into the training pool upstream in run.py, so val is empty and val AUC is undefined.
         if _CLASSIFIER_KIND == "lr":
             auc_m_val_post, auc_s_val_post = float("nan"), None
         else:

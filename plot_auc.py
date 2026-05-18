@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 from pandas.errors import EmptyDataError
 
-ROOT_DIR = Path("avg_auc_results/")
+ROOT_DIR = Path("avg_auc_results_nn/")
 # ROOT_DIR = Path("Cardiomate_AL/G_SSL_no_augment_nn")
 # ROOT_DIR = Path("cluster_results/nn_no_augment_l2/G_SSL_no_augmented_l2")
 

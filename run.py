@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 from types import SimpleNamespace
 import pickle
+import pandas as pd
 from sklearn.model_selection import train_test_split
 import utility
 import preprocess
@@ -55,7 +56,7 @@ dropout_rate = [float(args.dropout_rate)]
 warm_start = [bool(int(args.warm_start))]
 T = [50]
 # K = [100]
-K = [3]
+K = [10]
 
 Budget = [None]
 
@@ -162,6 +163,15 @@ def run(exp_dir, exp_name, exp_kwargs):
     
     (df_tr, df_all_tr, df_val, df_te, enc_hr, enc_st, *_,) = prep
 
+    # Under LR, fold val into the training pool so AL can query from it.
+    # df_val is emptied so the downstream LR val-merge inside run_experiment is a no-op.
+    if classifier_kind == "lr" and df_val is not None and len(df_val) > 0:
+        if df_all_tr is not None:
+            df_all_tr = pd.concat([df_all_tr, df_val], ignore_index=False)
+        if df_tr is not None:
+            df_tr = pd.concat([df_tr, df_val], ignore_index=False)
+        df_val = df_val.iloc[0:0].copy()
+
     if df_all_tr is not None:
         pre_hash, pre_meta = utility.split_fingerprint(df_all_tr)
         # print(
@@ -240,7 +250,7 @@ def run(exp_dir, exp_name, exp_kwargs):
         # random_state=split_seed, #commented this for avg roc auc computation in avg_auc.py
         random_state=42,
     )
-    breakpoint()
+
     split_source = df_all_tr.reset_index(drop=True)
 
     Z_split = utility.encode_single_df(

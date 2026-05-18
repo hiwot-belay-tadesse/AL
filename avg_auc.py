@@ -296,12 +296,19 @@ def _seed_from_path(path: Path) -> int | None:
     return None
 
 
-def load_auc_rows_from_runs(scenario_dir: Path, seeds: list[int], methods: list[str]) -> pd.DataFrame:
+def load_auc_rows_from_runs(
+    scenario_dir: Path,
+    seeds: list[int],
+    methods: list[str],
+    hp_contains: str | None = None,
+) -> pd.DataFrame:
     frames = []
     for method in methods:
         for seed in seeds:
             seed_dir = scenario_dir / method / f"seed_{seed}"
             paths = sorted(seed_dir.rglob("al_progress.csv"))
+            if hp_contains:
+                paths = [path for path in paths if hp_contains in str(path.parent)]
             if not paths:
                 print(f"Missing al_progress.csv for {seed_dir}")
                 continue
@@ -334,12 +341,15 @@ def load_full_data_auc_rows_from_runs(
     scenario_dir: Path,
     seeds: list[int],
     methods: list[str],
+    hp_contains: str | None = None,
 ) -> pd.DataFrame:
     rows = []
     for method in methods:
         for seed in seeds:
             seed_dir = scenario_dir / method / f"seed_{seed}"
             paths = sorted(seed_dir.rglob("upper_bound_auc.npy"))
+            if hp_contains:
+                paths = [path for path in paths if hp_contains in str(path.parent)]
             if not paths:
                 print(f"Missing 100% labeled AUC for {seed_dir}")
                 continue
@@ -681,6 +691,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--task", default="bp")
     parser.add_argument("--input_df", default="raw")
     parser.add_argument("--classifier", default="mlp", choices=["mlp", "lr"])
+    parser.add_argument(
+        "--hp_contains",
+        default=None,
+        help="Optional substring to disambiguate hp folders (e.g. 'K10') when multiple exist per seed.",
+    )
     parser.add_argument("--outdir", default="avg_auc_results")
     parser.add_argument(
         "--submit",
@@ -722,9 +737,9 @@ def process_user(
     if not args.analyze_only:
         scenario_dir = run_seed_jobs(args, run_module, repo_root, outdir, job_outdir)
 
-    df = load_auc_rows_from_runs(scenario_dir, seeds, methods)
+    df = load_auc_rows_from_runs(scenario_dir, seeds, methods, hp_contains=args.hp_contains)
     summary = average_auc_per_round(df)
-    full_df = load_full_data_auc_rows_from_runs(scenario_dir, seeds, methods)
+    full_df = load_full_data_auc_rows_from_runs(scenario_dir, seeds, methods, hp_contains=args.hp_contains)
     full_summary = average_full_data_auc(full_df)
 
     out_csv = args.out_csv or (scenario_dir / "auc_mean_std_per_round.csv")

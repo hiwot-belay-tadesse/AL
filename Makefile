@@ -105,7 +105,7 @@ TARGET_USER ?= 20
 POOL ?= personal
 FRUIT ?= BP
 SCENARIO ?= spike
-UNLABELED_FRAC ?= 0.22
+UNLABELED_FRAC ?= 0.0018
 DROPOUT_RATE ?= 0.5
 WARM_START ?= 0
 TASK ?= bp
@@ -137,12 +137,13 @@ METHODS ?= random,coreset
 POOL ?= pool
 FRUIT ?= BP
 SCENARIO ?= spike
-UNLABELED_FRAC ?= 0.22
+UNLABELED_FRAC ?= 0.0018
 DROPOUT_RATE ?= 0.5
 WARM_START ?= 0
 TASK ?= bp 
 INPUT_DF ?= raw
 OUTDIR ?= avg_auc_results
+CLASSIFIER ?= lr
 LOCAL ?= 1
 AVG_AUC_RUN_MODE_FLAG := $(if $(filter 1 true yes,$(LOCAL)),--local,--submit)
 AVG_AUC_ANALYZE_ONLY ?= 0
@@ -161,6 +162,7 @@ run_avg_auc:
 	  --unlabeled_frac $(UNLABELED_FRAC) \
 	  --dropout_rate $(DROPOUT_RATE) \
 	  --warm_start $(WARM_START) \
+	  --classifier $(CLASSIFIER) \
 	  --task $(TASK) \
 	  --input_df $(INPUT_DF) \
 	  $(AVG_AUC_RUN_MODE_FLAG) \
