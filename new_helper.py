@@ -98,6 +98,7 @@ def parse_args():
     pa.add_argument("--warm_start", default=0) ## 0 is retrain from scratch each round, 1 is finetune each round
     pa.add_argument("--results_subdir", default="results")
     pa.add_argument("--input_df", default="raw", choices=["raw", "processed"])
+    pa.add_argument("--classifier", default="mlp", choices=["mlp", "lr"])
     return pa.parse_known_args()
 
 def select_balanced_centroid_seed(df, n_per_class=2, label_col="state_val", random_state=42):
@@ -885,9 +886,70 @@ def predict_positive_scores(model, X):
         return np.asarray(probs)[:, 1]
     return np.asarray(model.predict(X, verbose=0)).ravel()
     
-def build_classifier(input_dim, CLF_PATIENCE, 
-                     dropout_rate, seed):
-    
+_CLASSIFIER_KIND = "mlp"
+
+
+def set_classifier(kind: str) -> None:
+    global _CLASSIFIER_KIND
+    if kind not in ("mlp", "lr"):
+        raise ValueError(f"Unknown classifier kind: {kind!r}")
+    _CLASSIFIER_KIND = kind
+
+
+def get_classifier() -> str:
+    return _CLASSIFIER_KIND
+
+
+class _LRAdapter:
+    """Sklearn LogisticRegression wrapped to mimic the Keras `.fit/.predict` surface used downstream."""
+
+    def __init__(self, seed: int):
+        from sklearn.linear_model import LogisticRegression
+
+        self._lr = LogisticRegression(
+            penalty="l2",
+            C=1e2,
+            solver="lbfgs",
+            max_iter=1000,
+            random_state=int(seed),
+        )
+
+    def fit(self, X, y, **kwargs):
+        y_arr = np.asarray(y).ravel()
+        class_weight = kwargs.get("class_weight")
+        sample_weight = None
+        if isinstance(class_weight, dict):
+            sample_weight = np.asarray([class_weight.get(int(label), 1.0) for label in y_arr])
+        elif class_weight == "balanced":
+            cw_vals = compute_class_weight("balanced", classes=np.unique(y_arr), y=y_arr)
+            cw_map = {int(cls): float(w) for cls, w in zip(np.unique(y_arr), cw_vals)}
+            sample_weight = np.asarray([cw_map[int(label)] for label in y_arr])
+        self._lr.fit(np.asarray(X), y_arr, sample_weight=sample_weight)
+        return self
+
+    def predict_proba(self, X):
+        X_arr = np.asarray(X)
+        if X_arr.shape[0] == 0:
+            return np.empty((0, 2), dtype=float)
+        return self._lr.predict_proba(X_arr)
+
+    def predict(self, X, verbose=0):
+        X_arr = np.asarray(X)
+        if X_arr.shape[0] == 0:
+            return np.empty((0,), dtype=float)
+        return self._lr.predict_proba(X_arr)[:, 1]
+
+
+def build_classifier(input_dim, CLF_PATIENCE,
+                     dropout_rate, seed, classifier: str | None = None):
+
+    if classifier is None:
+        classifier = _CLASSIFIER_KIND
+
+    if classifier == "lr":
+        reset_seeds(seed)
+        return _LRAdapter(seed=seed), []
+
     reset_seeds(seed)
         
     # ── Self-tune regulirzer based on label count ──────────
@@ -1136,6 +1198,10 @@ def run_experiment(exp_dir, exp_name, exp_kwargs, args, prep, clf_epochs, clf_pa
             y_val_full = df_val["state_val"].values.astype("float32")
             Z_te = encode_single_df(df_te, enc_hr, enc_st, args.pool)
             y_te = df_te["state_val"].values.astype("float32")
+            # Under LR, fold val into the ceiling training set to match the AL-loop merge.
+            if _CLASSIFIER_KIND == "lr" and len(Z_val_full) > 0:
+                Z_full = np.concatenate([Z_full, Z_val_full], axis=0)
+                y_full = np.concatenate([y_full, y_val_full], axis=0)
             # full_model = build_lr_classifier(seed=split_seed)
             # full_model.fit(Z_full, y_full)
             full_model, callbacks = build_classifier(
@@ -1151,7 +1217,8 @@ def run_experiment(exp_dir, exp_name, exp_kwargs, args, prep, clf_epochs, clf_pa
                 cw_vals = compute_class_weight("balanced", classes=classes, y=y_full)
                 class_weight = {int(cls): float(weight) for cls, weight in zip(classes, cw_vals)}
             full_fit_kwargs = dict(fit_kwargs or {})
-            full_fit_kwargs["validation_data"] = (Z_val_full, y_val_full)
+            if _CLASSIFIER_KIND != "lr":
+                full_fit_kwargs["validation_data"] = (Z_val_full, y_val_full)
             full_fit_kwargs = build_fit_kwargs(full_fit_kwargs, callbacks, use_early_stopping=True)
             full_model.fit(Z_full, y_full, class_weight=class_weight, **full_fit_kwargs)
             full_probs_te = predict_positive_scores(full_model, Z_te)
@@ -1201,6 +1268,10 @@ def run_experiment(exp_dir, exp_name, exp_kwargs, args, prep, clf_epochs, clf_pa
         Z_final = encode_single_df(df_all_tr, enc_hr, enc_st, args.pool)
         y_final = df_all_tr["state_val"].values.astype("float32")
         Z_val_final, y_val_final = encode_single_df(df_val, enc_hr, enc_st, args.pool), df_val["state_val"].values.astype("float32")
+        # Under LR, fold val into the ceiling training set to match the AL-loop merge.
+        if _CLASSIFIER_KIND == "lr" and len(Z_val_final) > 0:
+            Z_final = np.concatenate([Z_final, Z_val_final], axis=0)
+            y_final = np.concatenate([y_final, y_val_final], axis=0)
 
     
         # es = EarlyStopping(
@@ -1225,7 +1296,8 @@ def run_experiment(exp_dir, exp_name, exp_kwargs, args, prep, clf_epochs, clf_pa
         )
         
         final_fit_kwargs = dict(fit_kwargs or {})
-        final_fit_kwargs["validation_data"] = (Z_val_final, y_val_final)
+        if _CLASSIFIER_KIND != "lr":
+            final_fit_kwargs["validation_data"] = (Z_val_final, y_val_final)
         final_fit_kwargs = build_fit_kwargs(final_fit_kwargs, callbacks, use_early_stopping=True)
         final_model.fit(
             Z_final,
@@ -1573,7 +1645,7 @@ def initialize_active_model(
 
         
         input_dim = Z_tr_labeled.shape[1]
-        clf, [es, lr_cb ] = build_classifier(input_dim, CLF_PATIENCE, dropout_rate, seed)
+        clf, _callbacks = build_classifier(input_dim, CLF_PATIENCE, dropout_rate, seed)
         fit_kwargs_with_callbacks = fit_kwargs.copy() if fit_kwargs else {}
 
         unique_classes = np.unique(y_tr_labeled)
@@ -1658,7 +1730,8 @@ def pre_al_metrics(model, Z_tr_labeled, y_tr_labeled, Z_val, y_val, Z_te, y_te):
     ##for direct AUC without bootstrapping to be using by averaging in multi-seed
     auc_m_pre  = roc_auc_score(y_te, probs_te)
     auc_m_train_pre = roc_auc_score(y_tr_labeled, probs_train)
-    auc_m_val_pre = roc_auc_score(y_val, probs_val)
+    # Under LR, val is folded into the labeled set upstream, so val is empty and val AUC is undefined.
+    auc_m_val_pre = float("nan") if _CLASSIFIER_KIND == "lr" else roc_auc_score(y_val, probs_val)
     auc_s_pre, auc_s_train_pre, auc_s_val_pre = None, None, None
     m = pd.DataFrame(index=[0])
     m["round"] = 0
@@ -1991,6 +2064,15 @@ def run_al_refactored(
 
         # breakpoint()
 
+    # LR has no early-stopping signal, so the val split is unused labels.
+    # Fold val into the labeled training set once, then drop it from downstream eval.
+    if _CLASSIFIER_KIND == "lr" and Z_val is not None and len(Z_val) > 0:
+        Z_tr_labeled = np.concatenate([Z_tr_labeled, Z_val], axis=0)
+        y_tr_labeled = np.concatenate([y_tr_labeled, np.asarray(y_val).ravel()], axis=0)
+        df_tr_labeled = pd.concat([df_tr_labeled, df_val], ignore_index=False)
+        Z_val = np.empty((0, Z_tr_labeled.shape[1]), dtype=Z_tr_labeled.dtype)
+        y_val = np.empty((0,), dtype=y_tr_labeled.dtype)
+
     results = []
     queried_all = []
     queried_participants = {}
@@ -2116,8 +2198,6 @@ def run_al_refactored(
             queried_indices, df_queried = pick_most_uncertain(
                 active_model, df_tr_unlabeled, Z_tr_unlabeled, k_actual, T, mc_predict
             )
-
-            df_queried_original = df_queried.copy()
             # queried_indices, df_queried = pick_most_uncertain_ensemble(
             #     df_tr_labeled=df_tr_labeled,
             #     X_tr_labeled=Z_tr_labeled,
@@ -2153,7 +2233,6 @@ def run_al_refactored(
             queried_indices, df_queried = kmeans_query_with_labeled_centroid(
                 df_tr_labeled, Z_tr_labeled, df_tr_unlabeled, Z_tr_unlabeled, k_actual
             )
-            df_queried_original = df_queried.copy()
         else:
             raise ValueError(
                 f"Unknown acquisition function: {Aq}. Must be 'random', 'uncertainty', 'coreset', or 'mixed'."
@@ -2165,7 +2244,7 @@ def run_al_refactored(
 
         queried_all.extend(queried_indices)
         try:
-            plot_queried_windows(df_queried_original, round_num, results_d)
+            plot_queried_windows(df_queried, round_num, results_d)
         except Exception as e:
             print(f"Skipping queried-window plot for round {round_num}: {e}")
         queried_participants_per_round = df_queried["user_id"].tolist()
@@ -2722,7 +2801,8 @@ def train_and_evaluate_by_pool(
         ## this is for average auc computation in run_multi_seeds.py
         auc_m_post = roc_auc_score(y_te, probs_te)
         auc_m_train_post = roc_auc_score(y_tr_labeled, probs_train)
-        auc_m_val_post  = roc_auc_score(y_val, probs_val)
+        # Under LR, val is folded into the labeled set upstream, so val is empty and val AUC is undefined.
+        auc_m_val_post  = float("nan") if _CLASSIFIER_KIND == "lr" else roc_auc_score(y_val, probs_val)
         auc_s_train_post,auc_s_val_post, auc_s_post  = None, None, None
         
         
@@ -2878,7 +2958,11 @@ def train_and_evaluate_by_pool(
         probs_val = active_model.predict(Z_val, verbose=0).ravel()
         auc_m_post, auc_s_post, _ = bootstrap_auc(y_te, probs_te)
         auc_m_train_post, auc_s_train_post, _ = bootstrap_auc(y_tr_labeled, probs_train)
-        auc_m_val_post, auc_s_val_post, _ = bootstrap_auc(y_val, probs_val)
+        # Under LR, val is folded into the labeled set upstream, so val is empty and val AUC is undefined.
+        if _CLASSIFIER_KIND == "lr":
+            auc_m_val_post, auc_s_val_post = float("nan"), None
+        else:
+            auc_m_val_post, auc_s_val_post, _ = bootstrap_auc(y_val, probs_val)
         ap_test = average_precision_score(y_te, probs_te)
         eval_payload = _build_eval_payload(
             y_tr_labeled=y_tr_labeled,

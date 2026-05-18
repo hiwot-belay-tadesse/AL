@@ -462,7 +462,8 @@ if all_from_list:
         run_for_pattern(scenario_pkls, scenario_name)
 else:
     all_pkls = glob.glob(
-        os.path.join(base_dir, "*", fruit_scenario, aq, "*", "queried_participant_counts_*.pkl"),
+        # os.path.join(base_dir, "*", fruit_scenario, aq, "*", "queried_participant_counts_*.pkl"),
+        os.path.join(base_dir, "*", "*", aq, "*", "queried_participant_counts_*.pkl"),
         recursive=True,
     )
     run_for_pattern(all_pkls, fruit_scenario)

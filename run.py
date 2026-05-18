@@ -20,6 +20,7 @@ from new_helper import (
     write_summary,
     run_experiment,
     reset_seeds,
+    set_classifier,
     aggregate_per_round_labeled_and_compute_auc,
 )
 
@@ -42,6 +43,8 @@ if args.task == "bp":
     BP_MODE = True
 else:
     BP_MODE = False
+
+set_classifier(args.classifier)
 
 # This is the base directory where the results will be stored.
 OUTPUT_DIR = os.environ.get("BAN_AL_OUTPUT_DIR") or set_output_dir(args.pool, BP_MODE)
@@ -69,16 +72,17 @@ QUEUE = [
     ("random", dict(
         user=[args.user], pool=[args.pool], fruit=[args.fruit], scenario=[args.scenario],
         task=[args.task], participant_id=[args.participant_id],
-        K=K, Budget=Budget, unlabeled_frac=unlabeled_frac, dropout_rate=dropout_rate, warm_start=warm_start, input_df=[args.input_df]
+        K=K, Budget=Budget, unlabeled_frac=unlabeled_frac, dropout_rate=dropout_rate, warm_start=warm_start,
+        input_df=[args.input_df], classifier=[args.classifier]
     )),
     (
         "coreset", dict(
             user=[args.user], pool=[args.pool], fruit=[args.fruit], scenario=[args.scenario],
             task=[args.task], participant_id=[args.participant_id],
-            K=K, Budget=Budget, unlabeled_frac=unlabeled_frac, dropout_rate=dropout_rate, 
-            warm_start=warm_start, input_df=[args.input_df]
+            K=K, Budget=Budget, unlabeled_frac=unlabeled_frac, dropout_rate=dropout_rate,
+            warm_start=warm_start, input_df=[args.input_df], classifier=[args.classifier]
         )
-    ),  
+    ),
     # (
     #     "kmeans", dict(
     #         user=[args.user], pool=[args.pool], fruit=[args.fruit], scenario=[args.scenario],
@@ -103,7 +107,15 @@ def run(exp_dir, exp_name, exp_kwargs):
     if not exp_kwargs:
         raise SystemExit("refactor_run.py requires exp_kwargs from submit_batch.py.")
 
-    ##Build args namespace from exp_kwargs 
+    classifier_kind = exp_kwargs.get("classifier", "mlp")
+    if classifier_kind == "lr" and exp_name == "uncertainty":
+        raise SystemExit(
+            "aq=uncertainty is not supported with classifier=lr "
+            "(MC-dropout/BALD require dropout layers). Pick aq=random or aq=coreset."
+        )
+    set_classifier(classifier_kind)
+
+    ##Build args namespace from exp_kwargs
     args_ns = SimpleNamespace(
         user=exp_kwargs["user"],
         pool=exp_kwargs["pool"],
@@ -115,7 +127,8 @@ def run(exp_dir, exp_name, exp_kwargs):
         dropout_rate=exp_kwargs["dropout_rate"],
         warm_start=exp_kwargs.get("warm_start"),
         results_subdir=exp_kwargs.get("results_subdir", "results"),
-        input_df = exp_kwargs["input_df"],
+        input_df=exp_kwargs["input_df"],
+        classifier=classifier_kind,
     )
 
     ## Use OUTPUT_DIR as the top-level output root
@@ -227,6 +240,7 @@ def run(exp_dir, exp_name, exp_kwargs):
         # random_state=split_seed, #commented this for avg roc auc computation in avg_auc.py
         random_state=42,
     )
+    breakpoint()
     split_source = df_all_tr.reset_index(drop=True)
 
     Z_split = utility.encode_single_df(
@@ -403,6 +417,8 @@ def main():
         "K": 20,
         "T": 30,
         "Budget": None,
+        "input_df": args.input_df,
+        "classifier": args.classifier,
     }
     run(exp_dir, exp_name, exp_kwargs)
 

@@ -102,7 +102,7 @@ clean_logs:
 
 SEEDS ?= 41,42,43,44,45,46,47,48,49,50
 TARGET_USER ?= 20
-POOL ?= global
+POOL ?= personal
 FRUIT ?= BP
 SCENARIO ?= spike
 UNLABELED_FRAC ?= 0.22
@@ -110,7 +110,7 @@ DROPOUT_RATE ?= 0.5
 WARM_START ?= 0
 TASK ?= bp
 INPUT_DF ?= raw
-OUTDIR ?= multiseeds
+OUTDIR ?= avg_auc_results
 LOCAL ?= 1
 LOCAL_FLAG := $(if $(filter 1 true yes,$(LOCAL)),--local,)
 
@@ -131,11 +131,10 @@ run_multi_seeds:
 	  --input_df $(INPUT_DF) $(LOCAL_FLAG)
 
 
-
 AVG_AUC_SEEDS ?= 41,42,43,44
-TARGET_USERS ?= 15 20 22 24 25 26 30 31 33 39
+TARGET_USERS ?= 15 20 22 24 25 26 30 31 32 33 35 39
 METHODS ?= random,coreset
-POOL ?= global
+POOL ?= pool
 FRUIT ?= BP
 SCENARIO ?= spike
 UNLABELED_FRAC ?= 0.22

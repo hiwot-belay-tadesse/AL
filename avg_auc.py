@@ -106,6 +106,8 @@ def import_run_module(args, repo_root: Path, outdir: str):
         str(args.warm_start),
         "--input_df",
         args.input_df,
+        "--classifier",
+        args.classifier,
     ]
     if args.task == "bp":
         run_argv.extend(["--participant_id", str(args.participant_id)])
@@ -180,6 +182,7 @@ def exp_kwargs_for_seed(args, run_module, seed: int, method: str, output_dir: st
         "participant_id": args.participant_id,
         "results_subdir": args.results_subdir,
         "output_dir": output_dir,
+        "classifier": args.classifier,
     }
 
 
@@ -518,6 +521,26 @@ def _plot_summary_lines(
     return y_values
 
 
+def _plot_full_data_reference(ax, full_summary: pd.DataFrame, y_values: list[float]) -> None:
+    if not isinstance(full_summary, pd.DataFrame) or full_summary.empty:
+        return
+    auc_vals = pd.to_numeric(full_summary["AUC_Mean"], errors="coerce").dropna()
+    if auc_vals.empty:
+        return
+    std_vals = pd.to_numeric(full_summary.get("AUC_STD"), errors="coerce").dropna()
+    upper_auc = float(auc_vals.mean())
+    upper_std = float(std_vals.mean()) if not std_vals.empty else 0.0
+    ax.axhline(
+        upper_auc,
+        color="red",
+        linestyle="--",
+        linewidth=1.6,
+        alpha=0.85,
+        label=f"100%-data ceiling ({upper_auc:.3f})",
+    )
+    y_values.extend([upper_auc - upper_std, upper_auc, upper_auc + upper_std])
+
+
 def aggregate_grid_records(records: list[dict], methods: list[str]) -> tuple[pd.DataFrame, pd.DataFrame]:
     frames = []
     full_frames = []
@@ -593,14 +616,12 @@ def plot_auc_grid(records: list[dict], methods: list[str], out_path: Path) -> No
     for idx, record in enumerate(records):
         ax = axes[idx]
         summary = record["summary"]
-        has_num_labeled = (
-            "Num_Labeled" in summary.columns
-            and pd.to_numeric(summary["Num_Labeled"], errors="coerce").notna().any()
-        )
-        x_col = "Num_Labeled" if has_num_labeled else "Pct_Total_Labeled"
+        x_col = "Pct_Total_Labeled"
         y_values = _plot_summary_lines(ax, summary, x_col, methods)
+        _plot_full_data_reference(ax, record.get("full_summary"), y_values)
+        ax.legend(fontsize=8, loc="lower right")
         ax.set_title(f"target {record['user']}")
-        ax.set_xlabel("Labels acquired" if has_num_labeled else "% of total training data labeled")
+        ax.set_xlabel("% Labeled")
         ax.set_ylabel("ROC-AUC")
         x_vals = pd.to_numeric(summary[x_col], errors="coerce").dropna()
         if not x_vals.empty:
@@ -617,15 +638,7 @@ def plot_auc_grid(records: list[dict], methods: list[str], out_path: Path) -> No
             methods,
         )
         if not full_aggregate.empty:
-            upper_auc = float(full_aggregate["AUC_Mean"].mean())
-            aggregate_ax.axhline(
-                upper_auc,
-                color="red",
-                linestyle="--",
-                linewidth=1.8,
-                label=f"100%-data ceiling ({upper_auc:.3f})",
-            )
-            y_values.append(upper_auc)
+            _plot_full_data_reference(aggregate_ax, full_aggregate, y_values)
             aggregate_ax.legend(fontsize=8, loc="lower right")
         aggregate_ax.set_title("Aggregate (pooled labels across participants)")
         aggregate_ax.set_xlabel("% of total training data labeled")
@@ -667,6 +680,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--warm_start", default="0")
     parser.add_argument("--task", default="bp")
     parser.add_argument("--input_df", default="raw")
+    parser.add_argument("--classifier", default="mlp", choices=["mlp", "lr"])
     parser.add_argument("--outdir", default="avg_auc_results")
     parser.add_argument(
         "--submit",
