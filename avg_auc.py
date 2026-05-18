@@ -20,8 +20,21 @@ from types import SimpleNamespace
 import pandas as pd
 
 
+METHOD_COLORS = {
+    "random": "#ff7f0e",
+    "coreset": "#2ca02c",
+    "uncertainty": "#1f77b4",
+}
+
+
 def parse_csv_list(value: str, cast=str) -> list:
     return [cast(item.strip()) for item in value.split(",") if item.strip()]
+
+
+def parse_user_list(value: str | None) -> list[str]:
+    if value is None:
+        return []
+    return [item for item in re.split(r"[,\s]+", str(value).strip()) if item]
 
 
 def configure_matplotlib_cache() -> None:
@@ -249,6 +262,14 @@ def _read_progress_csv(path: Path, method: str | None = None, seed: int | None =
             f"{path} is missing Pct_Total_Labeled or Num_Labeled/Total_Data; "
             "cannot plot AUC against % labeled."
         )
+    if "Num_Labeled" in df.columns:
+        out["num_labeled"] = pd.to_numeric(df["Num_Labeled"], errors="coerce")
+    else:
+        out["num_labeled"] = pd.NA
+    if "Total_Data" in df.columns:
+        out["total_data"] = pd.to_numeric(df["Total_Data"], errors="coerce")
+    else:
+        out["total_data"] = pd.NA
     out["source"] = str(path)
     if seed is not None:
         out["seed"] = seed
@@ -292,6 +313,8 @@ def load_auc_rows_from_runs(scenario_dir: Path, seeds: list[int], methods: list[
     df["round"] = pd.to_numeric(df["round"], errors="coerce")
     df["auc"] = pd.to_numeric(df["auc"], errors="coerce")
     df["pct_labeled"] = pd.to_numeric(df["pct_labeled"], errors="coerce")
+    df["num_labeled"] = pd.to_numeric(df["num_labeled"], errors="coerce")
+    df["total_data"] = pd.to_numeric(df["total_data"], errors="coerce")
     df = df.dropna(subset=["round", "auc", "pct_labeled"])
     df["round"] = df["round"].astype(int)
     return df
@@ -337,6 +360,9 @@ def average_auc_per_round(df: pd.DataFrame) -> pd.DataFrame:
         .agg(
             Pct_Total_Labeled=("pct_labeled", "mean"),
             Pct_Total_Labeled_STD=("pct_labeled", "std"),
+            Num_Labeled=("num_labeled", "mean"),
+            Num_Labeled_STD=("num_labeled", "std"),
+            Total_Data=("total_data", "mean"),
             AUC_Mean=("auc", "mean"),
             AUC_STD=("auc", "std"),
             N_Runs=("auc", "count"),
@@ -346,6 +372,7 @@ def average_auc_per_round(df: pd.DataFrame) -> pd.DataFrame:
     )
     summary["AUC_STD"] = summary["AUC_STD"].fillna(0.0)
     summary["Pct_Total_Labeled_STD"] = summary["Pct_Total_Labeled_STD"].fillna(0.0)
+    summary["Num_Labeled_STD"] = summary["Num_Labeled_STD"].fillna(0.0)
     return summary
 
 
@@ -444,12 +471,193 @@ def plot_auc_summary(
     plt.close()
     
 
+def _set_y_padding(ax, values: list[float]) -> None:
+    vals = pd.to_numeric(pd.Series(values), errors="coerce").dropna()
+    if vals.empty:
+        return
+    ymin = float(vals.min())
+    ymax = float(vals.max())
+    pad = max(0.02, (ymax - ymin) * 0.15)
+    ax.set_ylim(max(0.0, ymin - pad), min(1.0, ymax + pad))
+
+
+def _plot_summary_lines(
+    ax,
+    summary: pd.DataFrame,
+    x_col: str,
+    methods: list[str],
+    *,
+    show_legend: bool = True,
+) -> list[float]:
+    y_values = []
+    for method in methods:
+        method_df = summary[summary["method"] == method].sort_values("round")
+        if method_df.empty or x_col not in method_df.columns:
+            continue
+
+        x = pd.to_numeric(method_df[x_col], errors="coerce").to_numpy(dtype=float)
+        y = pd.to_numeric(method_df["AUC_Mean"], errors="coerce").to_numpy(dtype=float)
+        yerr = pd.to_numeric(method_df["AUC_STD"], errors="coerce").fillna(0.0).to_numpy(dtype=float)
+        mask = ~(pd.isna(x) | pd.isna(y))
+        if not mask.any():
+            continue
+
+        x = x[mask]
+        y = y[mask]
+        yerr = yerr[mask]
+        color = METHOD_COLORS.get(method)
+        ax.plot(x, y, linewidth=2.0, color=color, label=method)
+        ax.fill_between(x, y - yerr, y + yerr, color=color, alpha=0.18, linewidth=0)
+        y_values.extend(y.tolist())
+        y_values.extend((y - yerr).tolist())
+        y_values.extend((y + yerr).tolist())
+
+    if show_legend:
+        ax.legend(fontsize=8, loc="lower right")
+    ax.grid(alpha=0.25)
+    return y_values
+
+
+def aggregate_grid_records(records: list[dict], methods: list[str]) -> tuple[pd.DataFrame, pd.DataFrame]:
+    frames = []
+    full_frames = []
+    for record in records:
+        summary = record.get("summary")
+        if isinstance(summary, pd.DataFrame) and not summary.empty:
+            df = summary.copy()
+            df["target_user"] = record["user"]
+            frames.append(df)
+        full_summary = record.get("full_summary")
+        if isinstance(full_summary, pd.DataFrame) and not full_summary.empty:
+            full_df = full_summary.copy()
+            full_df["target_user"] = record["user"]
+            full_frames.append(full_df)
+
+    if frames:
+        combined = pd.concat(frames, ignore_index=True)
+        aggregate = (
+            combined.groupby(["method", "round"], as_index=False)
+            .agg(
+                Pct_Total_Labeled=("Pct_Total_Labeled", "mean"),
+                AUC_Mean=("AUC_Mean", "mean"),
+                AUC_STD=("AUC_Mean", "std"),
+                N_Targets=("target_user", "nunique"),
+            )
+            .sort_values(["method", "round"])
+            .reset_index(drop=True)
+        )
+        aggregate["AUC_STD"] = aggregate["AUC_STD"].fillna(0.0)
+    else:
+        aggregate = pd.DataFrame()
+
+    if full_frames:
+        full_combined = pd.concat(full_frames, ignore_index=True)
+        full_aggregate = (
+            full_combined.groupby("method", as_index=False)
+            .agg(
+                Pct_Total_Labeled=("Pct_Total_Labeled", "mean"),
+                AUC_Mean=("AUC_Mean", "mean"),
+                AUC_STD=("AUC_Mean", "std"),
+                N_Targets=("target_user", "nunique"),
+            )
+            .sort_values("method")
+            .reset_index(drop=True)
+        )
+        full_aggregate["AUC_STD"] = full_aggregate["AUC_STD"].fillna(0.0)
+    else:
+        full_aggregate = pd.DataFrame()
+
+    if not aggregate.empty:
+        aggregate = aggregate[aggregate["method"].isin(methods)]
+    if not full_aggregate.empty:
+        full_aggregate = full_aggregate[full_aggregate["method"].isin(methods)]
+    return aggregate, full_aggregate
+
+
+def plot_auc_grid(records: list[dict], methods: list[str], out_path: Path) -> None:
+    if not records:
+        return
+
+    configure_matplotlib_cache()
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+
+    n_panels = len(records) + 1
+    ncols = 3
+    nrows = int(np.ceil(n_panels / ncols))
+    fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(5.2 * ncols, 3.8 * nrows))
+    axes = np.asarray(axes).reshape(-1)
+
+    for idx, record in enumerate(records):
+        ax = axes[idx]
+        summary = record["summary"]
+        has_num_labeled = (
+            "Num_Labeled" in summary.columns
+            and pd.to_numeric(summary["Num_Labeled"], errors="coerce").notna().any()
+        )
+        x_col = "Num_Labeled" if has_num_labeled else "Pct_Total_Labeled"
+        y_values = _plot_summary_lines(ax, summary, x_col, methods)
+        ax.set_title(f"target {record['user']}")
+        ax.set_xlabel("Labels acquired" if has_num_labeled else "% of total training data labeled")
+        ax.set_ylabel("ROC-AUC")
+        x_vals = pd.to_numeric(summary[x_col], errors="coerce").dropna()
+        if not x_vals.empty:
+            ax.set_xlim(float(x_vals.min()), float(x_vals.max()))
+        _set_y_padding(ax, y_values)
+
+    aggregate, full_aggregate = aggregate_grid_records(records, methods)
+    aggregate_ax = axes[len(records)]
+    if not aggregate.empty:
+        y_values = _plot_summary_lines(
+            aggregate_ax,
+            aggregate,
+            "Pct_Total_Labeled",
+            methods,
+        )
+        if not full_aggregate.empty:
+            upper_auc = float(full_aggregate["AUC_Mean"].mean())
+            aggregate_ax.axhline(
+                upper_auc,
+                color="red",
+                linestyle="--",
+                linewidth=1.8,
+                label=f"100%-data ceiling ({upper_auc:.3f})",
+            )
+            y_values.append(upper_auc)
+            aggregate_ax.legend(fontsize=8, loc="lower right")
+        aggregate_ax.set_title("Aggregate (pooled labels across participants)")
+        aggregate_ax.set_xlabel("% of total training data labeled")
+        aggregate_ax.set_ylabel("ROC-AUC on concat test set")
+        x_vals = pd.to_numeric(aggregate["Pct_Total_Labeled"], errors="coerce").dropna()
+        if not x_vals.empty:
+            aggregate_ax.set_xlim(float(x_vals.min()), float(x_vals.max()))
+        _set_y_padding(aggregate_ax, y_values)
+    else:
+        aggregate_ax.axis("off")
+
+    for ax in axes[n_panels:]:
+        ax.axis("off")
+
+    fig.suptitle("BP per-participant target AUC + aggregate", fontsize=14)
+    fig.tight_layout(rect=[0, 0, 1, 0.97])
+    fig.savefig(out_path, dpi=200, facecolor="white")
+    plt.close(fig)
+    print(f"Saved grid plot: {out_path}")
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run run.py across seeds and average AUC per AL round.")
     parser.add_argument("--seeds", default="41,42,43", help="Comma-separated seeds.")
     parser.add_argument("--methods", default="random,coreset", help="Comma-separated AL methods.")
     parser.add_argument("--results_subdir", default="results")
     parser.add_argument("--user", default="35")
+    parser.add_argument(
+        "--users",
+        default=None,
+        help="Optional comma- or space-separated users for multi-user grid/analyze.",
+    )
     parser.add_argument("--participant_id", default=None)
     parser.add_argument("--pool", default="global")
     parser.add_argument("--fruit", default="BP")
@@ -481,40 +689,24 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--out_csv", type=Path, default=None, help="Output CSV for per-round AUC summary.")
     parser.add_argument("--raw_csv", type=Path, default=None, help="Output CSV for seed-level AUC rows.")
     parser.add_argument("--out_plot", type=Path, default=None, help="Output PNG for the AUC plot.")
+    parser.add_argument("--grid_out", type=Path, default=None, help="Output PNG for multi-user grid plot.")
     parser.add_argument("--title", default="Average AUC per Round Across Seeds", help="Plot title.")
     return parser.parse_args()
 
 
-def main() -> int:
-    args = parse_args()
-    configure_matplotlib_cache()
-
-    if args.task == "bp":
-        args.participant_id = args.participant_id or args.user
-        args.user = str(args.participant_id)
-
-    seeds = parse_csv_list(args.seeds, int)
-    methods = parse_csv_list(args.methods, str)
-
-    repo_root = Path(__file__).resolve().parent
-    outdir_path = Path(args.outdir)
-    if not outdir_path.is_absolute():
-        outdir_path = repo_root / outdir_path
-    outdir = str(outdir_path)
-    job_outdir = str(Path(args.outdir)) if args.submit else outdir
-
-    run_module = import_run_module(args, repo_root, outdir)
+def process_user(
+    args: argparse.Namespace,
+    run_module,
+    repo_root: Path,
+    outdir: str,
+    job_outdir: str,
+    seeds: list[int],
+    methods: list[str],
+) -> dict | None:
     scenario_dir = Path(run_module.OUTPUT_DIR) / args.pool / args.user / f"{args.fruit}_{args.scenario}"
 
     if not args.analyze_only:
-        prepare_shared_encoders_if_needed(args, run_module, outdir)
         scenario_dir = run_seed_jobs(args, run_module, repo_root, outdir, job_outdir)
-
-    if args.submit and not args.analyze_only:
-        total_jobs = len(seeds) * len(methods)
-        print(f"Submitted {total_jobs} jobs.")
-        print("After the jobs finish, rerun this script with --analyze_only to compute the mean/std AUC.")
-        return 0
 
     df = load_auc_rows_from_runs(scenario_dir, seeds, methods)
     summary = average_auc_per_round(df)
@@ -536,6 +728,7 @@ def main() -> int:
         full_summary.to_csv(full_summary_csv, index=False)
     plot_auc_summary(summary, out_plot, args.title, full_summary)
 
+    print(f"\nTarget user {args.user}")
     print(summary.to_string(index=False))
     if not full_summary.empty:
         print("\n100% labeled AUC:")
@@ -545,6 +738,82 @@ def main() -> int:
     if not full_df.empty:
         print(f"Saved 100% labeled AUC CSV: {full_summary_csv}")
     print(f"Saved plot: {out_plot}")
+
+    return {
+        "user": str(args.user),
+        "scenario_dir": scenario_dir,
+        "summary": summary,
+        "full_summary": full_summary,
+    }
+
+
+def main() -> int:
+    args = parse_args()
+    configure_matplotlib_cache()
+
+    users = parse_user_list(args.users) or parse_user_list(args.user)
+    if not users:
+        raise SystemExit("No users provided.")
+
+    if args.task == "bp":
+        args.participant_id = args.participant_id or users[0]
+        args.user = str(args.participant_id)
+    else:
+        args.user = users[0]
+
+    seeds = parse_csv_list(args.seeds, int)
+    methods = parse_csv_list(args.methods, str)
+
+    repo_root = Path(__file__).resolve().parent
+    outdir_path = Path(args.outdir)
+    if not outdir_path.is_absolute():
+        outdir_path = repo_root / outdir_path
+    outdir = str(outdir_path)
+    job_outdir = str(Path(args.outdir)) if args.submit else outdir
+
+    run_module = import_run_module(args, repo_root, outdir)
+    records = []
+
+    if not args.analyze_only and args.submit:
+        prepare_shared_encoders_if_needed(args, run_module, outdir)
+
+    for user in users:
+        user_args = argparse.Namespace(**vars(args))
+        user_args.user = str(user)
+        if user_args.task == "bp":
+            user_args.participant_id = str(user)
+
+        if args.submit and not args.analyze_only:
+            run_seed_jobs(user_args, run_module, repo_root, outdir, job_outdir)
+            continue
+
+        records.append(
+            process_user(
+                user_args,
+                run_module,
+                repo_root,
+                outdir,
+                job_outdir,
+                seeds,
+                methods,
+            )
+        )
+
+    if args.submit and not args.analyze_only:
+        total_jobs = len(users) * len(seeds) * len(methods)
+        print(f"Submitted {total_jobs} jobs for {len(users)} user(s).")
+        print("After the jobs finish, rerun with --analyze_only to compute summaries and the grid.")
+        return 0
+
+    records = [record for record in records if record is not None]
+    if len(records) > 1 or args.grid_out is not None:
+        grid_out = args.grid_out
+        if grid_out is None:
+            grid_out = Path(run_module.OUTPUT_DIR) / args.pool / f"{args.fruit}_{args.scenario}" / "auc_grid.png"
+        elif not grid_out.is_absolute():
+            grid_out = repo_root / grid_out
+        plot_auc_grid(records, methods, grid_out)
+
     return 0
 
 

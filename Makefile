@@ -132,27 +132,30 @@ run_multi_seeds:
 
 
 
-SEEDS ?= 41,42,43,44
-TARGET_USER ?= 15 20 22 24 25 26 30 31 33 39
+AVG_AUC_SEEDS ?= 41,42,43,44
+TARGET_USERS ?= 15 20 22 24 25 26 30 31 33 39
+METHODS ?= random,coreset
 POOL ?= global
 FRUIT ?= BP
 SCENARIO ?= spike
-UNLABELED_FRAC ?= 0.0022
+UNLABELED_FRAC ?= 0.22
 DROPOUT_RATE ?= 0.5
 WARM_START ?= 0
 TASK ?= bp 
 INPUT_DF ?= raw
 OUTDIR ?= multiseeds
 LOCAL ?= 1
-LOCAL_FLAG := $(if $(filter 1 true yes,$(LOCAL)),--local,)
+AVG_AUC_RUN_MODE_FLAG := $(if $(filter 1 true yes,$(LOCAL)),--local,--submit)
+AVG_AUC_ANALYZE_ONLY ?= 0
+AVG_AUC_ANALYZE_FLAG := $(if $(filter 1 true yes,$(AVG_AUC_ANALYZE_ONLY)),--analyze_only,)
 
 .PHONY: run_avg_auc
 run_avg_auc:
 	python avg_auc.py \
 	  --outdir $(OUTDIR) \
-	  --seeds $(SEEDS) \
-	  --user $(TARGET_USER) \
-	  --participant_id $(TARGET_USER) \
+	  --seeds $(AVG_AUC_SEEDS) \
+	  --methods $(METHODS) \
+	  --users "$(TARGET_USERS)" \
 	  --pool $(POOL) \
 	  --fruit $(FRUIT) \
 	  --scenario $(SCENARIO) \
@@ -160,5 +163,23 @@ run_avg_auc:
 	  --dropout_rate $(DROPOUT_RATE) \
 	  --warm_start $(WARM_START) \
 	  --task $(TASK) \
-	  --input_df $(INPUT_DF) $(LOCAL_FLAG)
+	  --input_df $(INPUT_DF) \
+	  $(AVG_AUC_RUN_MODE_FLAG) \
+	  $(AVG_AUC_ANALYZE_FLAG)
 
+.PHONY: plot_avg_auc_grid
+plot_avg_auc_grid:
+	python avg_auc.py \
+	  --analyze_only \
+	  --outdir $(OUTDIR) \
+	  --seeds $(AVG_AUC_SEEDS) \
+	  --methods $(METHODS) \
+	  --users "$(TARGET_USERS)" \
+	  --pool $(POOL) \
+	  --fruit $(FRUIT) \
+	  --scenario $(SCENARIO) \
+	  --unlabeled_frac $(UNLABELED_FRAC) \
+	  --dropout_rate $(DROPOUT_RATE) \
+	  --warm_start $(WARM_START) \
+	  --task $(TASK) \
+	  --input_df $(INPUT_DF)
