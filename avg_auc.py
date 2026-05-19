@@ -84,6 +84,64 @@ def submit_seed_job(repo_root, output_dir, template, exp_name, exp_dir, exp_kwar
         print(f"Error code {ret} when submitting job for {script_path}")
 
 
+def discover_invalid_users(seeds: list[int], task: str, input_df: str) -> set[str]:
+    """For BP task: load each candidate user once, then try ensure_train_val_test_days
+    across every seed. Any user that raises for any seed is marked invalid.
+
+    Returns the union of users to exclude. Skips silently for non-BP tasks.
+    """
+    if task != "bp":
+        return set()
+
+    from new_prep import _bp_load_all
+    from src.compare_pipelines import ensure_train_val_test_days
+
+    bp_root = Path("DATA/Cardiomate")
+    candidate_dirs = (
+        sorted((bp_root / "hp").glob("hp*"))
+        if (bp_root / "hp").exists()
+        else sorted(bp_root.glob("hp*"))
+    )
+    invalid: set[str] = set()
+
+    for p in candidate_dirs:
+        m = re.search(r"\d+", p.name)
+        if not m:
+            continue
+        pid = m.group(0)
+        base = p
+        required = [
+            base / f"hp{pid}_hr.csv",
+            base / f"hp{pid}_steps.csv",
+            base / f"blood_pressure_readings_ID{pid}_cleaned.csv",
+        ]
+        if not all(path.exists() for path in required):
+            continue
+
+        try:
+            hr_df, st_df, pos_df, neg_df = _bp_load_all(pid)
+        except Exception as e:
+            print(f"[sweep] pid={pid} dropped (load failed): {e}")
+            invalid.add(pid)
+            continue
+
+        for seed in seeds:
+            try:
+                ensure_train_val_test_days(
+                    pos_df, neg_df, hr_df, st_df,
+                    input_df=input_df,
+                    seed=int(seed),
+                )
+            except RuntimeError as e:
+                print(f"[sweep] pid={pid} fails for seed={seed}: {e}")
+                invalid.add(pid)
+                break
+
+    if invalid:
+        print(f"[sweep] invalid users (excluded from pool): {sorted(invalid)}")
+    return invalid
+
+
 def import_run_module(args, repo_root: Path, outdir: str):
     original_argv = sys.argv[:]
     run_argv = [
@@ -109,6 +167,8 @@ def import_run_module(args, repo_root: Path, outdir: str):
         "--classifier",
         args.classifier,
     ]
+    if getattr(args, "exclude_users", ""):
+        run_argv.extend(["--exclude_users", args.exclude_users])
     if args.task == "bp":
         run_argv.extend(["--participant_id", str(args.participant_id)])
 
@@ -183,6 +243,7 @@ def exp_kwargs_for_seed(args, run_module, seed: int, method: str, output_dir: st
         "results_subdir": args.results_subdir,
         "output_dir": output_dir,
         "classifier": args.classifier,
+        "exclude_users": getattr(args, "exclude_users", ""),
     }
 
 
@@ -620,9 +681,23 @@ def plot_auc_grid(records: list[dict], methods: list[str], out_path: Path) -> No
     n_panels = len(records) + 1
     ncols = 3
     nrows = int(np.ceil(n_panels / ncols))
-    fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(5.2 * ncols, 3.8 * nrows))
-    axes = np.asarray(axes).reshape(-1)
+    fig, axes_2d = plt.subplots(
+        nrows=nrows, ncols=ncols, figsize=(5.2 * ncols, 3.8 * nrows),
+        sharey="row", sharex=False,
+    )
+    axes_2d = np.asarray(axes_2d).reshape(nrows, ncols)
+    axes = axes_2d.reshape(-1)
 
+    # With sharex=True, compute a single union x-range from every target.
+    all_x_vals: list[float] = []
+    for record in records:
+        summary = record.get("summary")
+        if isinstance(summary, pd.DataFrame) and "Pct_Total_Labeled" in summary.columns:
+            vals = pd.to_numeric(summary["Pct_Total_Labeled"], errors="coerce").dropna()
+            all_x_vals.extend(vals.tolist())
+    global_xlim = (float(min(all_x_vals)), float(max(all_x_vals))) if all_x_vals else None
+
+    row_y_values: dict[int, list[float]] = {}
     for idx, record in enumerate(records):
         ax = axes[idx]
         summary = record["summary"]
@@ -630,13 +705,20 @@ def plot_auc_grid(records: list[dict], methods: list[str], out_path: Path) -> No
         y_values = _plot_summary_lines(ax, summary, x_col, methods)
         _plot_full_data_reference(ax, record.get("full_summary"), y_values)
         ax.legend(fontsize=8, loc="lower right")
-        ax.set_title(f"target {record['user']}")
+        ax.set_title(f"P-{record['user']}")
         ax.set_xlabel("% Labeled")
-        ax.set_ylabel("ROC-AUC")
-        x_vals = pd.to_numeric(summary[x_col], errors="coerce").dropna()
-        if not x_vals.empty:
-            ax.set_xlim(float(x_vals.min()), float(x_vals.max()))
-        _set_y_padding(ax, y_values)
+        # Only the leftmost panel in each row keeps the y-label.
+        ax.set_ylabel("ROC-AUC" if idx % ncols == 0 else "")
+        row_y_values.setdefault(idx // ncols, []).extend(y_values)
+
+    if global_xlim is not None:
+        axes[0].set_xlim(*global_xlim)  # sharex=True propagates this to every panel
+
+    # With sharey="row", set ylim once per row from the pooled y-values of all panels in that row.
+    for row, vals in row_y_values.items():
+        if not vals:
+            continue
+        _set_y_padding(axes_2d[row, 0], vals)
 
     aggregate, full_aggregate = aggregate_grid_records(records, methods)
     aggregate_ax = axes[len(records)]
@@ -652,10 +734,8 @@ def plot_auc_grid(records: list[dict], methods: list[str], out_path: Path) -> No
             aggregate_ax.legend(fontsize=8, loc="lower right")
         aggregate_ax.set_title("Aggregate (pooled labels across participants)")
         aggregate_ax.set_xlabel("% of total training data labeled")
-        aggregate_ax.set_ylabel("ROC-AUC on concat test set")
-        x_vals = pd.to_numeric(aggregate["Pct_Total_Labeled"], errors="coerce").dropna()
-        if not x_vals.empty:
-            aggregate_ax.set_xlim(float(x_vals.min()), float(x_vals.max()))
+        aggregate_ax.set_ylabel("ROC-AUC")
+        # xlim is set globally above via sharex=True; per-panel set_xlim would override the shared range.
         _set_y_padding(aggregate_ax, y_values)
     else:
         aggregate_ax.axis("off")
@@ -691,6 +771,16 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--task", default="bp")
     parser.add_argument("--input_df", default="raw")
     parser.add_argument("--classifier", default="mlp", choices=["mlp", "lr"])
+    parser.add_argument(
+        "--exclude_users",
+        default="",
+        help="Comma-separated user IDs to exclude from the global pool. Overrides --auto_exclude.",
+    )
+    parser.add_argument(
+        "--auto_exclude",
+        action="store_true",
+        help="Before launching runs, sweep every (user, seed) for valid splits; exclude users that fail any seed.",
+    )
     parser.add_argument(
         "--hp_contains",
         default=None,
@@ -792,6 +882,16 @@ def main() -> int:
 
     seeds = parse_csv_list(args.seeds, int)
     methods = parse_csv_list(args.methods, str)
+
+    # If auto_exclude is on, sweep first and merge results into --exclude_users.
+    # Skip the sweep when only re-analyzing existing data (no new runs to gate).
+    if args.auto_exclude and not args.analyze_only:
+        discovered = discover_invalid_users(seeds, args.task, args.input_df)
+        manual = {u.strip() for u in args.exclude_users.split(",") if u.strip()}
+        combined = sorted(discovered | manual)
+        args.exclude_users = ",".join(combined)
+        if combined:
+            print(f"[exclude_users] effective: {combined}")
 
     repo_root = Path(__file__).resolve().parent
     outdir_path = Path(args.outdir)

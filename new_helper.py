@@ -99,6 +99,11 @@ def parse_args():
     pa.add_argument("--results_subdir", default="results")
     pa.add_argument("--input_df", default="raw", choices=["raw", "processed"])
     pa.add_argument("--classifier", default="mlp", choices=["mlp", "lr"])
+    pa.add_argument(
+        "--exclude_users",
+        default="",
+        help="Comma-separated user IDs to drop from the global pool entirely (no signals loaded, no splits computed).",
+    )
     return pa.parse_known_args()
 
 def select_balanced_centroid_seed(df, n_per_class=2, label_col="state_val", random_state=42):
@@ -2130,9 +2135,9 @@ def run_al_refactored(
     except Exception as e:
         print(f"Skipping t-SNE feature-space plot for round 0: {e}")
 
-    # initial_unlabeled = len(df_tr_unlabeled)
-    # max_pool_rounds = int(np.ceil(initial_unlabeled / K)) if K and initial_unlabeled > 0 else 0
-    # planned_rounds = min(int(budget), max_pool_rounds) if budget is not None else max_pool_rounds
+    # Run until the unlabeled pool is exhausted (each user walks to ~100% labeled regardless of pool size).
+    initial_unlabeled = len(df_tr_unlabeled)
+    # planned_rounds = int(np.ceil(initial_unlabeled / K)) if K and initial_unlabeled > 0 else 0
     planned_rounds = 20
     round_num = 0
 

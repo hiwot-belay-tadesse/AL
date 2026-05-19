@@ -247,12 +247,20 @@ def prepare_data(
             raise ValueError(f"Unknown input_df: {input_df}")
 
         # ── Step 2: discover participants ─────────────────────────
+        # Excluded users are filtered out before any data is loaded so they never
+        # enter all_splits/train_info/val_info/all_signals and therefore can't
+        # appear in the global pool.
+        excluded_users = {
+            u.strip() for u in os.environ.get("BAN_AL_EXCLUDE_USERS", "").split(",") if u.strip()
+        }
         bp_users = []
         for p in candidate_dirs:
             m = re.search(r"\d+", p.name)
             if not m:
                 continue
             pid = m.group(0)
+            if pid in excluded_users:
+                continue
             base = p
             if not (base / f"hp{pid}_hr.csv").exists():
                 continue
@@ -261,6 +269,9 @@ def prepare_data(
             if not (base / f"blood_pressure_readings_ID{pid}_cleaned.csv").exists():
                 continue
             bp_users.append(pid)
+
+        if excluded_users:
+            print(f"[exclude] BAN_AL_EXCLUDE_USERS active; dropped from pool: {sorted(excluded_users)}")
 
         if not bp_users:
             raise SystemExit(

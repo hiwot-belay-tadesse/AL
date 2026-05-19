@@ -47,6 +47,9 @@ else:
 
 set_classifier(args.classifier)
 
+if getattr(args, "exclude_users", ""):
+    os.environ["BAN_AL_EXCLUDE_USERS"] = args.exclude_users
+
 # This is the base directory where the results will be stored.
 OUTPUT_DIR = os.environ.get("BAN_AL_OUTPUT_DIR") or set_output_dir(args.pool, BP_MODE)
 
@@ -115,6 +118,10 @@ def run(exp_dir, exp_name, exp_kwargs):
             "(MC-dropout/BALD require dropout layers). Pick aq=random or aq=coreset."
         )
     set_classifier(classifier_kind)
+
+    exclude_users = exp_kwargs.get("exclude_users", "")
+    if exclude_users:
+        os.environ["BAN_AL_EXCLUDE_USERS"] = exclude_users
 
     ##Build args namespace from exp_kwargs
     args_ns = SimpleNamespace(
