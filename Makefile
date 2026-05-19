@@ -16,6 +16,8 @@ Nectarine_Crave_users := ID10 ID11 ID12 ID20 ID21 ID27
 Nectarine_Use_users := ID10 ID11 ID12 ID13 ID20 ID21 ID27
 Melon_Crave_users := ID5 ID9 ID12 ID19 ID20 ID21 ID27
 
+
+
 ## runs active learning for banware data 
 .PHONY: run_%
 run_%:
@@ -102,7 +104,7 @@ clean_logs:
 
 SEEDS ?= 41,42,43,44,45,46,47,48,49,50
 TARGET_USER ?= 20
-POOL ?= personal
+POOL ?= global
 FRUIT ?= BP
 SCENARIO ?= spike
 UNLABELED_FRAC ?= 0.0018
@@ -110,7 +112,7 @@ DROPOUT_RATE ?= 0.5
 WARM_START ?= 0
 TASK ?= bp
 INPUT_DF ?= raw
-OUTDIR ?= avg_auc_results
+OUTDIR ?= avg_auc_results_lr
 LOCAL ?= 1
 LOCAL_FLAG := $(if $(filter 1 true yes,$(LOCAL)),--local,)
 
@@ -142,12 +144,20 @@ DROPOUT_RATE ?= 0.5
 WARM_START ?= 0
 TASK ?= bp 
 INPUT_DF ?= raw
-OUTDIR ?= avg_auc_results
+OUTDIR ?= avg_auc_results_lr
 CLASSIFIER ?= lr
 LOCAL ?= 1
 AVG_AUC_RUN_MODE_FLAG := $(if $(filter 1 true yes,$(LOCAL)),--local,--submit)
 AVG_AUC_ANALYZE_ONLY ?= 0
 AVG_AUC_ANALYZE_FLAG := $(if $(filter 1 true yes,$(AVG_AUC_ANALYZE_ONLY)),--analyze_only,)
+
+# Exclusion controls. Set AUTO_EXCLUDE=1 to discover bad users automatically,
+# or pass EXCLUDE_USERS="10,17,40" to specify manually. The two can be combined.
+AUTO_EXCLUDE ?= 0
+AUTO_EXCLUDE_FLAG := $(if $(filter 1 true yes,$(AUTO_EXCLUDE)),--auto_exclude,)
+EXCLUDE_USERS ?=
+EXCLUDE_USERS_FLAG := $(if $(EXCLUDE_USERS),--exclude_users $(EXCLUDE_USERS),)
+BIN_SIZE ?= 1
 
 .PHONY: run_avg_auc
 run_avg_auc:
@@ -165,6 +175,9 @@ run_avg_auc:
 	  --classifier $(CLASSIFIER) \
 	  --task $(TASK) \
 	  --input_df $(INPUT_DF) \
+	  --bin_size $(BIN_SIZE) \
+	  $(AUTO_EXCLUDE_FLAG) \
+	  $(EXCLUDE_USERS_FLAG) \
 	  $(AVG_AUC_RUN_MODE_FLAG) \
 	  $(AVG_AUC_ANALYZE_FLAG)
 
@@ -183,4 +196,6 @@ plot_avg_auc_grid:
 	  --dropout_rate $(DROPOUT_RATE) \
 	  --warm_start $(WARM_START) \
 	  --task $(TASK) \
-	  --input_df $(INPUT_DF)
+	  --input_df $(INPUT_DF) \
+	  --bin_size $(BIN_SIZE) \
+	  $(EXCLUDE_USERS_FLAG)

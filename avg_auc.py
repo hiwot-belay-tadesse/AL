@@ -750,6 +750,120 @@ def plot_auc_grid(records: list[dict], methods: list[str], out_path: Path) -> No
     print(f"Saved grid plot: {out_path}")
 
 
+def plot_personal_cumulative_grid_one_method(
+    records: list[dict],
+    method: str,
+    out_path: Path,
+    bin_size: int = 1,
+) -> None:
+    """One panel per user; bars showing cumulative Num_Labeled per round for a single method.
+
+    Intended for pool=personal where Pct_Total_Labeled has a per-user denominator and is therefore
+    not directly comparable across users. Num_Labeled is the raw integer label count.
+
+    bin_size > 1 collapses every `bin_size` consecutive rounds into one bar, taking the
+    cumulative value at the end of the bin (so the staircase still climbs).
+    """
+    if not records:
+        return
+
+    configure_matplotlib_cache()
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+
+    n_panels = len(records)
+    ncols = 3
+    nrows = int(np.ceil(n_panels / ncols))
+    fig, axes_2d = plt.subplots(
+        nrows=nrows, ncols=ncols, figsize=(5.2 * ncols, 3.8 * nrows), sharex=False,
+    )
+    axes_2d = np.asarray(axes_2d).reshape(nrows, ncols)
+    axes = axes_2d.reshape(-1)
+
+    # Color bars per target user using the same glasbey palette as the global
+    # query-distribution heatmaps so colors are consistent across plots.
+    try:
+        import colorcet as cc
+        palette = cc.glasbey_category10
+    except ImportError:
+        palette = list(plt.rcParams["axes.prop_cycle"].by_key()["color"])
+    bin_size = max(1, int(bin_size))
+
+    for idx, record in enumerate(records):
+        ax = axes[idx]
+        color = palette[idx % len(palette)]
+        summary = record.get("summary")
+        if not isinstance(summary, pd.DataFrame) or summary.empty:
+            ax.axis("off")
+            continue
+        if "Num_Labeled" not in summary.columns or "Pct_Total_Labeled" not in summary.columns:
+            ax.axis("off")
+            continue
+
+        method_df = summary[summary["method"] == method].sort_values("round")
+        if method_df.empty:
+            ax.axis("off")
+            continue
+
+        rounds = pd.to_numeric(method_df["round"], errors="coerce").to_numpy(dtype=float)
+        counts = pd.to_numeric(method_df["Num_Labeled"], errors="coerce").to_numpy(dtype=float)
+        pcts = pd.to_numeric(method_df["Pct_Total_Labeled"], errors="coerce").to_numpy(dtype=float)
+        mask = ~(pd.isna(rounds) | pd.isna(counts) | pd.isna(pcts))
+        if not mask.any():
+            ax.axis("off")
+            continue
+        rounds = rounds[mask]
+        counts = counts[mask]
+        pcts = pcts[mask]
+
+        if bin_size > 1:
+            # Keep only the last round in each bin so the cumulative staircase is preserved.
+            min_round = int(rounds.min())
+            bin_idx = ((rounds - min_round) // bin_size).astype(int)
+            keep_positions = []
+            for b in np.unique(bin_idx):
+                positions_in_bin = np.where(bin_idx == b)[0]
+                keep_positions.append(positions_in_bin[-1])
+            keep_positions = np.asarray(sorted(keep_positions))
+            rounds = rounds[keep_positions]
+            counts = counts[keep_positions]
+            pcts = pcts[keep_positions]
+
+        x_base = np.arange(len(pcts))
+        ax.bar(
+            x_base,
+            counts,
+            width=0.8,
+            color=color,
+            edgecolor="black",
+            linewidth=0.3,
+        )
+
+        ax.set_title(f"P-{record['user']}")
+        ax.set_xlabel("% of total data labeled")
+        ax.set_ylabel("Cumulative labels acquired" if idx % ncols == 0 else "")
+        if len(pcts) > 15:
+            step = max(1, len(pcts) // 10)
+            tick_idx = list(range(0, len(pcts), step))
+            ax.set_xticks([x_base[i] for i in tick_idx])
+            ax.set_xticklabels([f"{pcts[i]:.1f}" for i in tick_idx], fontsize=8, rotation=30)
+        else:
+            ax.set_xticks(x_base)
+            ax.set_xticklabels([f"{p:.1f}" for p in pcts], fontsize=8, rotation=30)
+        ax.grid(axis="y", alpha=0.25)
+
+    for ax in axes[n_panels:]:
+        ax.axis("off")
+
+    fig.suptitle(f"Personal pool: cumulative labels vs % labeled per user ({method})", fontsize=13)
+    fig.tight_layout(rect=[0, 0, 1, 0.96])
+    fig.savefig(out_path, dpi=200, facecolor="white")
+    plt.close(fig)
+    print(f"Saved personal cumulative-counts grid ({method}): {out_path}")
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run run.py across seeds and average AUC per AL round.")
     parser.add_argument("--seeds", default="41,42,43", help="Comma-separated seeds.")
@@ -786,6 +900,12 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help="Optional substring to disambiguate hp folders (e.g. 'K10') when multiple exist per seed.",
     )
+    parser.add_argument(
+        "--bin_size",
+        type=int,
+        default=1,
+        help="Bin size for the personal cumulative-counts grid (1 = one bar per round, 5 = one bar per 5 rounds).",
+    )
     parser.add_argument("--outdir", default="avg_auc_results")
     parser.add_argument(
         "--submit",
@@ -813,6 +933,7 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+      
 def process_user(
     args: argparse.Namespace,
     run_module,
@@ -871,6 +992,7 @@ def main() -> int:
     configure_matplotlib_cache()
 
     users = parse_user_list(args.users) or parse_user_list(args.user)
+    breakpoint()
     if not users:
         raise SystemExit("No users provided.")
 
@@ -942,6 +1064,11 @@ def main() -> int:
         elif not grid_out.is_absolute():
             grid_out = repo_root / grid_out
         plot_auc_grid(records, methods, grid_out)
+
+        if args.pool == "personal":
+            for method in methods:
+                cum_out = grid_out.parent / f"cumulative_counts_grid_{method}.png"
+                plot_personal_cumulative_grid_one_method(records, method, cum_out, bin_size=args.bin_size)
 
     return 0
 

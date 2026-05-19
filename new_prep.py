@@ -383,7 +383,7 @@ def prepare_data(
     if args.fruit !="BP": 
         BP_MODE =False 
         
-    BP_MODE = True
+    BP_MODE = (args.fruit == "BP")
     tr_days_u, val_days_u, te_days_u = all_splits[uid]
 
     # ── build DataFrames using _load_rows ─────────────────────────
@@ -445,7 +445,22 @@ def prepare_data(
             ignore_index=True
         )
         # df_val = val_info[uid]["df"].copy()
-        
+
+        # Diagnostic: per-user row counts in df_all_tr, flagging excluded users.
+        excluded_set = {
+            u.strip() for u in os.environ.get("BAN_AL_EXCLUDE_USERS", "").split(",") if u.strip()
+        }
+        per_user_counts = df_all_tr["user_id"].astype(str).value_counts().sort_index()
+        excl_in_pool = [u for u in per_user_counts.index if u in excluded_set]
+        excl_rows = int(per_user_counts.loc[excl_in_pool].sum()) if excl_in_pool else 0
+        total_rows = int(per_user_counts.sum())
+        share = (100.0 * excl_rows / total_rows) if total_rows else 0.0
+        print(
+            f"[df_all_tr] {total_rows} rows from {len(per_user_counts)} users; "
+            f"excluded-user rows in pool: {excl_rows} ({share:.1f}%) "
+            f"from {excl_in_pool if excl_in_pool else '[]'}"
+        )
+
         df_tr = train_info[uid]["df"].copy()
     
         if input_df == "raw":
