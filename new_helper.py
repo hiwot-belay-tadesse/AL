@@ -1260,8 +1260,17 @@ def run_experiment(exp_dir, exp_name, exp_kwargs, args, prep, clf_epochs, clf_pa
                 "y_score": np.asarray(full_probs_te).ravel(),
             }
     else:
-        Z_final = encode_single_df(df_all_tr, enc_hr, enc_st, args.pool)
-        y_final = df_all_tr["state_val"].values.astype("float32")
+        # df_all_tr is None for personal pool; fall back to the full per-user labeled+unlabeled split.
+        if df_all_tr is None:
+            df_final = (
+                pd.concat([df_tr_labeled_final, df_tr_unlabeled_final], axis=0)
+                if df_tr_unlabeled_final is not None
+                else df_tr_labeled_final
+            )
+        else:
+            df_final = df_all_tr
+        Z_final = encode_single_df(df_final, enc_hr, enc_st, args.pool)
+        y_final = df_final["state_val"].values.astype("float32")
         Z_val_final, y_val_final = encode_single_df(df_val, enc_hr, enc_st, args.pool), df_val["state_val"].values.astype("float32")
 
 

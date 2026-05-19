@@ -56,7 +56,7 @@ dropout_rate = [float(args.dropout_rate)]
 warm_start = [bool(int(args.warm_start))]
 T = [50]
 # K = [100]
-K = [10]
+K = [3]
 
 Budget = [None]
 
@@ -242,10 +242,22 @@ def run(exp_dir, exp_name, exp_kwargs):
     #     f"rows={split_meta['rows']} time_col={split_meta['time_col']}"
     # )
    
-    # reset_seeds(42)  
+    # reset_seeds(42)
+    # Floor labeled-set size to at least 2 per class so stratified split is well-defined.
+    n_classes = split_source["state_val"].nunique()
+    min_labeled = max(2 * n_classes, 1)
+    n_labeled_requested = int(round(uf_val * len(split_source)))
+    n_labeled = max(min_labeled, n_labeled_requested)
+    effective_uf = n_labeled / len(split_source)
+    if effective_uf != uf_val:
+        print(
+            f"[split] unlabeled_frac={uf_val} yields {n_labeled_requested} labeled rows; "
+            f"flooring to {n_labeled} (effective uf={effective_uf:.4f})."
+        )
+
     df_tr_labeled, df_tr_unlabeled = train_test_split(
         split_source,
-        test_size=(1- uf_val),
+        test_size=(1 - effective_uf),
         stratify=split_source["state_val"],
         # random_state=split_seed, #commented this for avg roc auc computation in avg_auc.py
         random_state=42,
