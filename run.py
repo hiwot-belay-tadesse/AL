@@ -251,7 +251,10 @@ def run(exp_dir, exp_name, exp_kwargs):
         random_state=42,
     )
 
-    split_source = df_all_tr.reset_index(drop=True)
+    if args_ns.pool == "personal":
+        split_source = df_tr.reset_index(drop=True)
+    else:
+        split_source = df_all_tr.reset_index(drop=True)
 
     Z_split = utility.encode_single_df(
         split_source,

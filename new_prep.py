@@ -470,22 +470,22 @@ def prepare_data(
     ()
     # ── sanity check — no date overlap between train pool and test (only for global pools)
     # only check target user's portion of df_all_tr
-
-    date_col = (
-    "datetime_local"
-    if input_df == "processed"
-    else "hawaii_createdat_time"
-    )
-    df_tr_uid = df_all_tr[df_all_tr["user_id"] == str(uid)]
-
-    train_dates_uid = set(pd.to_datetime(df_tr_uid[date_col]).dt.date)
-    test_dates_uid  = set(pd.to_datetime(df_te[date_col]).dt.date)
-
-    overlap = train_dates_uid & test_dates_uid
-    if overlap:
-        raise RuntimeError(
-            f"Date overlap for user {uid} between train and test: {overlap}"
+    if df_all_tr is not None:
+        date_col = (
+            "datetime_local"
+            if input_df == "processed"
+            else "hawaii_createdat_time"
         )
+        df_tr_uid = df_all_tr[df_all_tr["user_id"] == str(uid)]
+
+        train_dates_uid = set(pd.to_datetime(df_tr_uid[date_col]).dt.date)
+        test_dates_uid  = set(pd.to_datetime(df_te[date_col]).dt.date)
+
+        overlap = train_dates_uid & test_dates_uid
+        if overlap:
+            raise RuntimeError(
+                f"Date overlap for user {uid} between train and test: {overlap}"
+            )
 
     # ══════════════════════════════════════════════════════════════
     # RETURN — identical signature for all branches
