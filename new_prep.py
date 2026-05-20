@@ -443,12 +443,16 @@ def prepare_data(
         df_all_tr = None
 
         if input_df == "raw":
+            # Per-seed encoder cache so different AL seeds don't reuse the
+            # first-trained encoder (which would have seen days that are
+            # val/test for the other seeds).
+            seed_suffix = f"__seed_{int(seed)}" if seed is not None else ""
             enc_hr = src.compare_pipelines._train_or_load_encoder(
-                models_d / "hr_encoder.keras", "hr",
+                models_d / f"hr_encoder{seed_suffix}.keras", "hr",
                 all_signals[uid][0], tr_days_u, results_d
             )
             enc_st = src.compare_pipelines._train_or_load_encoder(
-                models_d / "steps_encoder.keras", "steps",
+                models_d / f"steps_encoder{seed_suffix}.keras", "steps",
                 all_signals[uid][1], tr_days_u, results_d
             )
         else:

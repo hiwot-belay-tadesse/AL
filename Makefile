@@ -160,6 +160,11 @@ EXCLUDE_USERS_AA ?=
 EXCLUDE_USERS_FLAG_AA := $(if $(EXCLUDE_USERS_AA),--exclude_users $(EXCLUDE_USERS_AA),)
 BIN_SIZE_AA ?= 1
 
+# Skip per-seed encoder warmup submission. Set SKIP_WARMUP_AA=1 on step 2 after
+# the warmup slurm jobs have finished, so only the AL jobs get submitted.
+SKIP_WARMUP_AA ?= 0
+SKIP_WARMUP_FLAG_AA := $(if $(filter 1 true yes,$(SKIP_WARMUP_AA)),--skip_warmup,)
+
 .PHONY: run_avg_auc
 run_avg_auc:
 	python avg_auc.py \
@@ -179,6 +184,7 @@ run_avg_auc:
 	  --bin_size $(BIN_SIZE_AA) \
 	  $(AUTO_EXCLUDE_FLAG_AA) \
 	  $(EXCLUDE_USERS_FLAG_AA) \
+	  $(SKIP_WARMUP_FLAG_AA) \
 	  $(RUN_MODE_FLAG_AA) \
 	  $(ANALYZE_FLAG_AA)
 

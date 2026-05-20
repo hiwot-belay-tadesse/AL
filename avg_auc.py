@@ -227,10 +227,9 @@ def import_run_module(args, repo_root: Path, outdir: str):
     return run_module
 
 
-def prepare_shared_encoders_if_needed(args, run_module, outdir: str, seeds: list[int]) -> None:
-    if not (args.submit and args.pool == "global" and args.input_df == "raw"):
-        return
-
+def run_warmup_one_seed(args, run_module, outdir: str, seed: int) -> None:
+    """Train the shared global encoder for a single seed and exit. Invoked by
+    the per-seed warmup slurm jobs."""
     top_out = Path(outdir)
     warmup_args = SimpleNamespace(
         user=args.user,
@@ -245,24 +244,89 @@ def prepare_shared_encoders_if_needed(args, run_module, outdir: str, seeds: list
         results_subdir=args.results_subdir,
         input_df=args.input_df,
     )
-    print(f"Preparing shared global encoders under {top_out / '_global_encoders'} for seeds {seeds}")
-    # One warmup per AL seed so per-seed encoder caches are pre-populated and
-    # the submitted jobs all hit a cache hit instead of racing on SimCLR training.
+    print(f"[warmup] training encoder for seed={seed} under {top_out / '_global_encoders'}")
+    run_module.prepare_data(
+        args=warmup_args,
+        top_out=top_out,
+        shared_enc_root=top_out / "_global_encoders",
+        shared_cnn_root=top_out / "global_cnns",
+        batch_ssl=32,
+        ssl_epochs=100,
+        pool=args.pool,
+        task=args.task,
+        input_df=args.input_df,
+        seed=int(seed),
+    )
+    print(f"[warmup] done for seed={seed}")
+
+
+def prepare_shared_encoders_if_needed(args, run_module, outdir: str, seeds: list[int], repo_root: Path) -> None:
+    if not (args.submit and args.pool == "global" and args.input_df == "raw"):
+        return
+
+    top_out = Path(outdir)
+    enc_dir = top_out / "_global_encoders"
+    print(f"Submitting per-seed warmup jobs under {enc_dir} for seeds {seeds}")
+
+    template_path = repo_root / "template.sh"
+    template = template_path.read_text()
+    tmp_dir = repo_root / "tmp"
+    tmp_dir.mkdir(parents=True, exist_ok=True)
+
+    # Reconstruct the avg_auc.py command minus the seed-loop bits so the warmup
+    # job runs only the encoder training for one seed and exits.
+    py_cmd_base = (
+        f'cd "{repo_root}" && '
+        f'python -u avg_auc.py '
+        f'--outdir "{args.outdir}" '
+        f'--pool {args.pool} '
+        f'--fruit {args.fruit} '
+        f'--scenario {args.scenario} '
+        f'--task {args.task} '
+        f'--input_df {args.input_df} '
+        f'--unlabeled_frac {args.unlabeled_frac} '
+        f'--dropout_rate {args.dropout_rate} '
+        f'--warm_start {args.warm_start} '
+        f'--classifier {args.classifier} '
+        f'--users "{args.user}" '
+        f'--seeds {seeds[0]} '  # placeholder; ignored when --warmup_only
+        f'--methods {parse_csv_list(args.methods, str)[0]} '  # ditto
+        f'--warmup_only --warmup_seed {{seed}}'
+    )
+    if args.exclude_users:
+        py_cmd_base += f' --exclude_users {args.exclude_users}'
+
     for seed in seeds:
-        print(f"[warmup] training encoder for seed={seed}")
-        run_module.prepare_data(
-            args=warmup_args,
-            top_out=top_out,
-            shared_enc_root=top_out / "_global_encoders",
-            shared_cnn_root=top_out / "global_cnns",
-            batch_ssl=32,
-            ssl_epochs=100,
-            pool=args.pool,
-            task=args.task,
-            input_df=args.input_df,
-            seed=int(seed),
+        py_cmd = py_cmd_base.format(seed=seed)
+        # Replace the template's run.py line with our warmup python command.
+        script = template.replace("# python -u run.py EXPDIR EXPNAME KWARGS\n", "")
+        script = script.replace(
+            "python -u refactor_run.py EXPDIR EXPNAME KWARGS",
+            py_cmd,
         )
-    print("Shared global encoders are ready; submitting seed/method jobs.")
+        # Point slurm logs into the encoder dir for that seed.
+        seed_log_dir = enc_dir / f"{args.fruit}_{args.scenario}__seed_{seed}"
+        seed_log_dir.mkdir(parents=True, exist_ok=True)
+        script = script.replace("EXPDIR", str(seed_log_dir))
+
+        script_path = tmp_dir / f"slurm_warmup_seed_{seed}.sh"
+        script_path.write_text(script)
+
+        try:
+            ret = subprocess.call(["sbatch", str(script_path)])
+        except FileNotFoundError as exc:
+            raise SystemExit("sbatch not found. Cannot submit warmup jobs.") from exc
+        if ret != 0:
+            print(f"Error code {ret} when submitting warmup for seed {seed}")
+        else:
+            print(f"[warmup] submitted seed {seed}: {script_path}")
+
+    print(
+        "Per-seed warmup jobs submitted. "
+        "Wait until they finish, then rerun this command (it will be a no-op for the warmup since the .keras files will exist) "
+        "OR run the AL submission separately after the warmup completes."
+    )
+    raise SystemExit(0)
 
 
 def exp_kwargs_for_seed(args, run_module, seed: int, method: str, output_dir: str) -> dict:
@@ -967,6 +1031,22 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Skip run.py and aggregate existing al_progress.csv files.",
     )
+    parser.add_argument(
+        "--warmup_only",
+        action="store_true",
+        help="Train per-seed shared encoders and exit (no AL runs, no submission). Used by warmup slurm jobs.",
+    )
+    parser.add_argument(
+        "--warmup_seed",
+        type=int,
+        default=None,
+        help="When --warmup_only is set, train only this single seed's encoder.",
+    )
+    parser.add_argument(
+        "--skip_warmup",
+        action="store_true",
+        help="Skip per-seed encoder warmup submission. Use this on step 2 after warmup jobs have finished, to submit only the AL jobs.",
+    )
     parser.add_argument("--out_csv", type=Path, default=None, help="Output CSV for per-round AUC summary.")
     parser.add_argument("--raw_csv", type=Path, default=None, help="Output CSV for seed-level AUC rows.")
     parser.add_argument("--out_plot", type=Path, default=None, help="Output PNG for the AUC plot.")
@@ -1099,8 +1179,16 @@ def main() -> int:
     run_module = import_run_module(args, repo_root, outdir)
     records = []
 
-    if not args.analyze_only and args.submit:
-        prepare_shared_encoders_if_needed(args, run_module, outdir, seeds)
+    # Warmup-only mode: train one seed's encoders and exit. Used by the slurm
+    # jobs submitted by prepare_shared_encoders_if_needed.
+    if args.warmup_only:
+        if args.warmup_seed is None:
+            raise SystemExit("--warmup_only requires --warmup_seed")
+        run_warmup_one_seed(args, run_module, outdir, int(args.warmup_seed))
+        return 0
+
+    if not args.analyze_only and args.submit and not args.skip_warmup:
+        prepare_shared_encoders_if_needed(args, run_module, outdir, seeds, repo_root)
 
     for user in users:
         user_args = argparse.Namespace(**vars(args))
