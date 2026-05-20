@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 from types import SimpleNamespace
 import pickle
+import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 import utility
@@ -252,14 +253,34 @@ def run(exp_dir, exp_name, exp_kwargs):
     # reset_seeds(42)
     # Floor labeled-set size to at least 2 per class so stratified split is well-defined.
     n_classes = split_source["state_val"].nunique()
-    min_labeled = max(2 * n_classes, 1)
-    n_labeled_requested = int(round(uf_val * len(split_source)))
+    n_total = len(split_source)
+    n_pos = int(split_source["state_val"].sum())
+    n_neg = n_total - n_pos
+
+    if args_ns.pool == "personal":
+        # Personal pools are small and often class-imbalanced. Raise the floor
+        # so a stratified split yields >= MIN_PER_CLASS of each class. For a
+        # class with count k out of N, stratify picks ~round(n_labeled * k / N);
+        # invert that to find n_labeled that guarantees MIN_PER_CLASS per class.
+        MIN_PER_CLASS = 2
+        floor_per_class = []
+        if n_pos > 0:
+            floor_per_class.append(int(np.ceil(n_total / n_pos * MIN_PER_CLASS)))
+        if n_neg > 0:
+            floor_per_class.append(int(np.ceil(n_total / n_neg * MIN_PER_CLASS)))
+        min_labeled = max(2 * n_classes, *floor_per_class) if floor_per_class else 2 * n_classes
+        min_labeled = min(min_labeled, n_total)
+    else:
+        min_labeled = max(2 * n_classes, 1)
+
+    n_labeled_requested = int(round(uf_val * n_total))
     n_labeled = max(min_labeled, n_labeled_requested)
-    effective_uf = n_labeled / len(split_source)
+    effective_uf = n_labeled / n_total
     if effective_uf != uf_val:
         print(
             f"[split] unlabeled_frac={uf_val} yields {n_labeled_requested} labeled rows; "
-            f"flooring to {n_labeled} (effective uf={effective_uf:.4f})."
+            f"flooring to {n_labeled} (effective uf={effective_uf:.4f}); "
+            f"n_pos={n_pos} n_neg={n_neg} of {n_total} (pool={args_ns.pool})."
         )
 
     df_tr_labeled, df_tr_unlabeled = train_test_split(
