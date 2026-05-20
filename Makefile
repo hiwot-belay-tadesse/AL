@@ -133,25 +133,27 @@ run_multi_seeds:
 
 
 SEEDS_AA ?= 41,42,43,44
-TARGET_USERS_AA ?= ID5 ID9 ID12 ID19 ID20 ID21 ID27 
+TARGET_USERS_AA ?=  15 20 22 24 25 26 30 31 33 35 39
 METHODS_AA ?= random,coreset
 POOL_AA ?= global
-FRUIT_AA ?= Melon
-SCENARIO_AA ?= Crave
+FRUIT_AA ?= BP
+SCENARIO_AA ?= spike
 UNLABELED_FRAC_AA ?= 0.0018
 DROPOUT_RATE_AA ?= 0.5
 WARM_START_AA ?= 0
-TASK_AA ?= crave
+TASK_AA ?= bp
 INPUT_DF_AA ?= raw
-OUTDIR_AA ?= avg_auc_results_lr
+OUTDIR_AA ?= avg_auc_results_lr_retry
 CLASSIFIER_AA ?= lr
 LOCAL_AA ?= 1
 RUN_MODE_FLAG_AA := $(if $(filter 1 true yes,$(LOCAL_AA)),--local,--submit)
 ANALYZE_ONLY_AA ?= 0
 ANALYZE_FLAG_AA := $(if $(filter 1 true yes,$(ANALYZE_ONLY_AA)),--analyze_only,)
 
-# Exclusion controls. Set AUTO_EXCLUDE_AA=1 to discover bad users automatically,
-# or pass EXCLUDE_USERS_AA="10,17,40" to specify manually. The two can be combined.
+# Exclusion controls. Set AUTO_EXCLUDE_AA=1 to discover bad users automatically
+# and derive the target cohort from the survivors (TARGET_USERS_AA is ignored in
+# that mode; the cohort = candidates - invalid - manual). EXCLUDE_USERS_AA is the
+# manual override and works with or without AUTO_EXCLUDE_AA.
 AUTO_EXCLUDE_AA ?= 0
 AUTO_EXCLUDE_FLAG_AA := $(if $(filter 1 true yes,$(AUTO_EXCLUDE_AA)),--auto_exclude,)
 EXCLUDE_USERS_AA ?=

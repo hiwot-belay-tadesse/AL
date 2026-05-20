@@ -84,6 +84,35 @@ def submit_seed_job(repo_root, output_dir, template, exp_name, exp_dir, exp_kwar
         print(f"Error code {ret} when submitting job for {script_path}")
 
 
+def discover_bp_candidate_users() -> list[str]:
+    """All BP user IDs with the three required files present on disk.
+
+    Used as the universe of candidate users when deriving target cohort from
+    exclusion logic (so the target list equals 'candidates - excluded').
+    """
+    bp_root = Path("DATA/Cardiomate")
+    candidate_dirs = (
+        sorted((bp_root / "hp").glob("hp*"))
+        if (bp_root / "hp").exists()
+        else sorted(bp_root.glob("hp*"))
+    )
+    candidates: list[str] = []
+    for p in candidate_dirs:
+        m = re.search(r"\d+", p.name)
+        if not m:
+            continue
+        pid = m.group(0)
+        required = [
+            p / f"hp{pid}_hr.csv",
+            p / f"hp{pid}_steps.csv",
+            p / f"blood_pressure_readings_ID{pid}_cleaned.csv",
+        ]
+        if not all(path.exists() for path in required):
+            continue
+        candidates.append(pid)
+    return candidates
+
+
 def discover_invalid_users(seeds: list[int], task: str, input_df: str) -> set[str]:
     """For BP task: load each candidate user once, then try ensure_train_val_test_days
     across every seed. Any user that raises for any seed is marked invalid.
@@ -94,7 +123,10 @@ def discover_invalid_users(seeds: list[int], task: str, input_df: str) -> set[st
         return set()
 
     from new_prep import _bp_load_all
-    from src.compare_pipelines import ensure_train_val_test_days
+    from src.compare_pipelines import (
+        ensure_train_val_test_days,
+        ensure_train_val_test_days_retry,
+    )
 
     bp_root = Path("DATA/Cardiomate")
     candidate_dirs = (
@@ -127,7 +159,12 @@ def discover_invalid_users(seeds: list[int], task: str, input_df: str) -> set[st
 
         for seed in seeds:
             try:
-                ensure_train_val_test_days(
+                # ensure_train_val_test_days(
+                #     pos_df, neg_df, hr_df, st_df,
+                #     input_df=input_df,
+                #     seed=int(seed),
+                # )
+                ensure_train_val_test_days_retry(
                     pos_df, neg_df, hr_df, st_df,
                     input_df=input_df,
                     seed=int(seed),
@@ -992,7 +1029,7 @@ def main() -> int:
     configure_matplotlib_cache()
 
     users = parse_user_list(args.users) or parse_user_list(args.user)
-    breakpoint()
+    # breakpoint()
     if not users:
         raise SystemExit("No users provided.")
 
@@ -1005,15 +1042,47 @@ def main() -> int:
     seeds = parse_csv_list(args.seeds, int)
     methods = parse_csv_list(args.methods, str)
 
-    # If auto_exclude is on, sweep first and merge results into --exclude_users.
-    # Skip the sweep when only re-analyzing existing data (no new runs to gate).
-    if args.auto_exclude and not args.analyze_only:
-        discovered = discover_invalid_users(seeds, args.task, args.input_df)
-        manual = {u.strip() for u in args.exclude_users.split(",") if u.strip()}
-        combined = sorted(discovered | manual)
-        args.exclude_users = ",".join(combined)
-        if combined:
-            print(f"[exclude_users] effective: {combined}")
+    # If auto_exclude is on, sweep first and derive the target cohort from the
+    # survivors. The target list (what auc_grid plots) and the source pool (who
+    # AL can query) come from the same set, so they can't drift apart.
+    if args.auto_exclude and not args.analyze_only and args.task == "bp":
+        discovered_invalid = discover_invalid_users(seeds, args.task, args.input_df)
+        manual_exclude = {u.strip() for u in args.exclude_users.split(",") if u.strip()}
+        candidates = discover_bp_candidate_users()
+        survivors = sorted(
+            (set(candidates) - discovered_invalid - manual_exclude),
+            key=lambda s: int(s),
+        )
+
+        # Source-pool exclusion = everyone in candidates who isn't a survivor.
+        # This guarantees the source pool inside new_prep.py == the target list.
+        full_exclude = sorted(
+            set(candidates) - set(survivors),
+            key=lambda s: int(s),
+        )
+        args.exclude_users = ",".join(full_exclude)
+
+        print(f"[cohort] candidates: {sorted(candidates, key=lambda s: int(s))}")
+        if discovered_invalid:
+            print(f"[cohort] auto-excluded (invalid splits): {sorted(discovered_invalid, key=lambda s: int(s))}")
+        if manual_exclude:
+            print(f"[cohort] manually excluded: {sorted(manual_exclude, key=lambda s: int(s))}")
+        print(f"[cohort] surviving targets (also source pool): {survivors}")
+
+        # Replace the user list passed on the CLI with the survivor set.
+        users = survivors
+        if not users:
+            raise SystemExit("[cohort] No users survived exclusion.")
+        if args.task == "bp":
+            args.participant_id = users[0]
+            args.user = str(args.participant_id)
+        else:
+            args.user = users[0]
+    elif args.exclude_users:
+        # Manual-only path: keep behavior as-is (don't override the user list).
+        manual_exclude = {u.strip() for u in args.exclude_users.split(",") if u.strip()}
+        if manual_exclude:
+            print(f"[exclude_users] effective: {sorted(manual_exclude, key=lambda s: int(s))}")
 
     repo_root = Path(__file__).resolve().parent
     outdir_path = Path(args.outdir)

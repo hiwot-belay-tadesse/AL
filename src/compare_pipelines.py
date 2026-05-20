@@ -749,6 +749,96 @@ def ensure_train_val_test_days(pos_df, neg_df, hr_df, st_df, df_processed=None, 
         f"and ≥{MIN_SAMPLES_PER_CLASS} positives & negatives after 10 tries"
     )
 
+
+def ensure_train_val_test_days_retry(
+    pos_df, neg_df, hr_df, st_df,
+    df_processed=None, input_df='raw', seed=0,
+    n_attempts=50, test_size=0.2, val_frac=0.25,
+):
+    """
+    Same goal as ensure_train_val_test_days but fixes test_size and varies
+    random_state across attempts. random_state = seed * 100 + attempt so that
+    attempts from different AL seeds don't collide.
+    """
+    if input_df == "raw":
+        days = np.array(sorted(
+            pd.concat([pos_df, neg_df])["hawaii_createdat_time"]
+            .dt.date.unique()
+        ))
+        day_counts = {
+            d: _count_windows(
+                df_p=pos_df, df_n=neg_df, hr_df=hr_df, st_df=st_df,
+                days=[d], input_df="raw",
+            )
+            for d in days
+        }
+    elif input_df == "processed":
+        if df_processed is None:
+            raise ValueError("processed mode requires df_processed")
+        if "datetime_local" not in df_processed.columns:
+            raise ValueError("df_processed must contain 'datetime_local'")
+        df_processed = df_processed.copy()
+        df_processed["datetime_local"] = pd.to_datetime(
+            df_processed["datetime_local"]
+        ).dt.tz_localize(None)
+        days = np.array(sorted(df_processed["datetime_local"].dt.date.unique()))
+        day_counts = {
+            d: _count_windows(
+                days=[d], df_processed=df_processed, input_df="processed",
+                df_p=None, df_n=None, hr_df=None, st_df=None,
+            )
+            for d in days
+        }
+    else:
+        raise ValueError(f"Unknown input_df: {input_df}")
+
+    base = int(seed) * 100
+    for attempt in range(n_attempts):
+        rs = base + attempt
+        try:
+            trval_days, test_days = train_test_split(
+                days, test_size=test_size, random_state=rs
+            )
+        except ValueError:
+            continue
+
+        n_test = sum(day_counts[d] for d in test_days)
+        if n_test < MIN_TEST_WINDOWS:
+            continue
+
+        df_te = collect_windows(pos_df, neg_df, hr_df, st_df, test_days)
+        pos_te = df_te['state_val'].sum()
+        neg_te = len(df_te) - pos_te
+        if pos_te < MIN_SAMPLES_PER_CLASS or neg_te < MIN_SAMPLES_PER_CLASS:
+            continue
+
+        trval_counts = [day_counts[d] for d in trval_days]
+        try:
+            train_days, val_days = train_test_split(
+                trval_days, test_size=val_frac,
+                stratify=trval_counts, random_state=rs,
+            )
+        except ValueError:
+            try:
+                train_days, val_days = train_test_split(
+                    trval_days, test_size=val_frac, random_state=rs,
+                )
+            except ValueError:
+                continue
+
+        n_val = sum(day_counts[d] for d in val_days)
+        if n_val < MIN_TEST_WINDOWS:
+            continue
+
+        return np.array(train_days), np.array(val_days), np.array(test_days)
+
+    raise RuntimeError(
+        f"Unable to find a TEST split with ≥{MIN_TEST_WINDOWS} windows "
+        f"and ≥{MIN_SAMPLES_PER_CLASS} positives & negatives "
+        f"after {n_attempts} attempts (seed={seed})"
+    )
+
+
 def safe_auc(y_true, probs):
     y_true = np.asarray(y_true)
     if len(np.unique(y_true)) < 2:

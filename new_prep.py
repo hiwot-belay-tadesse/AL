@@ -17,7 +17,12 @@ from src.classifier_utils import (
     load_signal_data,
     load_label_data,
 )
-from src.compare_pipelines import derive_negative_labels, collect_windows, ensure_train_val_test_days
+from src.compare_pipelines import (
+    derive_negative_labels,
+    collect_windows,
+    ensure_train_val_test_days,
+    ensure_train_val_test_days_retry,
+)
 
 import uq_utility
 
@@ -293,15 +298,26 @@ def prepare_data(
                 if input_df == "processed":
                     df_processed = _bp_load_processed_data(pid)
 
-                    tr_u, val_u, te_u = ensure_train_val_test_days(
+                    # tr_u, val_u, te_u = ensure_train_val_test_days(
+                    #     pos_df, neg_df, hr_df, st_df,
+                    #     df_processed=df_processed,
+                    #     input_df="processed",
+                    #     seed=seed,
+                    # )
+                    tr_u, val_u, te_u = ensure_train_val_test_days_retry(
                         pos_df, neg_df, hr_df, st_df,
                         df_processed=df_processed,
                         input_df="processed",
                         seed=seed,
                     )
-                    
+
                 else:
-                    tr_u, val_u, te_u = ensure_train_val_test_days(
+                    # tr_u, val_u, te_u = ensure_train_val_test_days(
+                    #     pos_df, neg_df, hr_df, st_df,
+                    #     input_df="raw",
+                    #     seed=seed,
+                    # )
+                    tr_u, val_u, te_u = ensure_train_val_test_days_retry(
                         pos_df, neg_df, hr_df, st_df,
                         input_df="raw",
                         seed=seed,
@@ -362,7 +378,10 @@ def prepare_data(
             all_negatives[u] = neg_df
 
             try:
-                tr_u, val_u, te_u = ensure_train_val_test_days(
+                # tr_u, val_u, te_u = ensure_train_val_test_days(
+                #     pos_df, neg_df, hr_df, st_df, seed=seed
+                # )
+                tr_u, val_u, te_u = ensure_train_val_test_days_retry(
                     pos_df, neg_df, hr_df, st_df, seed=seed
                 )
                 all_splits[u] = (tr_u, val_u, te_u)
