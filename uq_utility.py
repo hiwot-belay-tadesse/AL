@@ -518,17 +518,23 @@ def _ensure_global_encoders(
     SSL_EPOCHS,
     exclude_user_id=None,
     BP_MODE=False,
+    seed=None,
 ):
     """
     Train/load global SSL encoders for a fruit+scenario setup.
 
     If exclude_user_id is provided, that user's train-day windows are excluded
     from encoder training to avoid target-user leakage.
+
+    If seed is provided, it is appended to the cache directory name so each AL
+    seed (which produces a different train/val/test split) gets its own encoder.
     """
     suffix = ""
     if exclude_user_id is not None:
         safe_uid = str(exclude_user_id).replace("/", "_")
         suffix = f"__exclude_{safe_uid}"
+    if seed is not None:
+        suffix = f"{suffix}__seed_{int(seed)}"
     sdir = Path(shared_root) / f"{fruit}_{scenario}{suffix}"
     sdir.mkdir(parents=True, exist_ok=True)
     paths = {
@@ -544,6 +550,7 @@ def _ensure_global_encoders(
     
 
     losses = {}
+    print(f"[encoder] training on cohort: {sorted(all_splits.keys(), key=lambda s: int(str(s)) if str(s).isdigit() else 0)}")
     for dtype in ['hr', 'steps']:
         bank = []
         if BP_MODE:

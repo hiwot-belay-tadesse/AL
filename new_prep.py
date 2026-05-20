@@ -298,30 +298,30 @@ def prepare_data(
                 if input_df == "processed":
                     df_processed = _bp_load_processed_data(pid)
 
-                    # tr_u, val_u, te_u = ensure_train_val_test_days(
-                    #     pos_df, neg_df, hr_df, st_df,
-                    #     df_processed=df_processed,
-                    #     input_df="processed",
-                    #     seed=seed,
-                    # )
-                    tr_u, val_u, te_u = ensure_train_val_test_days_retry(
+                    tr_u, val_u, te_u = ensure_train_val_test_days(
                         pos_df, neg_df, hr_df, st_df,
                         df_processed=df_processed,
                         input_df="processed",
                         seed=seed,
                     )
-
-                else:
-                    # tr_u, val_u, te_u = ensure_train_val_test_days(
+                    # tr_u, val_u, te_u = ensure_train_val_test_days_retry(
                     #     pos_df, neg_df, hr_df, st_df,
-                    #     input_df="raw",
+                    #     df_processed=df_processed,
+                    #     input_df="processed",
                     #     seed=seed,
                     # )
-                    tr_u, val_u, te_u = ensure_train_val_test_days_retry(
+
+                else:
+                    tr_u, val_u, te_u = ensure_train_val_test_days(
                         pos_df, neg_df, hr_df, st_df,
                         input_df="raw",
                         seed=seed,
                     )
+                    # tr_u, val_u, te_u = ensure_train_val_test_days_retry(
+                    #     pos_df, neg_df, hr_df, st_df,
+                    #     input_df="raw",
+                    #     seed=seed,
+                    # )
                 all_splits[pid] = (tr_u, val_u, te_u)
             except RuntimeError as e:
                 print(f"Skipping user {pid}: {e}")
@@ -378,12 +378,12 @@ def prepare_data(
             all_negatives[u] = neg_df
 
             try:
-                # tr_u, val_u, te_u = ensure_train_val_test_days(
-                #     pos_df, neg_df, hr_df, st_df, seed=seed
-                # )
-                tr_u, val_u, te_u = ensure_train_val_test_days_retry(
+                tr_u, val_u, te_u = ensure_train_val_test_days(
                     pos_df, neg_df, hr_df, st_df, seed=seed
                 )
+                # tr_u, val_u, te_u = ensure_train_val_test_days_retry(
+                #     pos_df, neg_df, hr_df, st_df, seed=seed
+                # )
                 all_splits[u] = (tr_u, val_u, te_u)
             except RuntimeError as e:
                 print(f"Skipping user {u}: {e}")
@@ -486,8 +486,9 @@ def prepare_data(
             enc_hr, enc_st, enc_src = uq_utility._ensure_global_encoders(
                 shared_enc_root, args.fruit, args.scenario,
                 all_splits, batch_ssl, ssl_epochs,
-                exclude_user_id=None, 
+                exclude_user_id=None,
                 BP_MODE=BP_MODE,
+                seed=seed,
             )
             for fpath in Path(enc_src).glob("*"):
                 if fpath.suffix == ".keras":

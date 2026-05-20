@@ -159,16 +159,16 @@ def discover_invalid_users(seeds: list[int], task: str, input_df: str) -> set[st
 
         for seed in seeds:
             try:
-                # ensure_train_val_test_days(
-                #     pos_df, neg_df, hr_df, st_df,
-                #     input_df=input_df,
-                #     seed=int(seed),
-                # )
-                ensure_train_val_test_days_retry(
+                ensure_train_val_test_days(
                     pos_df, neg_df, hr_df, st_df,
                     input_df=input_df,
                     seed=int(seed),
                 )
+                # ensure_train_val_test_days_retry(
+                #     pos_df, neg_df, hr_df, st_df,
+                #     input_df=input_df,
+                #     seed=int(seed),
+                # )
             except RuntimeError as e:
                 print(f"[sweep] pid={pid} fails for seed={seed}: {e}")
                 invalid.add(pid)
@@ -227,7 +227,7 @@ def import_run_module(args, repo_root: Path, outdir: str):
     return run_module
 
 
-def prepare_shared_encoders_if_needed(args, run_module, outdir: str) -> None:
+def prepare_shared_encoders_if_needed(args, run_module, outdir: str, seeds: list[int]) -> None:
     if not (args.submit and args.pool == "global" and args.input_df == "raw"):
         return
 
@@ -245,18 +245,23 @@ def prepare_shared_encoders_if_needed(args, run_module, outdir: str) -> None:
         results_subdir=args.results_subdir,
         input_df=args.input_df,
     )
-    print(f"Preparing shared global encoders under {top_out / '_global_encoders'}")
-    run_module.prepare_data(
-        args=warmup_args,
-        top_out=top_out,
-        shared_enc_root=top_out / "_global_encoders",
-        shared_cnn_root=top_out / "global_cnns",
-        batch_ssl=32,
-        ssl_epochs=100,
-        pool=args.pool,
-        task=args.task,
-        input_df=args.input_df,
-    )
+    print(f"Preparing shared global encoders under {top_out / '_global_encoders'} for seeds {seeds}")
+    # One warmup per AL seed so per-seed encoder caches are pre-populated and
+    # the submitted jobs all hit a cache hit instead of racing on SimCLR training.
+    for seed in seeds:
+        print(f"[warmup] training encoder for seed={seed}")
+        run_module.prepare_data(
+            args=warmup_args,
+            top_out=top_out,
+            shared_enc_root=top_out / "_global_encoders",
+            shared_cnn_root=top_out / "global_cnns",
+            batch_ssl=32,
+            ssl_epochs=100,
+            pool=args.pool,
+            task=args.task,
+            input_df=args.input_df,
+            seed=int(seed),
+        )
     print("Shared global encoders are ready; submitting seed/method jobs.")
 
 
@@ -1095,7 +1100,7 @@ def main() -> int:
     records = []
 
     if not args.analyze_only and args.submit:
-        prepare_shared_encoders_if_needed(args, run_module, outdir)
+        prepare_shared_encoders_if_needed(args, run_module, outdir, seeds)
 
     for user in users:
         user_args = argparse.Namespace(**vars(args))

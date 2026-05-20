@@ -752,14 +752,16 @@ def ensure_train_val_test_days(pos_df, neg_df, hr_df, st_df, df_processed=None, 
 
 def ensure_train_val_test_days_retry(
     pos_df, neg_df, hr_df, st_df,
-    df_processed=None, input_df='raw', seed=0,
+    df_processed=None, input_df='raw', seed=None,
     n_attempts=50, test_size=0.2, val_frac=0.25,
 ):
     """
     Same goal as ensure_train_val_test_days but fixes test_size and varies
     random_state across attempts. random_state = seed * 100 + attempt so that
-    attempts from different AL seeds don't collide.
+    attempts from different AL seeds don't collide. seed=None is treated as 0.
     """
+    if seed is None:
+        seed = 0
     if input_df == "raw":
         days = np.array(sorted(
             pd.concat([pos_df, neg_df])["hawaii_createdat_time"]
