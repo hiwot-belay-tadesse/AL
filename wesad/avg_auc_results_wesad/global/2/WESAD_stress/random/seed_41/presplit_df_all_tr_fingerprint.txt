@@ -1,0 +1,4 @@
+source=wesad/run_wesad.py
+rows=10105
+time_col=hawaii_createdat_time
+sha256=038107342c2f4bde3b9b7bdc3ed3f2309c9a8c4aefbd016ab9e18ccabbb217aa

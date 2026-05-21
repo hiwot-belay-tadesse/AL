@@ -6,15 +6,14 @@ run:
 debug: 
 	python -m pdb main.py
 
-# Almond_Use_users := ID11 ID13 ID19 ID25 ID28
-# Almond_Crave_users := ID11 ID19 ID25
-# Melon_Crave_users := ID5 ID9 ID12 ID19 ID20 ID21 ID27
-# Melon_Use_users := ID12 ID19 ID20 ID27
-# Carrot_Crave_users := ID10 ID11 ID14 ID15 ID18 ID25
-# Carrot_Use_users := ID10 ID11 ID13 ID14 ID15 ID18 ID26
+Almond_Use_users := ID11 ID13 ID19 ID25 ID28
+Almond_Crave_users := ID11 ID19 ID25
+Melon_Crave_users := ID5 ID9 ID12 ID19 ID20 ID21 ID27
+Melon_Use_users := ID12 ID19 ID20 ID27
+Carrot_Crave_users := ID10 ID11 ID14 ID15 ID18 ID25
+Carrot_Use_users := ID10 ID11 ID13 ID14 ID15 ID18 ID26
 Nectarine_Crave_users := ID10 ID11 ID12 ID20 ID21 ID27
 Nectarine_Use_users := ID10 ID11 ID12 ID13 ID20 ID21 ID27
-Melon_Crave_users := ID5 ID9 ID12 ID19 ID20 ID21 ID27
 
 
 
@@ -206,3 +205,204 @@ plot_avg_auc_grid:
 	  --input_df $(INPUT_DF_AA) \
 	  --bin_size $(BIN_SIZE_AA) \
 	  $(EXCLUDE_USERS_FLAG_AA)
+
+
+# Helper: print the value of any make variable. Lets the all-fruit loop look up
+# user lists like Nectarine_Crave_users by name.
+print-%:
+	@echo $($*)
+
+# Submit run_avg_auc for every (fruit, scenario) pair listed below.
+# Step 1: warmup encoders for all combos -> make run_avg_auc_all_fruit
+# Step 2: AL after warmup finishes      -> make run_avg_auc_all_fruit EXTRA_AA="SKIP_WARMUP_AA=1"
+FRUIT_COMBOS ?= Almond:Use Almond:Crave Melon:Crave Melon:Use Carrot:Crave Carrot:Use Nectarine:Crave Nectarine:Use
+.PHONY: run_avg_auc_all_fruit
+run_avg_auc_all_fruit:
+	@for combo in $(FRUIT_COMBOS); do \
+	  fruit=$${combo%%:*}; \
+	  scenario=$${combo##*:}; \
+	  users_var=$${fruit}_$${scenario}_users; \
+	  users="$$($(MAKE) -s print-$$users_var)"; \
+	  if [ -z "$$users" ]; then \
+	    echo "[skip] $$fruit/$$scenario has no users defined"; \
+	    continue; \
+	  fi; \
+	  echo "=== Submitting $$fruit/$$scenario for users: $$users ==="; \
+	  $(MAKE) run_avg_auc \
+	    LOCAL_AA=0 \
+	    POOL_AA=$(POOL_AA) \
+	    TASK_AA=fruit \
+	    FRUIT_AA=$$fruit \
+	    SCENARIO_AA=$$scenario \
+	    TARGET_USERS_AA="$$users" $(EXTRA_AA); \
+	done
+
+# Plot query distributions for every (fruit, scenario) pair.
+# make plot_query_dist_all_fruit                              # default global
+# make plot_query_dist_all_fruit POOL_PLOT=personal           # personal
+# make plot_query_dist_all_fruit ROOT_PLOT=other_outdir       # different root
+ROOT_PLOT       ?= avg_run_after_seeded_encoder_SUD
+POOL_PLOT       ?= global
+METHODS_PLOT    ?= random,coreset
+SEEDS_PLOT      ?= 41,42,43,44
+BIN_SIZE_PLOT   ?= 1
+AGG_PLOT        ?= 0
+
+.PHONY: plot_query_dist_all_fruit
+plot_query_dist_all_fruit:
+	@for combo in $(FRUIT_COMBOS); do \
+	  fruit=$${combo%%:*}; \
+	  scenario=$${combo##*:}; \
+	  users_var=$${fruit}_$${scenario}_users; \
+	  users="$$($(MAKE) -s print-$$users_var)"; \
+	  if [ -z "$$users" ]; then \
+	    echo "[skip] $$fruit/$$scenario has no users defined"; \
+	    continue; \
+	  fi; \
+	  echo "=== Plotting $$fruit/$$scenario for users: $$users ==="; \
+	  python scripts/plot_avg_query_distribution.py \
+	    --root $(ROOT_PLOT) \
+	    --pool $(POOL_PLOT) \
+	    --fruit_scenario $${fruit}_$${scenario} \
+	    --users "$$users" \
+	    --methods $(METHODS_PLOT) \
+	    --seeds $(SEEDS_PLOT) \
+	    --bin_size $(BIN_SIZE_PLOT) \
+	    --aggregate_across_users $(AGG_PLOT); \
+	done
+
+
+# Run avg_auc.py --analyze_only for every (fruit, scenario) pair.
+# Uses the same FRUIT_COMBOS list as the other all-fruit targets, and pulls
+# user lists from the Makefile variables (Almond_Use_users, etc.) via print-%.
+# Override knobs:
+#   make analyze_all_fruit POOL_AOF=global CLASSIFIER_AOF=lr BIN_SIZE_AOF=7
+#   make analyze_all_fruit OUTDIR_AOF=other_outdir SEEDS_AOF=41,42
+#   make analyze_all_fruit FRUIT_COMBOS="Nectarine:Crave Melon:Use"
+POOL_AOF       ?= global
+CLASSIFIER_AOF ?= lr
+OUTDIR_AOF     ?= avg_run_after_seeded_encoder_SUD
+SEEDS_AOF      ?= 41,42,43,44
+METHODS_AOF    ?= random,coreset
+BIN_SIZE_AOF   ?= 7
+TASK_AOF       ?= fruit
+INPUT_DF_AOF   ?= raw
+
+.PHONY: analyze_all_fruit
+analyze_all_fruit:
+	@for combo in $(FRUIT_COMBOS); do \
+	  fruit=$${combo%%:*}; \
+	  scenario=$${combo##*:}; \
+	  users_var=$${fruit}_$${scenario}_users; \
+	  users="$$($(MAKE) -s print-$$users_var)"; \
+	  if [ -z "$$users" ]; then \
+	    echo "[skip] $$fruit/$$scenario has no users defined"; \
+	    continue; \
+	  fi; \
+	  users_csv=$$(echo "$$users" | tr ' ' ','); \
+	  echo "=== Analyzing $$fruit/$$scenario for users: $$users_csv ==="; \
+	  python avg_auc.py \
+	    --pool $(POOL_AOF) \
+	    --classifier $(CLASSIFIER_AOF) \
+	    --task $(TASK_AOF) \
+	    --input_df $(INPUT_DF_AOF) \
+	    --fruit $$fruit \
+	    --scenario $$scenario \
+	    --users "$$users_csv" \
+	    --seeds $(SEEDS_AOF) \
+	    --methods $(METHODS_AOF) \
+	    --outdir $(OUTDIR_AOF) \
+	    --bin_size $(BIN_SIZE_AOF) \
+	    --analyze_only; \
+	done
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# WESAD targets. Mirrors the BP run_avg_auc / analyze workflow but invokes
+# `python -m wesad.avg_auc_wesad` so nothing in the wesad/ folder gets
+# entangled with the BP run.py path. Variables use a _WS suffix so they don't
+# collide with the _AA / _AOF knobs above.
+#
+# Two-step cluster workflow (same as BP):
+#   make run_wesad LOCAL_WS=0                       # submit warmup jobs
+#   # wait for squeue to empty
+#   make run_wesad LOCAL_WS=0 SKIP_WARMUP_WS=1      # submit AL jobs
+# ─────────────────────────────────────────────────────────────────────────────
+USERS_WS         ?= 2,3,4,5,6,7,8,9,10,11,13,14,15,16,17
+SEEDS_WS         ?= 41,42,43,44
+METHODS_WS       ?= random,coreset
+POOL_WS          ?= global
+FRUIT_WS         ?= WESAD
+SCENARIO_WS      ?= stress
+UNLABELED_FRAC_WS ?= 0.05
+DROPOUT_RATE_WS  ?= 0.5
+WARM_START_WS    ?= 0
+# task=bp is intentional: wesad/run_wesad.py routes to WESAD prep regardless
+# of this value, but new_helper.parse_args inside it only accepts a fixed set.
+TASK_WS          ?= bp
+INPUT_DF_WS      ?= raw
+OUTDIR_WS        ?= avg_auc_results_wesad
+CLASSIFIER_WS    ?= lr
+LOCAL_WS         ?= 1
+RUN_MODE_FLAG_WS := $(if $(filter 1 true yes,$(LOCAL_WS)),--local,--submit)
+ANALYZE_ONLY_WS  ?= 0
+ANALYZE_FLAG_WS  := $(if $(filter 1 true yes,$(ANALYZE_ONLY_WS)),--analyze_only,)
+SKIP_WARMUP_WS   ?= 0
+SKIP_WARMUP_FLAG_WS := $(if $(filter 1 true yes,$(SKIP_WARMUP_WS)),--skip_warmup,)
+EXCLUDE_USERS_WS ?=
+EXCLUDE_USERS_FLAG_WS := $(if $(EXCLUDE_USERS_WS),--exclude_users $(EXCLUDE_USERS_WS),)
+BIN_SIZE_WS      ?= 1
+
+.PHONY: run_wesad
+run_wesad:
+	python -m wesad.avg_auc_wesad \
+	  --outdir $(OUTDIR_WS) \
+	  --seeds $(SEEDS_WS) \
+	  --methods $(METHODS_WS) \
+	  --users "$(USERS_WS)" \
+	  --pool $(POOL_WS) \
+	  --fruit $(FRUIT_WS) \
+	  --scenario $(SCENARIO_WS) \
+	  --unlabeled_frac $(UNLABELED_FRAC_WS) \
+	  --dropout_rate $(DROPOUT_RATE_WS) \
+	  --warm_start $(WARM_START_WS) \
+	  --classifier $(CLASSIFIER_WS) \
+	  --task $(TASK_WS) \
+	  --input_df $(INPUT_DF_WS) \
+	  --bin_size $(BIN_SIZE_WS) \
+	  $(EXCLUDE_USERS_FLAG_WS) \
+	  $(SKIP_WARMUP_FLAG_WS) \
+	  $(RUN_MODE_FLAG_WS) \
+	  $(ANALYZE_FLAG_WS)
+
+.PHONY: analyze_wesad
+analyze_wesad:
+	python -m wesad.avg_auc_wesad \
+	  --analyze_only \
+	  --outdir $(OUTDIR_WS) \
+	  --seeds $(SEEDS_WS) \
+	  --methods $(METHODS_WS) \
+	  --users "$(USERS_WS)" \
+	  --pool $(POOL_WS) \
+	  --fruit $(FRUIT_WS) \
+	  --scenario $(SCENARIO_WS) \
+	  --unlabeled_frac $(UNLABELED_FRAC_WS) \
+	  --dropout_rate $(DROPOUT_RATE_WS) \
+	  --warm_start $(WARM_START_WS) \
+	  --classifier $(CLASSIFIER_WS) \
+	  --task $(TASK_WS) \
+	  --input_df $(INPUT_DF_WS) \
+	  --bin_size $(BIN_SIZE_WS) \
+	  $(EXCLUDE_USERS_FLAG_WS)
+
+# One-shot WESAD conversion (re-run if you change label_source).
+WESAD_RAW_ROOT      ?= DATA/WESAD_raw
+WESAD_OUT_ROOT      ?= DATA/WESAD/hp
+WESAD_LABEL_SOURCE  ?= panas
+
+.PHONY: wesad_convert
+wesad_convert:
+	python wesad/convert_wesad_to_csv.py \
+	  --wesad_root $(WESAD_RAW_ROOT) \
+	  --out_root $(WESAD_OUT_ROOT) \
+	  --label_source $(WESAD_LABEL_SOURCE)

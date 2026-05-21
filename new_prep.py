@@ -183,6 +183,10 @@ def prepare_data(
     all_negatives = {}
     all_positives = {}
     all_signals   = {}
+    # Populated inside the BP branch when BAN_AL_TARGET_OVERRIDE_ALLOWED=1
+    # rescues an excluded target. Empty in every other case, so downstream
+    # checks behave identically to before.
+    eval_only_users: set[str] = set()
 
     # ══════════════════════════════════════════════════════════════
     # BRANCH 1 — BP TASK
@@ -258,6 +262,15 @@ def prepare_data(
         excluded_users = {
             u.strip() for u in os.environ.get("BAN_AL_EXCLUDE_USERS", "").split(",") if u.strip()
         }
+        # Opt-in override for restricted-pool experiments: if the target user is
+        # in `excluded_users`, normally we'd refuse to load them and the AL run
+        # would die. With BAN_AL_TARGET_OVERRIDE_ALLOWED=1, we let the target
+        # load anyway (so we can predict on their test_days) but track them as
+        # eval-only and skip their labels when building df_all_tr below.
+        target_override_allowed = os.environ.get("BAN_AL_TARGET_OVERRIDE_ALLOWED", "") in ("1", "true", "yes")
+        target_pid = str(args.user) if args.user else None
+        eval_only_users = set()
+
         bp_users = []
         for p in candidate_dirs:
             m = re.search(r"\d+", p.name)
@@ -265,7 +278,11 @@ def prepare_data(
                 continue
             pid = m.group(0)
             if pid in excluded_users:
-                continue
+                if target_override_allowed and pid == target_pid:
+                    eval_only_users.add(pid)
+                    # Fall through and add this user to bp_users so they're loaded.
+                else:
+                    continue
             base = p
             if not (base / f"hp{pid}_hr.csv").exists():
                 continue
@@ -277,6 +294,8 @@ def prepare_data(
 
         if excluded_users:
             print(f"[exclude] BAN_AL_EXCLUDE_USERS active; dropped from pool: {sorted(excluded_users)}")
+        if eval_only_users:
+            print(f"[exclude] eval-only override: target {sorted(eval_only_users)} loaded for test only, not in df_all_tr")
 
         if not bp_users:
             raise SystemExit(
@@ -421,6 +440,11 @@ def prepare_data(
         if u not in all_splits:
             print(f"Skipping user {u}: no valid train/val/test splits.")
             continue
+        # Eval-only users (target_override_allowed path) get their splits computed
+        # so the target's test_days are available downstream, but they don't
+        # contribute training labels to df_all_tr.
+        if task == "bp" and str(u) in eval_only_users:
+            continue
         tr_days, val_days, _ = all_splits[u]
         df_tr_u  = _load_rows(u, tr_days)
         df_val_u = _load_rows(u, val_days)
@@ -438,6 +462,12 @@ def prepare_data(
 
     # ── pool branching ─────────────────────────────────────────────
     if pool == "personal":
+        if uid not in train_info:
+            raise SystemExit(
+                f"Personal pool requires target user {uid} to contribute training labels, "
+                f"but {uid} is excluded from the pool (eval-only override). "
+                f"Use pool=global with BAN_AL_TARGET_OVERRIDE_ALLOWED=1."
+            )
         df_tr     = train_info[uid]["df"].copy()
         df_val    = val_info[uid]["df"].copy()
         df_all_tr = None
@@ -484,8 +514,16 @@ def prepare_data(
             f"from {excl_in_pool if excl_in_pool else '[]'}"
         )
 
-        df_tr = train_info[uid]["df"].copy()
-    
+        # Eval-only target users (BAN_AL_TARGET_OVERRIDE_ALLOWED) aren't in
+        # train_info. For pool=global, df_tr is the per-target slice used only
+        # for diagnostics and compute_budget; split_source uses df_all_tr. So
+        # alias df_tr to df_all_tr for eval-only targets so downstream guards
+        # in run_experiment (which require non-empty df_tr) don't reject the run.
+        if uid in train_info:
+            df_tr = train_info[uid]["df"].copy()
+        else:
+            df_tr = df_all_tr.copy()
+
         if input_df == "raw":
             enc_hr, enc_st, enc_src = uq_utility._ensure_global_encoders(
                 shared_enc_root, args.fruit, args.scenario,
@@ -512,7 +550,10 @@ def prepare_data(
             [v["df"] for v in val_info.values()],
             ignore_index=True
         )
-        df_tr = train_info[uid]["df"].copy()
+        if uid in train_info:
+            df_tr = train_info[uid]["df"].copy()
+        else:
+            df_tr = df_all_tr.copy()
         enc_hr, enc_st = None, None
 
     else:

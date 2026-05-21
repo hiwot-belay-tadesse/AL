@@ -1,0 +1,11 @@
+{
+    "user": "2",
+    "pool": "global",
+    "fruit": "WESAD",
+    "scenario": "stress",
+    "dropout_rate": 0.5,
+    "unlabeled_frac": 0.05,
+    "T": 50,
+    "K": 10,
+    "Budget": 51
+}
