@@ -1,4 +1,5 @@
 import os
+import time
 import numpy as np
 import pandas as pd
 import tensorflow as tf
@@ -82,13 +83,14 @@ def stretch_crop(x, scale_rng=(0.8, 1.2)):
     return cropped.reshape(x.shape)
 
 
-def apply_augmentations(segs):
+def apply_augmentations(segs, task=None):
     out = np.zeros_like(segs)
     for i, s in enumerate(segs):
         v = s.copy()
         if np.random.rand() < 0.5:
             v = jitter(v)
-        if np.random.rand() < 0.5:
+        # flip inverts SCR morphology; disabled for ADARP EDA but ok for other datasets
+        if task != "adarp" and np.random.rand() < 0.5:
             v = flip(v)
         if np.random.rand() < 0.5:
             v = stretch_crop(v)
@@ -150,12 +152,34 @@ def contrastive_loss(z_i, z_j, temperature=0.1):
 # SimCLR training loop
 # ------------------------------------------------------------------------- #
 def train_simclr(encoder, head, train_segs, val_segs,
-                 batch_size=128, epochs=80):
+                 batch_size=128, epochs=80, task=None, session_ids=None):
     opt   = tf.keras.optimizers.Adam(1e-3)
+
+    # Session-based split for ADARP (before random permutation contaminates)
+    if task == "adarp" and session_ids is not None:
+        unique_sessions = np.unique(session_ids)
+        n_tr_sessions = int(0.7 * len(unique_sessions))
+        tr_sessions = unique_sessions[:n_tr_sessions]
+        tr_mask = np.isin(session_ids, tr_sessions)
+
+        train_segs = train_segs[tr_mask]
+        val_segs = train_segs[~tr_mask]
+        print(f"[SimCLR] ADARP session-based split: {len(tr_sessions)} train sessions, "
+              f"{len(unique_sessions) - len(tr_sessions)} val sessions", flush=True)
+
     n_tr  = len(train_segs)
     val_ds = tf.data.Dataset.from_tensor_slices(val_segs).batch(batch_size)
 
     tr_loss_hist, va_loss_hist = [], []
+
+    # An epoch here is thousands of eager steps and prints nothing until it ends,
+    # which is indistinguishable from a hang. Report every `heartbeat` steps;
+    # BAN_AL_SSL_PROGRESS_EVERY=0 restores the quiet per-epoch-only output.
+    steps_per_epoch = -(-n_tr // batch_size)
+    heartbeat = int(os.environ.get("BAN_AL_SSL_PROGRESS_EVERY", "200"))
+    print(f"[SimCLR] {n_tr:,} train / {len(val_segs):,} val segments, "
+          f"batch={batch_size}, {steps_per_epoch:,} steps/epoch, up to {epochs} epochs",
+          flush=True)
 
     # Early‐stopping & LR‐scheduler state
     best_val = float('inf')
@@ -168,12 +192,13 @@ def train_simclr(encoder, head, train_segs, val_segs,
 
     for ep in range(1, epochs + 1):
         # ---- training ----
+        ep_start = time.time()
         idx = np.random.permutation(n_tr)
         total = 0.0
         for i in range(0, n_tr, batch_size):
             b   = idx[i:i + batch_size]
             x_i = train_segs[b]
-            x_j = apply_augmentations(x_i.copy())
+            x_j = apply_augmentations(x_i.copy(), task=task)
 
             with tf.GradientTape() as tape:
                 z_i  = encoder(x_i, training=True)
@@ -187,18 +212,34 @@ def train_simclr(encoder, head, train_segs, val_segs,
             grads  = tape.gradient(loss, vars_)
             opt.apply_gradients(zip(grads, vars_))
             total += loss.numpy() * len(b)
+
+            step = i // batch_size + 1
+            if heartbeat and step % heartbeat == 0:
+                seen = min(i + batch_size, n_tr)
+                print(f"[SimCLR {ep:>3}/{epochs}]  step {step:,}/{steps_per_epoch:,}  "
+                      f"train={total / seen:.4f}  {time.time() - ep_start:.0f}s",
+                      flush=True)
         tr_loss = total / n_tr
         tr_loss_hist.append(tr_loss)
 
         # ---- validation ----
         vm = tf.keras.metrics.Mean()
         for x in val_ds:
-            x_rev = tf.reverse(x, axis=[1])
-            z_i = encoder(x,     training=False)
-            z_j = encoder(x_rev, training=False)
+            # augmentation-based validation (same distribution as training)
+            x_i = x.numpy()
+            x_j = apply_augmentations(x.numpy(), task=task)
+            z_i = encoder(x_i, training=False)
+            z_j = encoder(x_j, training=False)
             p_i = head(z_i, training=False)
             p_j = head(z_j, training=False)
             vm.update_state(contrastive_loss(p_i, p_j))
+            # # old time-reversal validation (scores reversal-matching, not representation learning)
+            # x_rev = tf.reverse(x, axis=[1])
+            # z_i = encoder(x,     training=False)
+            # z_j = encoder(x_rev, training=False)
+            # p_i = head(z_i, training=False)
+            # p_j = head(z_j, training=False)
+            # vm.update_state(contrastive_loss(p_i, p_j))
         va_loss = vm.result().numpy()
         va_loss_hist.append(va_loss)
 
@@ -216,15 +257,16 @@ def train_simclr(encoder, head, train_segs, val_segs,
         if wait_lr >= patience_lr:
             new_lr = max(opt.learning_rate.numpy() * lr_factor, min_lr)
             opt.learning_rate.assign(new_lr)
-            print(f"[SimCLR] reducing lr to {new_lr:.2e}")
+            print(f"[SimCLR] reducing lr to {new_lr:.2e}", flush=True)
             wait_lr = 0
 
         # Break if no improvement for patience_es
         if wait_es >= patience_es:
-            print(f"[SimCLR] early stopping at epoch {ep} (no val_loss improvement for {patience_es} epochs).")
+            print(f"[SimCLR] early stopping at epoch {ep} (no val_loss improvement for {patience_es} epochs).", flush=True)
             break
 
-        print(f"[SimCLR {ep:>3}/{epochs}]  train={tr_loss:.4f}  val={va_loss:.4f}")
+        print(f"[SimCLR {ep:>3}/{epochs}]  train={tr_loss:.4f}  val={va_loss:.4f}  "
+              f"{time.time() - ep_start:.0f}s", flush=True)
 
     return tr_loss_hist, va_loss_hist
 

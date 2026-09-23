@@ -334,14 +334,14 @@ METHODS_WS       ?= random,coreset
 POOL_WS          ?= global
 FRUIT_WS         ?= WESAD
 SCENARIO_WS      ?= stress
-UNLABELED_FRAC_WS ?= 0.05
+UNLABELED_FRAC_WS ?= 0.0009   # ~9 labels on the 10,105-row LR pool
 DROPOUT_RATE_WS  ?= 0.5
 WARM_START_WS    ?= 0
 # task=bp is intentional: wesad/run_wesad.py routes to WESAD prep regardless
 # of this value, but new_helper.parse_args inside it only accepts a fixed set.
 TASK_WS          ?= bp
 INPUT_DF_WS      ?= raw
-OUTDIR_WS        ?= avg_auc_results_wesad
+OUTDIR_WS        ?= wesad_global_results
 CLASSIFIER_WS    ?= lr
 LOCAL_WS         ?= 1
 RUN_MODE_FLAG_WS := $(if $(filter 1 true yes,$(LOCAL_WS)),--local,--submit)
@@ -406,3 +406,104 @@ wesad_convert:
 	  --wesad_root $(WESAD_RAW_ROOT) \
 	  --out_root $(WESAD_OUT_ROOT) \
 	  --label_source $(WESAD_LABEL_SOURCE)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ADARP targets. Mirrors the WESAD workflow but invokes
+# `python ADARP/avg_auc_adarp.py` (a path, not a module -- ADARP/ is a plain
+# directory). Variables use an _AD suffix so they don't collide with the
+# _AA / _AOF / _WS knobs above.
+#
+# Build the inputs first; the AL targets refuse to start without them:
+#   make adarp_prepare                               # windows + signal export
+#
+# Two-step cluster workflow (same as BP and WESAD):
+#   make run_adarp LOCAL_AD=0                        # submit warmup jobs
+#   # wait for squeue to empty
+#   make run_adarp LOCAL_AD=0 SKIP_WARMUP_AD=1       # submit AL jobs
+#
+# 104 and 107 are absent from USERS_AD: one has no non-stress windows and the
+# other a single button press, so neither can be split into train/val/test.
+# Both still feed the global pool. --auto_exclude would drop them anyway.
+# ─────────────────────────────────────────────────────────────────────────────
+USERS_AD         ?= 101,102,105,106,108,109,110,111,112
+SEEDS_AD         ?= 41,42,43,44
+METHODS_AD       ?= random,coreset
+POOL_AD          ?= global
+FRUIT_AD         ?= ADARP
+SCENARIO_AD      ?= stress
+UNLABELED_FRAC_AD ?= 0.0018   # ~37 labels on the ~20.5k-row global pool
+DROPOUT_RATE_AD  ?= 0.5
+WARM_START_AD    ?= 0
+TASK_AD          ?= adarp
+INPUT_DF_AD      ?= raw
+OUTDIR_AD        ?= adarp_global_results
+CLASSIFIER_AD    ?= lr
+LOCAL_AD         ?= 1
+BAN_AL_OUTPUT_DIR_AD ?= ADARP/results
+RUN_MODE_FLAG_AD := $(if $(filter 1 true yes,$(LOCAL_AD)),--local,--submit)
+ANALYZE_ONLY_AD  ?= 0
+ANALYZE_FLAG_AD  := $(if $(filter 1 true yes,$(ANALYZE_ONLY_AD)),--analyze_only,)
+SKIP_WARMUP_AD   ?= 0
+SKIP_WARMUP_FLAG_AD := $(if $(filter 1 true yes,$(SKIP_WARMUP_AD)),--skip_warmup,)
+EXCLUDE_USERS_AD ?=
+EXCLUDE_USERS_FLAG_AD := $(if $(EXCLUDE_USERS_AD),--exclude_users $(EXCLUDE_USERS_AD),)
+BIN_SIZE_AD      ?= 1
+# 2 reproduces the published sampling; `none` keeps the whole non-stress pool,
+# which is the harder and more honest setting for an acquisition study.
+NONSTRESS_RATIO_AD ?= 2
+# SSL encoder knobs. ADARP only: run_adarp.py reads these two variables and
+# passes them into its own prepare_data, so BP and WESAD stay on the 32/100 in
+# src/compare_pipelines.py. Defaults here are those same values, so a plain
+# `make run_adarp` is unchanged; raise them on the command line, e.g.
+#   make run_adarp BATCH_SSL_AD=256 SSL_EPOCHS_AD=30
+BATCH_SSL_AD     ?= 32
+SSL_EPOCHS_AD    ?= 100
+
+.PHONY: adarp_prepare
+adarp_prepare:
+	python ADARP/build_adarp_dataset.py \
+	  --nonstress_ratio $(NONSTRESS_RATIO_AD)
+
+.PHONY: run_adarp
+run_adarp:
+	BAN_AL_OUTPUT_DIR=$(BAN_AL_OUTPUT_DIR_AD) ADARP_BATCH_SSL=$(BATCH_SSL_AD) ADARP_SSL_EPOCHS=$(SSL_EPOCHS_AD) \
+	python ADARP/avg_auc_adarp.py \
+	  --outdir $(BAN_AL_OUTPUT_DIR_AD)/adarp_global_results \
+	  --seeds $(SEEDS_AD) \
+	  --methods $(METHODS_AD) \
+	  --users "$(USERS_AD)" \
+	  --pool $(POOL_AD) \
+	  --fruit $(FRUIT_AD) \
+	  --scenario $(SCENARIO_AD) \
+	  --unlabeled_frac $(UNLABELED_FRAC_AD) \
+	  --dropout_rate $(DROPOUT_RATE_AD) \
+	  --warm_start $(WARM_START_AD) \
+	  --classifier $(CLASSIFIER_AD) \
+	  --task $(TASK_AD) \
+	  --input_df $(INPUT_DF_AD) \
+	  --bin_size $(BIN_SIZE_AD) \
+	  $(EXCLUDE_USERS_FLAG_AD) \
+	  $(SKIP_WARMUP_FLAG_AD) \
+	  $(RUN_MODE_FLAG_AD) \
+	  $(ANALYZE_FLAG_AD)
+
+.PHONY: analyze_adarp
+analyze_adarp:
+	BAN_AL_OUTPUT_DIR=$(BAN_AL_OUTPUT_DIR_AD) \
+	python ADARP/avg_auc_adarp.py \
+	  --analyze_only \
+	  --outdir $(BAN_AL_OUTPUT_DIR_AD)/adarp_global_results \
+	  --seeds $(SEEDS_AD) \
+	  --methods $(METHODS_AD) \
+	  --users "$(USERS_AD)" \
+	  --pool $(POOL_AD) \
+	  --fruit $(FRUIT_AD) \
+	  --scenario $(SCENARIO_AD) \
+	  --unlabeled_frac $(UNLABELED_FRAC_AD) \
+	  --dropout_rate $(DROPOUT_RATE_AD) \
+	  --warm_start $(WARM_START_AD) \
+	  --classifier $(CLASSIFIER_AD) \
+	  --task $(TASK_AD) \
+	  --input_df $(INPUT_DF_AD) \
+	  --bin_size $(BIN_SIZE_AD) \
+	  $(EXCLUDE_USERS_FLAG_AD)
