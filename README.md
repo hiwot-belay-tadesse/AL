@@ -3,6 +3,7 @@
 This repository contains code for active learning experiments on:
 - Banaware fruit craving/use tasks
 - Cardiomate BP spike prediction
+- ADARP stress detection
 
 ## Run Active Learning
 
@@ -10,11 +11,23 @@ This repository contains code for active learning experiments on:
 make run_all
 ```
 
-For Cardiomate runs:
+For Cardiomate (BP) runs:
 
 ```bash
 make run_bp_submit
 ```
+
+For ADARP runs:
+
+```bash
+make adarp_prepare                              # prepare dataset once
+make run_adarp LOCAL_AD=0                       # submit warmup jobs
+# wait for squeue to empty
+make run_adarp LOCAL_AD=0 SKIP_WARMUP_AD=1      # submit AL jobs
+make analyze_adarp                              # analyze results
+```
+
+All ADARP outputs go to `ADARP/results`.
 
 ## Aggregate AUC Results
 
