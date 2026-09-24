@@ -947,8 +947,17 @@ def write_split_details(
         f.write(f"   windows={len(df_te)}  (+={p_te}, -={n_te})\n")
 
 # ─── Helper to train/load per-user SSL encoder ─────────────────────────────
-def _train_or_load_encoder(path, dtype, df, train_days, results_dir):
+def _train_or_load_encoder(path, dtype, df, train_days, results_dir,
+                           batch_ssl=None, ssl_epochs=None, task=None):
+    """Train (or reload) one frozen SimCLR encoder.
+
+    `batch_ssl` and `ssl_epochs` default to this module's BATCH_SSL/SSL_EPOCHS,
+    so BP and WESAD callers that pass neither keep the 32/100 they have always
+    used. ADARP passes its own: its stream is 1 Hz rather than per-minute, so an
+    epoch there is several times the gradient steps.
+    """
     if path.exists():
+        print(f"[encoder] {dtype}: loading cached {path}", flush=True)
         enc = load_model(path)
         enc.trainable = False
         return enc
@@ -959,13 +968,20 @@ def _train_or_load_encoder(path, dtype, df, train_days, results_dir):
     if not len(segs):
         raise RuntimeError(f"No {dtype} segments to train encoder.")
 
+    batch_ssl = BATCH_SSL if batch_ssl is None else int(batch_ssl)
+    ssl_epochs = SSL_EPOCHS if ssl_epochs is None else int(ssl_epochs)
+
+    print(f"[encoder] {dtype}: no cached encoder at {path}; training SimCLR on "
+          f"{len(segs):,} segments (batch={batch_ssl}, epochs={ssl_epochs})",
+          flush=True)
+
     n, idx = len(segs), np.random.permutation(len(segs))
     tr, va = segs[idx[:int(0.8*n)]], segs[idx[int(0.8*n):]]
 
     enc = build_simclr_encoder(WINDOW_SIZE)
     head = create_projection_head()
     tr_l, va_l = train_simclr(enc, head, tr, va,
-                              batch_size=BATCH_SSL, epochs=SSL_EPOCHS)
+                              batch_size=batch_ssl, epochs=ssl_epochs, task=task)
     enc.save(path)
     enc.trainable = False
     plot_ssl_losses(tr_l, va_l, results_dir, encoder_name=f"{dtype}_ssl")
