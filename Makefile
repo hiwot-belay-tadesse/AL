@@ -466,6 +466,7 @@ adarp_prepare:
 
 .PHONY: run_adarp
 run_adarp:
+	mkdir -p $(BAN_AL_OUTPUT_DIR_AD) && \
 	BAN_AL_OUTPUT_DIR=$(BAN_AL_OUTPUT_DIR_AD) ADARP_BATCH_SSL=$(BATCH_SSL_AD) ADARP_SSL_EPOCHS=$(SSL_EPOCHS_AD) \
 	python ADARP/avg_auc_adarp.py \
 	  --outdir $(BAN_AL_OUTPUT_DIR_AD)/adarp_global_results \
@@ -485,7 +486,8 @@ run_adarp:
 	  $(EXCLUDE_USERS_FLAG_AD) \
 	  $(SKIP_WARMUP_FLAG_AD) \
 	  $(RUN_MODE_FLAG_AD) \
-	  $(ANALYZE_FLAG_AD)
+	  $(ANALYZE_FLAG_AD) \
+	  2>&1 >> $(BAN_AL_OUTPUT_DIR_AD)/out.txt
 
 .PHONY: analyze_adarp
 analyze_adarp:
