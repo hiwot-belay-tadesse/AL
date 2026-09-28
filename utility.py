@@ -302,10 +302,12 @@ def fit_and_eval(fit_kwargs, clf_builder, input_dim, X_lab, y_lab, X_val, y_val,
     return auc_mean, auc_std, best_f1, auc_m_val,auc_s_val, auc_m_train, auc_s_train,  clf
 
 def encode(df, enc_hr, enc_st):
-    hr_seq = np.stack(df['hr_seq'])[..., None]
     st_seq = np.stack(df['st_seq'])[..., None]
-    H = enc_hr.predict(hr_seq, verbose=0)
     S = enc_st.predict(st_seq, verbose=0)
+    if enc_hr is None:
+        return None, S
+    hr_seq = np.stack(df['hr_seq'])[..., None]
+    H = enc_hr.predict(hr_seq, verbose=0)
     return H, S
 
 
@@ -1332,10 +1334,14 @@ def reset_seeds(seed=42):
 def encode_single_df(df, enc_hr, enc_st, pool):
     """
     Encode a dataframe using the provided encoders based on the pool type.
+    If enc_hr is None, return EDA-only encoding.
     """
     if pool in ["personal", "global"]:
         H, S = encode(df, enc_hr, enc_st)
-        Z = np.concatenate([H, S], axis=1).astype('float32')
+        if H is None:
+            Z = S.astype('float32')
+        else:
+            Z = np.concatenate([H, S], axis=1).astype('float32')
     elif pool == "global_supervised":
         Z, _ = uq_utility._build_XY_from_windows(df)
     else:
