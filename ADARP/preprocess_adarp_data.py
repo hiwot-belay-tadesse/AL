@@ -1443,7 +1443,11 @@ def prepare_data(args, top_out, shared_enc_root, shared_cnn_root,
 
     user_root = Path(top_out) / str(args.user) / f"{args.fruit}_{args.scenario}"
     out_dir = user_root / pool
-    models_d = out_dir / "models_saved"
+    # For global pool: encoders in shared_enc_root; for personal: per-user in models_d
+    if pool == "global":
+        models_d = Path(shared_enc_root) / f"{args.fruit}_{args.scenario}"
+    else:
+        models_d = out_dir / "models_saved"
     results_d = out_dir / "results"
     models_d.mkdir(parents=True, exist_ok=True)
     results_d.mkdir(parents=True, exist_ok=True)
@@ -1523,7 +1527,9 @@ def prepare_data(args, top_out, shared_enc_root, shared_cnn_root,
     enc_hr = _train_or_load_encoder(
         enc_hr_path, "hr", hr_stream, sorted(set(hr_stream.index.date)), results_d,
         batch_ssl=batch_ssl, ssl_epochs=ssl_epochs,
+        
     )
+
     print(f"[adarp] eda encoder -> {enc_st_path}", flush=True)
     enc_st = _train_or_load_encoder(
         enc_st_path, "steps", eda_stream, sorted(set(eda_stream.index.date)), results_d,
