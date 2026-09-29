@@ -13,9 +13,13 @@ train, val and test a stress session each -- are dropped from the target list by
 
 from __future__ import annotations
 
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = ""
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+os.environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "false"
+
 import argparse
 import json
-import os
 import re
 import subprocess
 import sys
@@ -1049,21 +1053,31 @@ def process_user(
     seeds: list[int],
     methods: list[str],
 ) -> dict | None:
-    scenario_dir = Path(run_module.OUTPUT_DIR) / args.pool / args.user / f"{args.fruit}_{args.scenario}"
+    # Results are stored per-seed at top level: outdir/seed_X/pool/user/fruit_scenario/
+    # For analysis, aggregate across all seeds
+    frames = []
+    full_frames = []
+    for seed in seeds:
+        scenario_dir = Path(outdir) / f"seed_{seed}" / args.pool / args.user / f"{args.fruit}_{args.scenario}"
+        df_seed = load_auc_rows_from_runs(scenario_dir, [seed], methods, hp_contains=args.hp_contains)
+        if not df_seed.empty:
+            frames.append(df_seed)
+        full_df_seed = load_full_data_auc_rows_from_runs(scenario_dir, [seed], methods, hp_contains=args.hp_contains)
+        if not full_df_seed.empty:
+            full_frames.append(full_df_seed)
 
-    if not args.analyze_only:
-        scenario_dir = run_seed_jobs(args, run_module, repo_root, outdir, job_outdir)
-
-    df = load_auc_rows_from_runs(scenario_dir, seeds, methods, hp_contains=args.hp_contains)
+    df = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
+    full_df = pd.concat(full_frames, ignore_index=True) if full_frames else pd.DataFrame()
     summary = average_auc_per_round(df)
-    full_df = load_full_data_auc_rows_from_runs(scenario_dir, seeds, methods, hp_contains=args.hp_contains)
     full_summary = average_full_data_auc(full_df)
 
-    out_csv = args.out_csv or (scenario_dir / "auc_mean_std_per_round.csv")
-    raw_csv = args.raw_csv or (scenario_dir / "auc_by_seed_per_round.csv")
-    full_raw_csv = scenario_dir / "full_data_auc_by_seed.csv"
-    full_summary_csv = scenario_dir / "full_data_auc_summary.csv"
-    out_plot = args.out_plot or (scenario_dir / "auc_mean_std_per_round.png")
+    # Save aggregated results to base outdir
+    agg_dir = Path(outdir) / args.pool / args.user / f"{args.fruit}_{args.scenario}"
+    out_csv = args.out_csv or (agg_dir / "auc_mean_std_per_round.csv")
+    raw_csv = args.raw_csv or (agg_dir / "auc_by_seed_per_round.csv")
+    full_raw_csv = agg_dir / "full_data_auc_by_seed.csv"
+    full_summary_csv = agg_dir / "full_data_auc_summary.csv"
+    out_plot = args.out_plot or (agg_dir / "auc_mean_std_per_round.png")
 
     out_csv.parent.mkdir(parents=True, exist_ok=True)
     raw_csv.parent.mkdir(parents=True, exist_ok=True)
@@ -1087,7 +1101,7 @@ def process_user(
 
     return {
         "user": str(args.user),
-        "scenario_dir": scenario_dir,
+        "scenario_dir": agg_dir,
         "summary": summary,
         "full_summary": full_summary,
     }
