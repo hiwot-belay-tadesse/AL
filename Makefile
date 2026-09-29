@@ -471,10 +471,10 @@ adarp_prepare:
 
 .PHONY: run_adarp
 run_adarp:
-	mkdir -p $(OUTDIR_AD) && \
-	BAN_AL_OUTPUT_DIR=$(OUTDIR_AD) ADARP_BATCH_SSL=$(BATCH_SSL_AD) ADARP_SSL_EPOCHS=$(SSL_EPOCHS_AD) \
+	mkdir -p ADARP/$(OUTDIR_AD) && \
+	BAN_AL_OUTPUT_DIR=ADARP/$(OUTDIR_AD) ADARP_BATCH_SSL=$(BATCH_SSL_AD) ADARP_SSL_EPOCHS=$(SSL_EPOCHS_AD) \
 	python ADARP/avg_auc_adarp.py \
-	  --outdir $(OUTDIR_AD) \
+	  --outdir ADARP/$(OUTDIR_AD) \
 	  --seeds $(SEEDS_AD) \
 	  --methods $(METHODS_AD) \
 	  --users "$(USERS_AD)" \
@@ -492,14 +492,14 @@ run_adarp:
 	  $(SKIP_WARMUP_FLAG_AD) \
 	  $(RUN_MODE_FLAG_AD) \
 	  $(ANALYZE_FLAG_AD) \
-	  2>&1 >> $(OUTDIR_AD)/out.txt
+	  2>&1 >> ADARP/$(OUTDIR_AD)/out.txt
 
 .PHONY: analyze_adarp
 analyze_adarp:
-	BAN_AL_OUTPUT_DIR=$(OUTDIR_AD) \
+	BAN_AL_OUTPUT_DIR=ADARP/$(OUTDIR_AD) \
 	python ADARP/avg_auc_adarp.py \
 	  --analyze_only \
-	  --outdir $(OUTDIR_AD) \
+	  --outdir ADARP/$(OUTDIR_AD) \
 	  --seeds $(SEEDS_AD) \
 	  --methods $(METHODS_AD) \
 	  --users "$(USERS_AD)" \
