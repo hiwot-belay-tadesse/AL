@@ -155,6 +155,7 @@ def run(exp_dir, exp_name, exp_kwargs):
     exp_dir_path = Path(exp_dir)
     split_seed = int(exp_kwargs.get("seed", 42))
     top_out = Path(OUTPUT_DIR) / f"seed_{split_seed}"
+    print(f"[DEBUG] OUTPUT_DIR={OUTPUT_DIR}, split_seed={split_seed}, top_out={top_out}", flush=True)
     reset_seeds(split_seed)
     shared_enc_root = top_out / "_global_encoders"
     shared_cnn_root = top_out / "global_cnns"
