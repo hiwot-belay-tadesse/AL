@@ -345,8 +345,6 @@ def run_seed_jobs(args, run_module, repo_root: Path, outdir: str, job_outdir: st
 
     base_dir = Path(run_module.OUTPUT_DIR)
     job_base_dir = Path(job_outdir)
-    scenario_dir = base_dir / args.pool / args.user / f"{args.fruit}_{args.scenario}"
-    job_scenario_dir = job_base_dir / args.pool / args.user / f"{args.fruit}_{args.scenario}"
 
     template = None
     if args.submit:
@@ -358,6 +356,12 @@ def run_seed_jobs(args, run_module, repo_root: Path, outdir: str, job_outdir: st
         if not args.submit and hasattr(run_module, "reset_seeds"):
             run_module.reset_seeds(seed)
 
+        # Put seed at root level: base_dir / seed_X / pool / user / fruit_scenario
+        seed_base_dir = base_dir / f"seed_{seed}"
+        job_seed_base_dir = job_base_dir / f"seed_{seed}"
+        scenario_dir = seed_base_dir / args.pool / args.user / f"{args.fruit}_{args.scenario}"
+        job_scenario_dir = job_seed_base_dir / args.pool / args.user / f"{args.fruit}_{args.scenario}"
+
         for method in methods:
             exp_kwargs = exp_kwargs_for_seed(
                 args,
@@ -366,10 +370,10 @@ def run_seed_jobs(args, run_module, repo_root: Path, outdir: str, job_outdir: st
                 method,
                 job_outdir if args.submit else outdir,
             )
-            seed_dir = scenario_dir / method / f"seed_{seed}"
+            seed_dir = scenario_dir / method
 
             if args.submit:
-                job_seed_dir = job_scenario_dir / method / f"seed_{seed}"
+                job_seed_dir = job_scenario_dir / method
                 submit_seed_job(
                     repo_root,
                     job_outdir,
