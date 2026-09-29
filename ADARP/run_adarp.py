@@ -156,16 +156,13 @@ def run(exp_dir, exp_name, exp_kwargs):
     global OUTPUT_DIR
     exp_dir_path = Path(exp_dir)
     split_seed = int(exp_kwargs.get("seed", 42))
-    print(f"[DEBUG1] OUTPUT_DIR_BASE={OUTPUT_DIR_BASE}, split_seed={split_seed}", flush=True)
     OUTPUT_DIR = str(Path(OUTPUT_DIR_BASE) / f"seed_{split_seed}")
-    print(f"[DEBUG2] Updated OUTPUT_DIR={OUTPUT_DIR}", flush=True)
     reset_seeds(split_seed)
     shared_enc_root = Path(OUTPUT_DIR) / "_global_encoders"
     shared_cnn_root = Path(OUTPUT_DIR) / "global_cnns"
-    print(f"[DEBUG3] shared_enc_root={shared_enc_root}", flush=True)
     prep = prepare_data(
         args=args_ns,
-        top_out=top_out,
+        top_out=OUTPUT_DIR,
         shared_enc_root=shared_enc_root,
         shared_cnn_root=shared_cnn_root,
         batch_ssl=BATCH_SSL_ADARP,
