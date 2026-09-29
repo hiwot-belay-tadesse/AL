@@ -200,11 +200,12 @@ def full_data_auc_for_user(user, args, top_out, pool, level_table=None, channels
     )
 
     reset_seeds(args.seed)
+    top_out_seed = top_out / f"seed_{args.seed}"
     prep = prepare_data(
         args=args_ns,
-        top_out=top_out,
-        shared_enc_root=top_out / "_global_encoders" / f"ADARP_stress__seed_{args.seed}",
-        shared_cnn_root=top_out / "global_cnns",
+        top_out=top_out_seed,
+        shared_enc_root=top_out_seed / "_global_encoders",
+        shared_cnn_root=top_out_seed / "global_cnns",
         batch_ssl=BATCH_SSL_ADARP,
         ssl_epochs=SSL_EPOCHS_ADARP,
         pool=pool,

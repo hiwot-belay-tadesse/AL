@@ -153,11 +153,10 @@ def run(exp_dir, exp_name, exp_kwargs):
     )
 
     exp_dir_path = Path(exp_dir)
-    top_out = Path(OUTPUT_DIR)
-
     split_seed = int(exp_kwargs.get("seed", 42))
+    top_out = Path(OUTPUT_DIR) / f"seed_{split_seed}"
     reset_seeds(split_seed)
-    shared_enc_root = top_out / "_global_encoders" / f"ADARP_stress__seed_{split_seed}"
+    shared_enc_root = top_out / "_global_encoders"
     shared_cnn_root = top_out / "global_cnns"
     prep = prepare_data(
         args=args_ns,
