@@ -307,7 +307,7 @@ def run(exp_dir, exp_name, exp_kwargs):
     _PER_USER_ROUND_EVAL[user_key] = run_out.get("round_eval_payloads")
     _PER_USER_FULL_DATA_EVAL[user_key] = run_out.get("full_data_eval_payload")
 
-    aggregate_dir = Path(OUTPUT_DIR) / args_ns.pool / "aggregates" / exp_name / hp_folder
+    aggregate_dir = Path(OUTPUT_DIR) / f"seed_{split_seed}" / args_ns.pool / "aggregates" / exp_name / hp_folder
     aggregate_dir.mkdir(parents=True, exist_ok=True)
 
     def _read_pickle_dict(path: Path):
@@ -354,7 +354,7 @@ def run(exp_dir, exp_name, exp_kwargs):
         with open(aggregate_dir / "full_data_auc_aggregated.json", "w") as f:
             json.dump(full_data_auc, f, indent=2)
 
-    base_root = Path(OUTPUT_DIR) / args_ns.pool / args_ns.user / f"{args_ns.fruit}_{args_ns.scenario}" / hp_folder
+    base_root = Path(OUTPUT_DIR) / f"seed_{split_seed}" / args_ns.pool / args_ns.user / f"{args_ns.fruit}_{args_ns.scenario}" / hp_folder
     key = (str(base_root), args_ns.task, args_ns.participant_id)
     _FINAL_COUNTS.setdefault(key, {})
     _FINAL_COUNTS[key][exp_name] = (labeled_len, unlabeled_len)

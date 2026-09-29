@@ -1,5 +1,10 @@
 SHELL := /bin/bash
 
+# Disable GPU/CUDA for TensorFlow (use CPU only)
+export CUDA_VISIBLE_DEVICES=""
+export TF_CPP_MIN_LOG_LEVEL=3
+export TF_FORCE_GPU_ALLOW_GROWTH=false
+
 run:
 	python submit_batch.py
 
@@ -466,10 +471,10 @@ adarp_prepare:
 
 .PHONY: run_adarp
 run_adarp:
-	mkdir -p $(BAN_AL_OUTPUT_DIR_AD) && \
-	BAN_AL_OUTPUT_DIR=$(BAN_AL_OUTPUT_DIR_AD) ADARP_BATCH_SSL=$(BATCH_SSL_AD) ADARP_SSL_EPOCHS=$(SSL_EPOCHS_AD) \
+	mkdir -p $(OUTDIR_AD) && \
+	BAN_AL_OUTPUT_DIR=$(OUTDIR_AD) ADARP_BATCH_SSL=$(BATCH_SSL_AD) ADARP_SSL_EPOCHS=$(SSL_EPOCHS_AD) \
 	python ADARP/avg_auc_adarp.py \
-	  --outdir $(BAN_AL_OUTPUT_DIR_AD)/adarp_global_results \
+	  --outdir $(OUTDIR_AD) \
 	  --seeds $(SEEDS_AD) \
 	  --methods $(METHODS_AD) \
 	  --users "$(USERS_AD)" \
@@ -487,14 +492,14 @@ run_adarp:
 	  $(SKIP_WARMUP_FLAG_AD) \
 	  $(RUN_MODE_FLAG_AD) \
 	  $(ANALYZE_FLAG_AD) \
-	  2>&1 >> $(BAN_AL_OUTPUT_DIR_AD)/out.txt
+	  2>&1 >> $(OUTDIR_AD)/out.txt
 
 .PHONY: analyze_adarp
 analyze_adarp:
-	BAN_AL_OUTPUT_DIR=$(BAN_AL_OUTPUT_DIR_AD) \
+	BAN_AL_OUTPUT_DIR=$(OUTDIR_AD) \
 	python ADARP/avg_auc_adarp.py \
 	  --analyze_only \
-	  --outdir $(BAN_AL_OUTPUT_DIR_AD)/adarp_global_results \
+	  --outdir $(OUTDIR_AD) \
 	  --seeds $(SEEDS_AD) \
 	  --methods $(METHODS_AD) \
 	  --users "$(USERS_AD)" \
