@@ -458,7 +458,8 @@ def load_auc_rows_from_runs(
     frames = []
     for method in methods:
         for seed in seeds:
-            seed_dir = scenario_dir / method / f"seed_{seed}"
+            # scenario_dir already includes seed at root level: outdir/seed_X/pool/user/fruit_scenario
+            seed_dir = scenario_dir / method
             paths = sorted(seed_dir.rglob("al_progress.csv"))
             if hp_contains:
                 paths = [path for path in paths if hp_contains in str(path.parent)]
@@ -499,7 +500,8 @@ def load_full_data_auc_rows_from_runs(
     rows = []
     for method in methods:
         for seed in seeds:
-            seed_dir = scenario_dir / method / f"seed_{seed}"
+            # scenario_dir already includes seed at root level: outdir/seed_X/pool/user/fruit_scenario
+            seed_dir = scenario_dir / method
             paths = sorted(seed_dir.rglob("upper_bound_auc.npy"))
             if hp_contains:
                 paths = [path for path in paths if hp_contains in str(path.parent)]
