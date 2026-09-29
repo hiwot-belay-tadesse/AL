@@ -13,6 +13,9 @@ No file in the repo root is modified by this copy.
 import json
 import os
 os.environ["TF_DETERMINISTIC_OPS"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = ""
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+os.environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "false"
 
 import sys
 from pathlib import Path
@@ -54,7 +57,7 @@ from new_helper import (
 BATCH_SSL_ADARP = int(os.environ.get("ADARP_BATCH_SSL", "32"))
 SSL_EPOCHS_ADARP = int(os.environ.get("ADARP_SSL_EPOCHS", "100"))
 
-DRYRUN = True
+DRYRUN = False
 _FINAL_COUNTS = {}
 _PER_USER_AL_PROGRESS = {}
 _PER_USER_ROUND_EVAL = {}
@@ -85,12 +88,12 @@ unlabeled_frac = [float(args.unlabeled_frac)]
 dropout_rate = [float(args.dropout_rate)]
 warm_start = [bool(int(args.warm_start))]
 T = [50]
-K = [3]   # matches run.py (BP spike)
+K = [10]  # fixed budget per round for realistic AL
 
 # Smallest number of windows of EACH class the initial labeled seed must contain.
 # The seed size is raised until a stratified split clears this for both classes,
 # so a run never starts from one or two positives.
-MIN_PER_CLASS = 5
+MIN_PER_CLASS = 2
 
 Budget = [None]
 
@@ -152,11 +155,10 @@ def run(exp_dir, exp_name, exp_kwargs):
     exp_dir_path = Path(exp_dir)
     top_out = Path(OUTPUT_DIR)
 
-    shared_enc_root = top_out / "_global_encoders"
-    shared_cnn_root = top_out / "global_cnns"
-
     split_seed = int(exp_kwargs.get("seed", 42))
     reset_seeds(split_seed)
+    shared_enc_root = top_out / "_global_encoders" / f"ADARP_stress__seed_{split_seed}"
+    shared_cnn_root = top_out / "global_cnns"
     prep = prepare_data(
         args=args_ns,
         top_out=top_out,
@@ -226,8 +228,10 @@ def run(exp_dir, exp_name, exp_kwargs):
 
     if args_ns.pool == "personal":
         split_source = df_tr.reset_index(drop=True)
+        print(f"[DEBUG] personal pool: using df_tr with {len(split_source)} rows")
     else:
         split_source = df_all_tr.reset_index(drop=True)
+        print(f"[DEBUG] global pool: using df_all_tr with {len(split_source)} rows")
 
     reset_seeds(split_seed)
 
@@ -264,7 +268,8 @@ def run(exp_dir, exp_name, exp_kwargs):
 
     Z_split = utility.encode_single_df(
         split_source,
-        enc_hr,
+        # enc_hr,
+        None,  # ADARP uses the eda encoder only for testing purposes
         enc_st,
         args_ns.pool,
     )
