@@ -1442,13 +1442,18 @@ def prepare_data(args, top_out, shared_enc_root, shared_cnn_root,
     from src.compare_pipelines import _train_or_load_encoder
 
     user_root = Path(top_out) / str(args.user) / f"{args.fruit}_{args.scenario}"
-    out_dir = user_root / pool
-    # For global pool: encoders in shared_enc_root; for personal: per-user in models_d
+
+    # For global pool: no per-user encoder/results dirs; for personal: per-user dirs
     if pool == "global":
         models_d = Path(shared_enc_root) / f"{args.fruit}_{args.scenario}"
+        # Results go to top_out/pool/user/fruit_scenario (not user_root/pool)
+        results_d = Path(top_out) / pool / str(args.user) / f"{args.fruit}_{args.scenario}" / "results"
     else:
+        # Personal pool keeps per-user structure
+        out_dir = user_root / pool
         models_d = out_dir / "models_saved"
-    results_d = out_dir / "results"
+        results_d = out_dir / "results"
+
     models_d.mkdir(parents=True, exist_ok=True)
     results_d.mkdir(parents=True, exist_ok=True)
 
