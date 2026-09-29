@@ -81,7 +81,8 @@ set_classifier(args.classifier)
 if getattr(args, "exclude_users", ""):
     os.environ["BAN_AL_EXCLUDE_USERS"] = args.exclude_users
 
-OUTPUT_DIR = os.environ.get("BAN_AL_OUTPUT_DIR") or set_output_dir(args.pool, BP_MODE)
+OUTPUT_DIR_BASE = os.environ.get("BAN_AL_OUTPUT_DIR") or set_output_dir(args.pool, BP_MODE)
+OUTPUT_DIR = OUTPUT_DIR_BASE  # Will be updated per-seed in run()
 
 
 unlabeled_frac = [float(args.unlabeled_frac)]
@@ -152,13 +153,14 @@ def run(exp_dir, exp_name, exp_kwargs):
         classifier=classifier_kind,
     )
 
+    global OUTPUT_DIR
     exp_dir_path = Path(exp_dir)
     split_seed = int(exp_kwargs.get("seed", 42))
-    top_out = Path(OUTPUT_DIR) / f"seed_{split_seed}"
-    print(f"[DEBUG] OUTPUT_DIR={OUTPUT_DIR}, split_seed={split_seed}, top_out={top_out}", flush=True)
+    OUTPUT_DIR = str(Path(OUTPUT_DIR_BASE) / f"seed_{split_seed}")
+    print(f"[DEBUG] OUTPUT_DIR={OUTPUT_DIR}, seed={split_seed}", flush=True)
     reset_seeds(split_seed)
-    shared_enc_root = top_out / "_global_encoders"
-    shared_cnn_root = top_out / "global_cnns"
+    shared_enc_root = Path(OUTPUT_DIR) / "_global_encoders"
+    shared_cnn_root = Path(OUTPUT_DIR) / "global_cnns"
     prep = prepare_data(
         args=args_ns,
         top_out=top_out,
@@ -308,7 +310,7 @@ def run(exp_dir, exp_name, exp_kwargs):
     _PER_USER_ROUND_EVAL[user_key] = run_out.get("round_eval_payloads")
     _PER_USER_FULL_DATA_EVAL[user_key] = run_out.get("full_data_eval_payload")
 
-    aggregate_dir = Path(OUTPUT_DIR) / f"seed_{split_seed}" / args_ns.pool / "aggregates" / exp_name / hp_folder
+    aggregate_dir = Path(OUTPUT_DIR) / args_ns.pool / "aggregates" / exp_name / hp_folder
     aggregate_dir.mkdir(parents=True, exist_ok=True)
 
     def _read_pickle_dict(path: Path):
@@ -355,7 +357,7 @@ def run(exp_dir, exp_name, exp_kwargs):
         with open(aggregate_dir / "full_data_auc_aggregated.json", "w") as f:
             json.dump(full_data_auc, f, indent=2)
 
-    base_root = Path(OUTPUT_DIR) / f"seed_{split_seed}" / args_ns.pool / args_ns.user / f"{args_ns.fruit}_{args_ns.scenario}" / hp_folder
+    base_root = Path(OUTPUT_DIR) / args_ns.pool / args_ns.user / f"{args_ns.fruit}_{args_ns.scenario}" / hp_folder
     key = (str(base_root), args_ns.task, args_ns.participant_id)
     _FINAL_COUNTS.setdefault(key, {})
     _FINAL_COUNTS[key][exp_name] = (labeled_len, unlabeled_len)
