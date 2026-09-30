@@ -515,3 +515,37 @@ analyze_adarp:
 	  --bin_size $(BIN_SIZE_AD) \
 	  $(EXCLUDE_USERS_FLAG_AD)
 
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Event-level k-fold CV for personal pool (no data leakage)
+# Stratifies by event (button press) instead of window to prevent leakage.
+# Organizes everything in ADARP/kfold/ (encoders, results, summaries)
+#
+# Local run:
+#   make event_kfold_personal LOCAL_EKF=1
+#
+# Cluster submission:
+#   make event_kfold_personal LOCAL_EKF=0
+# ─────────────────────────────────────────────────────────────────────────────
+LOCAL_EKF ?= 1
+RUN_MODE_FLAG_EKF := $(if $(filter 1 true yes,$(LOCAL_EKF)),local,submit)
+OUTDIR_EKF ?= ADARP/kfold
+
+.PHONY: event_kfold_personal
+event_kfold_personal:
+	@echo "[Event K-Fold CV] Organizing results in $(OUTDIR_EKF)/"
+	@mkdir -p $(OUTDIR_EKF)/{encoders,results}
+	@if [ "$(RUN_MODE_FLAG_EKF)" = "local" ]; then \
+	  echo "[Event K-Fold CV] Running locally..."; \
+	  python ADARP/event_kfold_personal.py 2>&1 | tee $(OUTDIR_EKF)/event_kfold.log; \
+	else \
+	  echo "[Event K-Fold CV] Submitting to cluster..."; \
+	  sbatch \
+	    --job-name=event_kfold_personal \
+	    --output=$(OUTDIR_EKF)/event_kfold_%j.log \
+	    --time=04:00:00 \
+	    --mem=32G \
+	    --cpus-per-task=4 \
+	    --wrap="cd $(shell pwd) && python ADARP/event_kfold_personal.py"; \
+	fi
+

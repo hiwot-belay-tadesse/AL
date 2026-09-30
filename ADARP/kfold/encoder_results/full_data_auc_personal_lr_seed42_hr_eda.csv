@@ -1,0 +1,2 @@
+user_id,auc,train_auc,pooled_train_auc,gap,train_n_user,train_pos_user,train_events,test_events,n_train,n_test,test_pos,test_neg,test_pos_rate,pool,level,n_features,classifier,seed
+105,0.4069941932537352,0.6408722217775288,0.6408722217775288,0.23387802852379358,1273,312,4,3,1273,365,234,131,0.6410958766937256,personal,False,64,lr,42

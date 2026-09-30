@@ -1,0 +1,18 @@
+{
+  "pool": "personal",
+  "classifier": "lr",
+  "seed": 42,
+  "n_splits": 1,
+  "n_participants": 1,
+  "per_participant_mean_auc": 0.4069941932537352,
+  "pooled_test_auc": 0.4069941932537352,
+  "mean_train_auc": 0.6408722217775288,
+  "pooled_train_auc": 0.6408722217775288,
+  "mean_pooled_train_auc": 0.6408722217775288,
+  "mean_gap": 0.23387802852379358,
+  "median_auc": 0.4069941932537352,
+  "std_auc": 0.0,
+  "min_auc": 0.4069941932537352,
+  "max_auc": 0.4069941932537352,
+  "skipped": []
+}
