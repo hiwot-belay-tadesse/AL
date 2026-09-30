@@ -25,8 +25,9 @@ from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import roc_auc_score
 from sklearn.preprocessing import StandardScaler
 
-_ADARP_DIR = Path(__file__).resolve().parent
-_REPO_ROOT = _ADARP_DIR.parent
+_SCRIPT_DIR = Path(__file__).resolve().parent  # ADARP/kfold
+_ADARP_DIR = _SCRIPT_DIR.parent  # ADARP
+_REPO_ROOT = _ADARP_DIR.parent  # repo root
 for _path in (str(_REPO_ROOT), str(_ADARP_DIR)):
     if _path not in sys.path:
         sys.path.insert(0, _path)
