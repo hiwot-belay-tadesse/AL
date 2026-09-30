@@ -537,7 +537,7 @@ event_kfold_personal:
 	@mkdir -p $(OUTDIR_EKF)/{encoders,results}
 	@if [ "$(RUN_MODE_FLAG_EKF)" = "local" ]; then \
 	  echo "[Event K-Fold CV] Running locally..."; \
-	  python ADARP/event_kfold_personal.py 2>&1 | tee $(OUTDIR_EKF)/event_kfold.log; \
+	  python ADARP/kfold/event_kfold_personal.py 2>&1 | tee $(OUTDIR_EKF)/event_kfold.log; \
 	else \
 	  echo "[Event K-Fold CV] Submitting to cluster..."; \
 	  sbatch \
@@ -546,6 +546,6 @@ event_kfold_personal:
 	    --time=04:00:00 \
 	    --mem=32G \
 	    --cpus-per-task=4 \
-	    --wrap="cd $(shell pwd) && python ADARP/event_kfold_personal.py"; \
+	    --wrap="cd $(shell pwd) && python ADARP/kfold/event_kfold_personal.py"; \
 	fi
 
