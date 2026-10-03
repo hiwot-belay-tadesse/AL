@@ -18,6 +18,9 @@
 #     EXTRA       extra args for train_encoders.py, e.g. "--augmentations low_pass band_pass"
 #     PARTICIPANTS  space-separated ids indexed by SLURM_ARRAY_TASK_ID in --array mode
 #                 (default: the 11 ADARP participants, index 0 = 101 ... 10 = 112)
+#     SENSOR_DIR  override for the raw E4 'Part <id>C' folder. Not needed when the data
+#                 is at ~/AL/DATA/ADARP/Sensor Data or <repo>/DATA/ADARP/Sensor Data,
+#                 which data4hz.resolve_sensor_dir finds on its own.
 
 #SBATCH --job-name=matton_ssl_adarp
 #SBATCH -n 1
@@ -40,6 +43,12 @@ export ADARP_SSL_EPOCHS="${ADARP_SSL_EPOCHS:-100}"
 
 cd "${SLURM_SUBMIT_DIR:-$(pwd)}"
 mkdir -p ADARP/results/logs
+
+# raw 4 Hz EDA location: explicit override only; otherwise data4hz searches
+# ~/AL/DATA/ADARP/Sensor Data, then <repo>/AL/DATA/..., then <repo>/DATA/...
+if [ -n "${SENSOR_DIR:-}" ]; then
+  export ADARP_SENSOR_DIR="${SENSOR_DIR}"
+fi
 
 SEED="${SEED:-42}"
 POOL="${POOL:-global}"

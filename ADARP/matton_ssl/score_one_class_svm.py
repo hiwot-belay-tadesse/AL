@@ -45,7 +45,9 @@ from eda_baseline import assert_no_overlap, assign_split, mark_split  # noqa: E4
 from one_class_svm import (  # noqa: E402  (protocol reused unchanged)
     GAMMA, KERNEL, NU, RESULT_COLS, run_global, run_personalized,
 )
-from data4hz import FS_EDA, labelled_eda_windows, load_eda_4hz, zscore_rows  # noqa: E402
+from data4hz import (  # noqa: E402
+    ENV_SENSOR_DIR, FS_EDA, labelled_eda_windows, load_eda_4hz, resolve_sensor_dir, zscore_rows,
+)
 from train_encoders import OUT_DIR, WINDOW_SEC, encoder_target  # noqa: E402
 
 RESULTS_DIR = _HERE / "results"
@@ -81,14 +83,15 @@ def encode(enc_hr, enc_eda, X_eda, X_hr):
     return np.concatenate([H, S], axis=1).astype("float32")
 
 
-def build_table(processed_dir, seed, verbose=True):
+def build_table(processed_dir, seed, sensor_dir=None, verbose=True):
     """Window table with split + the raw 4 Hz EDA and 1 Hz HR arrays aligned to it."""
     eda1, hr, meta = load_windows(processed_dir)
     table = meta.copy()
     table["participant"] = table["participant"].astype(str)
     table["label"] = table["label"].astype(int)
 
-    frames = {pid: load_eda_4hz(pid) for pid in sorted(table["participant"].unique())}
+    frames = {pid: load_eda_4hz(pid, sensor_dir=sensor_dir)
+              for pid in sorted(table["participant"].unique())}
     X_eda = labelled_eda_windows(table, frames, fs=FS_EDA, window_sec=WINDOW_SEC)
 
     ok = ~np.isnan(X_eda).any(axis=1)
@@ -110,14 +113,15 @@ def build_table(processed_dir, seed, verbose=True):
 
 
 def run(processed_dir=PROCESSED_DIR, run_dir=OUT_DIR, results_dir=RESULTS_DIR, seed=42,
-        channels="eda", n_boot=1000, nu=NU, gamma=GAMMA, save_embeddings=False, verbose=True):
+        channels="eda", n_boot=1000, nu=NU, gamma=GAMMA, sensor_dir=None,
+        save_embeddings=False, verbose=True):
     results_dir = Path(results_dir)
     results_dir.mkdir(parents=True, exist_ok=True)
     gamma_val = gamma if isinstance(gamma, str) else float(gamma)
     svm_kw = dict(nu=nu, gamma=gamma_val)
     notes = {"encoder_run_dir": str(run_dir), "channels": channels}
 
-    table, X_eda, X_hr = build_table(processed_dir, seed, verbose)
+    table, X_eda, X_hr = build_table(processed_dir, seed, sensor_dir=sensor_dir, verbose=verbose)
     pids = table["participant"].to_numpy()
 
     encs, reason = encoders_for(run_dir, seed, channels)
@@ -177,6 +181,9 @@ def parse_args():
     pa = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     pa.add_argument("--processed_dir", default=str(PROCESSED_DIR))
+    pa.add_argument("--sensor_dir", default=None,
+                    help=f"Raw E4 'Part <id>C' folders. Default: ${ENV_SENSOR_DIR} if set, else "
+                         f"<repo>/DATA/ADARP/Sensor Data. Only needed if the 4 Hz cache is absent.")
     pa.add_argument("--run_dir", default=str(OUT_DIR),
                     help="Encoder tree from train_encoders.py (holds seed_<seed>/).")
     pa.add_argument("--results_dir", default=str(RESULTS_DIR))
@@ -194,8 +201,8 @@ def main():
     a = parse_args()
     run(processed_dir=Path(a.processed_dir), run_dir=Path(a.run_dir),
         results_dir=Path(a.results_dir), seed=a.seed, channels=a.channels,
-        n_boot=a.n_boot, nu=a.nu, gamma=a.gamma, save_embeddings=a.save_embeddings,
-        verbose=not a.quiet)
+        n_boot=a.n_boot, nu=a.nu, gamma=a.gamma, sensor_dir=a.sensor_dir,
+        save_embeddings=a.save_embeddings, verbose=not a.quiet)
     return 0
 
 

@@ -19,6 +19,7 @@ Also here:
                      each, for encoding with a 4 Hz encoder
 """
 
+import os
 import sys
 from pathlib import Path
 
@@ -37,11 +38,44 @@ from load_adarp import EDA_HZ, read_signal, session_dirs  # noqa: E402
 CACHE_DIR = _HERE / "cache"
 FS_EDA = float(EDA_HZ)        # 4 Hz
 
+# Where the `Part <id>C` folders live. Checked in this order, first existing wins:
+#   1. an explicit sensor_dir argument / --sensor_dir
+#   2. $ADARP_SENSOR_DIR
+#   3. ~/AL/DATA/ADARP/Sensor Data            (the cluster layout)
+#   4. <repo>/AL/DATA/ADARP/Sensor Data
+#   5. <repo>/DATA/ADARP/Sensor Data          (load_adarp.SENSOR_DIR, the pipeline's default)
+ENV_SENSOR_DIR = "ADARP_SENSOR_DIR"
+_REPO = _ADARP_DIR.parent
+DEFAULT_SENSOR_DIRS = (
+    Path.home() / "AL" / "DATA" / "ADARP" / "Sensor Data",
+    _REPO / "AL" / "DATA" / "ADARP" / "Sensor Data",
+    Path(load_adarp.SENSOR_DIR),
+)
+
+
+def resolve_sensor_dir(sensor_dir=None):
+    candidates = []
+    if sensor_dir:
+        candidates.append(Path(sensor_dir).expanduser())
+    if os.environ.get(ENV_SENSOR_DIR):
+        candidates.append(Path(os.environ[ENV_SENSOR_DIR]).expanduser())
+    candidates.extend(DEFAULT_SENSOR_DIRS)
+    for path in candidates:
+        if path.is_dir():
+            return path
+    raise FileNotFoundError(
+        "ADARP Sensor Data not found. Looked in:\n  " + "\n  ".join(str(c) for c in candidates)
+        + f"\nPass --sensor_dir, or set {ENV_SENSOR_DIR}, to the folder holding 'Part 101C' ... 'Part 112C'.")
+
 
 # ------------------------------------------------------------------ loading
 
-def load_eda_4hz(pid, cache_dir=CACHE_DIR, sensor_dir=load_adarp.SENSOR_DIR):
-    """One participant's raw 4 Hz EDA: DataFrame indexed by UTC time, columns eda, session."""
+def load_eda_4hz(pid, cache_dir=CACHE_DIR, sensor_dir=None):
+    """One participant's raw 4 Hz EDA: DataFrame indexed by UTC time, columns eda, session.
+
+    `sensor_dir` defaults to $ADARP_SENSOR_DIR, else the pipeline's <repo>/DATA/ADARP/Sensor Data.
+    The cache is consulted first, so the archives are only needed on the first call.
+    """
     pid = str(pid).rstrip("C")
     cache_dir = Path(cache_dir)
     cache_dir.mkdir(parents=True, exist_ok=True)
@@ -53,6 +87,7 @@ def load_eda_4hz(pid, cache_dir=CACHE_DIR, sensor_dir=load_adarp.SENSOR_DIR):
         sessions = np.asarray(z["sessions"]).astype(str)[z["session_code"]]
         return pd.DataFrame({"eda": z["eda"].astype(np.float32), "session": sessions}, index=idx)
 
+    sensor_dir = resolve_sensor_dir(sensor_dir)
     parts = []
     for path in session_dirs(f"{pid}C", sensor_dir):
         eda_path = path / "EDA.csv"

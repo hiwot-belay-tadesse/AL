@@ -77,7 +77,8 @@ from preprocess_adarp_data import (  # noqa: E402  (reused unchanged)
     windows_to_frame,
 )
 from data4hz import (  # noqa: E402
-    FS_EDA, WindowBank, load_eda_4hz, session_arrays_4hz, zscore_rows,
+    ENV_SENSOR_DIR, FS_EDA, WindowBank, load_eda_4hz, resolve_sensor_dir,
+    session_arrays_4hz, zscore_rows,
 )
 from eda_augmentations import MattonAugmenter, TRANSFORM_NAMES, paper_params  # noqa: E402
 
@@ -104,13 +105,14 @@ def training_sessions(processed_dir, seed):
     return {pid: list(s["train"]) for pid, s in splits.items()}
 
 
-def channel_sessions(channel, participants, sessions_by_pid, processed_dir, verbose=True):
+def channel_sessions(channel, participants, sessions_by_pid, processed_dir,
+                     sensor_dir=None, verbose=True):
     """[(pid, session, values)] at the channel's native rate over training sessions."""
     if channel == "eda":
         frames = {}
         for pid in participants:
             t0 = time.time()
-            frames[pid] = load_eda_4hz(pid)
+            frames[pid] = load_eda_4hz(pid, sensor_dir=sensor_dir)
             if verbose:
                 print(f"[matton-ssl] 4 Hz EDA {pid}: {len(frames[pid]):,} samples "
                       f"({time.time() - t0:.0f}s)", flush=True)
@@ -304,7 +306,12 @@ def train_channel(channel, sessions, out_path, out_dir, seed, batch_size, epochs
 def main():
     pa = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    pa.add_argument("--processed_dir", default=str(PROCESSED_DIR))
+    pa.add_argument("--processed_dir", default=str(PROCESSED_DIR),
+                    help="Pipeline outputs: adarp_windows.{npz,csv} and signals/.")
+    pa.add_argument("--sensor_dir", default=None,
+                    help=f"Folder holding 'Part 101C' ... 'Part 112C' with the raw E4 CSVs. "
+                         f"Default: ${ENV_SENSOR_DIR} if set, else <repo>/DATA/ADARP/Sensor Data "
+                         f"(the pipeline's location). On the cluster: ~/AL/DATA/ADARP/Sensor\ Data.")
     pa.add_argument("--out_dir", default=str(OUT_DIR))
     pa.add_argument("--seed", type=int, default=42, help="Split seed, as the pipeline.")
     pa.add_argument("--pool", default="global", choices=["global", "personal"])
@@ -321,6 +328,9 @@ def main():
     args = pa.parse_args()
 
     processed_dir, out_dir = Path(args.processed_dir), Path(args.out_dir)
+    sensor_dir = resolve_sensor_dir(args.sensor_dir) if "eda" in args.channels else None
+    if sensor_dir is not None:
+        print(f"[matton-ssl] raw 4 Hz EDA from {sensor_dir}", flush=True)
     sessions_by_pid = training_sessions(processed_dir, args.seed)
     participants = args.participants or sorted(sessions_by_pid)
 
@@ -332,6 +342,7 @@ def main():
         "window_sec": args.window_sec, "step_sec": args.step_sec, "buffer_sec": BUFFER_SEC,
         "fs_hz": CHANNEL_FS, "val_session_frac": VAL_SESSION_FRAC,
         "eda_source": "raw E4 EDA.csv at 4 Hz, unfiltered, microsiemens (data4hz.load_eda_4hz)",
+        "sensor_dir": str(sensor_dir),
         "hr_source": "processed/signals/<pid>_hr.csv at 1 Hz (pipeline export)",
         "eda_transforms": args.augmentations or TRANSFORM_NAMES,
         "eda_params": paper_params(FS_EDA),
@@ -343,7 +354,8 @@ def main():
 
     groups = [(None, participants)] if args.pool == "global" else [(p, [p]) for p in participants]
     for channel in args.channels:
-        sessions_all = channel_sessions(channel, participants, sessions_by_pid, processed_dir)
+        sessions_all = channel_sessions(channel, participants, sessions_by_pid, processed_dir,
+                                        sensor_dir=sensor_dir)
         for pid, members in groups:
             sessions = [t for t in sessions_all if t[0] in members]
             if not sessions:
