@@ -59,3 +59,45 @@ run_%:
 	    --output-dir $(OUTDIR) \
 	    $$WARM; \
 	done
+
+# ---------------------------------------------------------------- personalized AL (IN_A_MEETING)
+# meeting/experiments/personal_al_meeting.py, sharded one SLURM job per (fold, repeat).
+# Each shard writes its own part file, so jobs never collide and a requeued job resumes.
+PAL_FOLDS   ?= 0 1 2
+PAL_REPEATS ?= 0 1 2 3 4
+PAL_TARGETS ?=
+PAL_CORES   ?= 4
+PAL_HOURS   ?= 6
+PAL_MEM     ?= 16GB
+LOCAL_PAL   ?= 0          # 1 = run the shards here instead of submitting them
+
+## submit (or, with LOCAL_PAL=1, run) every fold x repeat shard
+.PHONY: submit_personal_al
+submit_personal_al:
+	@if [ "$(LOCAL_PAL)" = "1" ]; then \
+	  for f in $(PAL_FOLDS); do for r in $(PAL_REPEATS); do \
+	    (cd meeting && python -u experiments/personal_al_meeting.py --fold $$f --repeat $$r \
+	      $(if $(PAL_TARGETS),--targets $(PAL_TARGETS),)) ; \
+	  done; done; \
+	else \
+	  python meeting/submit_personal_al.py --folds $(PAL_FOLDS) --repeats $(PAL_REPEATS) \
+	    --cores $(PAL_CORES) --hours $(PAL_HOURS) --mem $(PAL_MEM) \
+	    $(if $(PAL_TARGETS),--targets $(PAL_TARGETS),) $(if $(filter 1,$(DRYRUN_PAL)),--dryrun,); \
+	fi
+
+## print the generated sbatch scripts without submitting anything
+.PHONY: dryrun_personal_al
+dryrun_personal_al:
+	python meeting/submit_personal_al.py --folds $(PAL_FOLDS) --repeats $(PAL_REPEATS) \
+	  --cores $(PAL_CORES) --hours $(PAL_HOURS) --mem $(PAL_MEM) \
+	  $(if $(PAL_TARGETS),--targets $(PAL_TARGETS),) --dryrun
+
+## collect every shard's part file into per_round.csv, summary.md and the figures
+.PHONY: analyze_personal_al
+analyze_personal_al:
+	cd meeting && python experiments/personal_al_meeting.py --summarize
+
+## the closed-form / greedy check for the variance-reduction acquisition
+.PHONY: test_personal_al
+test_personal_al:
+	cd meeting && python experiments/personal_al_meeting.py --unit_test
