@@ -25,7 +25,7 @@ TMP_DIR = os.path.join(ROOT, "tmp")
 LOGS = "meeting/results/personal_al_meeting/logs"
 
 
-def build(template, name, cmd, hours, mem, cores):
+def build(template, name, cmd, hours, mem, cores, data_dir=None):
     s = template
     s = s.replace("#SBATCH -n 1 # Number of cores", f"#SBATCH -n {cores} # Number of cores")
     s = s.replace("#SBATCH -t 0-010:00", f"#SBATCH -t 0-{hours:03d}:00")
@@ -35,9 +35,11 @@ def build(template, name, cmd, hours, mem, cores):
     s = s.replace("#SBATCH -e %s/err_%%j.txt" % LOGS, f"#SBATCH -e {LOGS}/{name}_%j.err")
     body = s.split("# python -u run.py EXPDIR EXPNAME KWARGS")[0]
     # BLAS threads must match -n: the acquisition step is one big matmul per round
-    return (body + f"export OMP_NUM_THREADS={cores}\nexport OPENBLAS_NUM_THREADS={cores}\n"
-                   f"export MKL_NUM_THREADS={cores}\nexport VECLIB_MAXIMUM_THREADS={cores}\n\n"
-                   f"cd meeting\n{cmd}\n")
+    env = (f"export OMP_NUM_THREADS={cores}\nexport OPENBLAS_NUM_THREADS={cores}\n"
+           f"export MKL_NUM_THREADS={cores}\nexport VECLIB_MAXIMUM_THREADS={cores}\n")
+    if data_dir:                       # walking/data.py reads ES_DATA_DIR before its default path
+        env += f'export ES_DATA_DIR="{data_dir}"\n'
+    return body + env + f"\ncd meeting\n{cmd}\n"
 
 
 def main():
@@ -47,6 +49,8 @@ def main():
     ap.add_argument("--targets", nargs="*", default=None)
     ap.add_argument("--cores", type=int, default=4); ap.add_argument("--hours", type=int, default=6)
     ap.add_argument("--mem", default="16GB")
+    ap.add_argument("--data_dir", default=os.environ.get("ES_DATA_DIR"),
+                    help="ExtraSensory CSVs on the cluster; exported as ES_DATA_DIR in each job")
     ap.add_argument("--dryrun", action="store_true", help="write the scripts but do not sbatch")
     args = ap.parse_args()
     os.makedirs(TMP_DIR, exist_ok=True)
@@ -59,7 +63,8 @@ def main():
             cmd = (f"python -u experiments/personal_al_meeting.py --fold {f} --repeat {r}"
                    + (" --targets " + " ".join(args.targets) if args.targets else ""))
             path = os.path.join(TMP_DIR, f"slurm_{name}.sh")
-            open(path, "w").write(build(template, name, cmd, args.hours, args.mem, args.cores))
+            open(path, "w").write(build(template, name, cmd, args.hours, args.mem, args.cores,
+                                          args.data_dir))
             if args.dryrun:
                 print(f"[dryrun] {path}: {cmd}")
             else:

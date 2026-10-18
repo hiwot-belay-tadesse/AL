@@ -69,6 +69,7 @@ PAL_TARGETS ?=
 PAL_CORES   ?= 4
 PAL_HOURS   ?= 6
 PAL_MEM     ?= 16GB
+ES_DATA_DIR ?=            # ExtraSensory CSVs on the cluster; empty = beside the checkout
 LOCAL_PAL   ?= 0          # 1 = run the shards here instead of submitting them
 
 ## submit (or, with LOCAL_PAL=1, run) every fold x repeat shard
@@ -82,6 +83,7 @@ submit_personal_al:
 	else \
 	  python meeting/submit_personal_al.py --folds $(PAL_FOLDS) --repeats $(PAL_REPEATS) \
 	    --cores $(PAL_CORES) --hours $(PAL_HOURS) --mem $(PAL_MEM) \
+	    $(if $(ES_DATA_DIR),--data_dir $(ES_DATA_DIR),) \
 	    $(if $(PAL_TARGETS),--targets $(PAL_TARGETS),) $(if $(filter 1,$(DRYRUN_PAL)),--dryrun,); \
 	fi
 
@@ -90,6 +92,7 @@ submit_personal_al:
 dryrun_personal_al:
 	python meeting/submit_personal_al.py --folds $(PAL_FOLDS) --repeats $(PAL_REPEATS) \
 	  --cores $(PAL_CORES) --hours $(PAL_HOURS) --mem $(PAL_MEM) \
+	  $(if $(ES_DATA_DIR),--data_dir $(ES_DATA_DIR),) \
 	  $(if $(PAL_TARGETS),--targets $(PAL_TARGETS),) --dryrun
 
 ## collect every shard's part file into per_round.csv, summary.md and the figures

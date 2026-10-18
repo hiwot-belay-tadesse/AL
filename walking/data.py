@@ -24,7 +24,11 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = os.path.join(HERE, "..", "DATA", "ExtraSensory")
+# ES_DATA_DIR relocates the ExtraSensory CSVs without touching the repo layout -- the cluster keeps
+# them on scratch rather than beside the checkout (cf. ADARP_SENSOR_DIR in ADARP/matton_ssl/).
+# Every consumer reads this one definition: meeting/meeting_data.py imports it, and the subprojects
+# import it from there, so exporting the variable is enough for walking and meeting alike.
+DATA_DIR = os.environ.get("ES_DATA_DIR") or os.path.join(HERE, "..", "DATA", "ExtraSensory")
 RESULTS_DIR = os.path.join(HERE, "results")
 
 POS_LABEL = "label:FIX_walking"

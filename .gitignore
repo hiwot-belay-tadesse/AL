@@ -5,3 +5,6 @@ __pycache__/
 *.npy
 
 *.pkl
+
+# raw sensor data: 748 MB of ExtraSensory CSVs, relocatable with ES_DATA_DIR
+DATA/
