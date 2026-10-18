@@ -25,9 +25,14 @@ TMP_DIR = os.path.join(ROOT, "tmp")
 LOGS = "meeting/results/personal_al_meeting/logs"
 
 
-def build(template, name, cmd, hours, mem, cores, data_dir=None):
+def build(template, name, cmd, hours, mem, cores, data_dir=None, partition=None, account=None):
     s = template
-    s = s.replace("#SBATCH -n 1 # Number of cores", f"#SBATCH -n {cores} # Number of cores")
+    s = s.replace("#SBATCH -n 1 # Number of cores",
+                  f"#SBATCH -J {name}\n#SBATCH -n {cores} # Number of cores")
+    if partition:                      # template.sh hard-codes serial_requeue
+        s = s.replace("#SBATCH -p serial_requeue", f"#SBATCH -p {partition}")
+    if account:                        # lab partitions sometimes need their own account
+        s = s.replace("#SBATCH -N 1", f"#SBATCH -A {account}\n#SBATCH -N 1")
     s = s.replace("#SBATCH -t 0-010:00", f"#SBATCH -t 0-{hours:03d}:00")
     s = s.replace("#SBATCH --mem=30GB", f"#SBATCH --mem={mem}")
     s = s.replace("ADARP/results/logs", LOGS)
@@ -51,6 +56,8 @@ def main():
     ap.add_argument("--mem", default="16GB")
     ap.add_argument("--data_dir", default=os.environ.get("ES_DATA_DIR"),
                     help="ExtraSensory CSVs on the cluster; exported as ES_DATA_DIR in each job")
+    ap.add_argument("--partition", default=None, help="SLURM partition (default: template.sh's)")
+    ap.add_argument("--account", default=None, help="SLURM account, if the partition needs one")
     ap.add_argument("--dryrun", action="store_true", help="write the scripts but do not sbatch")
     args = ap.parse_args()
     os.makedirs(TMP_DIR, exist_ok=True)
@@ -64,7 +71,7 @@ def main():
                    + (" --targets " + " ".join(args.targets) if args.targets else ""))
             path = os.path.join(TMP_DIR, f"slurm_{name}.sh")
             open(path, "w").write(build(template, name, cmd, args.hours, args.mem, args.cores,
-                                          args.data_dir))
+                                          args.data_dir, args.partition, args.account))
             if args.dryrun:
                 print(f"[dryrun] {path}: {cmd}")
             else:
